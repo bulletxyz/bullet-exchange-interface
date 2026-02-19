@@ -1,0 +1,49 @@
+[package]
+name = "bullet-exchange-interface"
+version = "0.0.1"
+edition = "2024"
+license = "UNLICENSED"
+authors = [
+  "Tristan Frizza <tristan@sierra.team>, Kelvin Lau <kelvin@sierra.team>, Filip Drazovic <filip@sierra.team>",
+]
+homepage = "https://www.bullet.xyz"
+repository = "https://github.com/zetamarkets/bullet"
+publish = false
+rust-version = "1.88"
+
+[dependencies]
+borsh = { version = "1.5.7" }
+serde = { version = "1.0.192", features = ["derive", "rc"] }
+serde_json = "1.0"
+strum = { version = "0.26.3", features = ["derive"] }
+thiserror = "2.0.10"
+rust_decimal = { version = "1.40.0", features = ["maths", "borsh"] }
+rust_decimal_macros = "1.40"
+schemars = { version = "0.8.21", features = ["rust_decimal" ] }
+hex = { version = "0.4.3", features = ["serde"] }
+
+sov-rollup-interface = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev = "1f5afcc00c879d3601947d09fdf9f5b17239d72b" }
+sov-universal-wallet = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev = "1f5afcc00c879d3601947d09fdf9f5b17239d72b", features=["serde"] }
+bullet-bs58 = { git = "https://github.com/zetamarkets/bullet-bs58.git" }
+
+
+[lints.rust]
+dead_code = "deny"
+non_ascii_idents = "deny" # Bad for readability and it can also be a security vulnerability
+
+[lints.clippy]
+debug_assert_with_mut_call = "deny"
+inefficient_to_string = "deny"
+map_flatten = "deny"
+manual_ok_or = "deny"
+doc_link_with_quotes = "deny"
+match_same_arms = "deny"
+semicolon_if_nothing_returned = "deny"
+
+# Performance-critical lints
+or_fun_call = "warn"
+unnecessary_lazy_evaluations = "warn"
+redundant_clone = "warn"
+trivial_regex = "warn"
+needless_collect = "warn"
+arithmetic_side_effects = "warn"
