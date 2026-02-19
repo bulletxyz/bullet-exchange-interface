@@ -5,6 +5,7 @@
 pub mod address;
 pub mod decimals;
 pub mod error;
+pub mod event;
 mod macros;
 pub mod message;
 pub mod schema;

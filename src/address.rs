@@ -1,7 +1,7 @@
 //! Base58 address.
+use sov_rollup_interface::BasicAddress;
 use sov_rollup_interface::crypto::CredentialId;
 use sov_rollup_interface::reexports::anyhow;
-use sov_rollup_interface::BasicAddress;
 
 #[derive(
     Clone,
@@ -111,6 +111,6 @@ impl std::str::FromStr for Address {
 
 impl From<CredentialId> for Address {
     fn from(credential_id: CredentialId) -> Self {
-        Self(credential_id.0 .0)
+        Self(credential_id.0.0)
     }
 }

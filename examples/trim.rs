@@ -1,4 +1,4 @@
-use bullet_exchange_interface::schema::{trim, Schema, SchemaFile};
+use bullet_exchange_interface::schema::{Schema, SchemaFile, trim};
 use bullet_exchange_interface::transaction::Transaction;
 
 fn main() {

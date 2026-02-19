@@ -131,7 +131,7 @@ impl TryDecimalOps for PositiveDecimal {
 
     #[inline]
     fn try_sub(self, v: impl Into<Decimal>) -> Result<Self, ArithmeticError> {
-	let v = v.into();
+        let v = v.into();
         self.as_dec()
             .checked_sub(v)
             .and_then(Self::new)
