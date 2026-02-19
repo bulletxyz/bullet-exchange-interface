@@ -1,6 +1,5 @@
 //! Argument types for user operations.
 
-
 use crate::decimals::PositiveDecimal;
 use crate::string::CustomString;
 use crate::types::{

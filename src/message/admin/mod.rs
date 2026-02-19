@@ -1,6 +1,5 @@
 //! Protocol admin operations.
 
-
 use crate::decimals::PositiveDecimal;
 use crate::types::{AdminType, AssetId, MarketId, OrderId, TriggerOrderId};
 
