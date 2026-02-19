@@ -20,8 +20,6 @@
 //! - Add new fields at END as `Option<T>` (old payloads won't have trailing bytes)
 //! - NEVER: reorder variants/fields, change/reuse discriminants, change types
 
-use sov_rollup_interface::BasicAddress;
-
 mod admin;
 mod keeper;
 mod public;
@@ -52,11 +50,10 @@ pub use self::vault::*;
     serde::Serialize,
     sov_universal_wallet::UniversalWallet,
 )]
-#[serde(rename_all = "snake_case", bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
+#[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
 #[repr(u8)]
-pub enum CallMessage<Address: BasicAddress> {
+pub enum CallMessage<Address> {
     /// User-facing operations requiring account ownership.
     ///
     /// Auth: `context.sender()` or resolved delegate
@@ -83,7 +80,7 @@ pub enum CallMessage<Address: BasicAddress> {
     Admin(AdminAction<Address>) = 4,
 }
 
-impl<Address: BasicAddress> CallMessage<Address> {
+impl<Address> CallMessage<Address> {
     pub fn msg_type(&self) -> String {
         match self {
             Self::User(x) => format!("User/{}", x.as_ref()),

@@ -1,7 +1,5 @@
 //! Vault operations.
 
-use sov_rollup_interface::BasicAddress;
-
 mod args;
 pub use args::*;
 
@@ -24,11 +22,10 @@ pub use args::*;
     sov_universal_wallet::UniversalWallet,
     strum::AsRefStr,
 )]
-#[serde(rename_all = "snake_case", bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
+#[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
 #[repr(u8)]
-pub enum VaultAction<Address: BasicAddress> {
+pub enum VaultAction<Address> {
     /// Update vault configuration (leader only).
     UpdateVaultConfig {
         vault_address: Address,

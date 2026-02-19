@@ -1,6 +1,5 @@
 //! Protocol admin operations.
 
-use sov_rollup_interface::BasicAddress;
 
 use crate::decimals::PositiveDecimal;
 use crate::types::{AdminType, AssetId, MarketId, OrderId, TriggerOrderId};
@@ -28,11 +27,10 @@ pub use args::*;
     sov_universal_wallet::UniversalWallet,
     strum::AsRefStr,
 )]
-#[serde(rename_all = "snake_case", bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
+#[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
 #[repr(u8)]
-pub enum AdminAction<Address: BasicAddress> {
+pub enum AdminAction<Address> {
     // =========================================================================
     // Market Operations (0-19)
     // =========================================================================

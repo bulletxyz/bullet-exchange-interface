@@ -1,6 +1,5 @@
 //! Argument types for user operations.
 
-use sov_rollup_interface::BasicAddress;
 
 use crate::decimals::PositiveDecimal;
 use crate::string::CustomString;
@@ -218,9 +217,7 @@ pub struct BackstopLiquidatePerpPositionArgs {
     serde::Serialize,
     sov_universal_wallet::UniversalWallet,
 )]
-#[serde(bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
-pub struct CreateVaultArgs<Address: BasicAddress> {
+pub struct CreateVaultArgs<Address> {
     pub name: CustomString,
     pub description: CustomString,
     pub leader: Address,

@@ -1,7 +1,5 @@
 //! User operations.
 
-use sov_rollup_interface::BasicAddress;
-
 use crate::decimals::PositiveDecimal;
 use crate::types::{AssetId, MarketId, SpotCollateralTransferDirection, TriggerOrderId, TwapId};
 
@@ -28,11 +26,10 @@ pub use args::*;
     sov_universal_wallet::UniversalWallet,
     strum::AsRefStr,
 )]
-#[serde(rename_all = "snake_case", bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
+#[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
 #[repr(u8)]
-pub enum UserAction<Address: BasicAddress> {
+pub enum UserAction<Address> {
     // =========================================================================
     // Account Operations (0-19)
     // =========================================================================

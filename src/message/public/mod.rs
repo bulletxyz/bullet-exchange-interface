@@ -1,7 +1,5 @@
 //! Permissionless operations.
 
-use sov_rollup_interface::BasicAddress;
-
 use crate::types::MarketId;
 
 /// Permissionless operations anyone can call.
@@ -25,11 +23,10 @@ use crate::types::MarketId;
     sov_universal_wallet::UniversalWallet,
     strum::AsRefStr,
 )]
-#[serde(rename_all = "snake_case", bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
+#[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
 #[repr(u8)]
-pub enum PublicAction<Address: BasicAddress> {
+pub enum PublicAction<Address> {
     /// Liquidate perp positions for an underwater account (permissionless).
     LiquidatePerpPositions { address: Address } = 0,
 

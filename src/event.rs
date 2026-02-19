@@ -1,5 +1,4 @@
 use rust_decimal::Decimal;
-use sov_rollup_interface::BasicAddress;
 
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
@@ -20,9 +19,9 @@ use crate::types::{
     strum::AsRefStr,
     strum::Display,
 )]
-#[serde(bound = "Address: BasicAddress", rename_all = "snake_case")]
-#[schemars(bound = "Address: BasicAddress", rename = "Event")]
-pub enum Event<Address: BasicAddress> {
+#[serde(rename_all = "snake_case")]
+#[schemars(rename = "Event")]
+pub enum Event<Address> {
     /// Market initialized
     InitializePerpMarket {
         market_id: MarketId,
@@ -510,7 +509,7 @@ pub enum Event<Address: BasicAddress> {
     },
 }
 
-impl<Address: BasicAddress> Event<Address> {
+impl<Address> Event<Address> {
     pub fn event_key(&self) -> &'static str {
         match self {
             Self::AccrueInterestOnBorrowLend { .. } => "Exchange/AccrueInterestOnBorrowLend",

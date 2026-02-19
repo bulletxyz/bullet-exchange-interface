@@ -1,8 +1,4 @@
 //! Base58 address.
-use sov_rollup_interface::BasicAddress;
-use sov_rollup_interface::crypto::CredentialId;
-use sov_rollup_interface::reexports::anyhow;
-
 #[derive(
     Clone,
     Eq,
@@ -21,7 +17,6 @@ use sov_rollup_interface::reexports::anyhow;
 pub struct Address(#[sov_wallet(display = "base58")] pub [u8; 32]);
 
 impl Copy for Address {}
-impl BasicAddress for Address {}
 
 impl serde::Serialize for Address {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -85,32 +80,23 @@ impl AsRef<[u8]> for Address {
 }
 
 impl TryFrom<&[u8]> for Address {
-    type Error = anyhow::Error;
+    type Error = String;
 
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let key: [u8; 32] = value.try_into().map_err(|_| {
-            anyhow::anyhow!(
-                "Invalid base58 address. Got {} instead of 32 bytes.",
-                value.len()
-            )
+            format!("Invalid base58 address. Got {} instead of 32 bytes.", value.len())
         })?;
         Ok(Self(key))
     }
 }
 
 impl std::str::FromStr for Address {
-    type Err = anyhow::Error;
+    type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let Some(x) = bullet_bs58::parse32(s.as_bytes()) else {
-            anyhow::bail!("Invalid base58 address `{s}`.");
+            return Err(format!("Invalid base58 address `{s}`."));
         };
         Ok(Self(x))
-    }
-}
-
-impl From<CredentialId> for Address {
-    fn from(credential_id: CredentialId) -> Self {
-        Self(credential_id.0.0)
     }
 }

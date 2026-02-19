@@ -1,7 +1,5 @@
 //! Keeper operations.
 
-use sov_rollup_interface::BasicAddress;
-
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{AdminType, AssetId, FeeTier, MarketId};
@@ -30,11 +28,10 @@ pub use args::*;
     sov_universal_wallet::UniversalWallet,
     strum::AsRefStr,
 )]
-#[serde(rename_all = "snake_case", bound = "Address: BasicAddress")]
-#[schemars(bound = "Address: BasicAddress")]
+#[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
 #[repr(u8)]
-pub enum KeeperAction<Address: BasicAddress> {
+pub enum KeeperAction<Address> {
     // =========================================================================
     // Pricing Admin Operations (0-9)
     // =========================================================================
@@ -102,7 +99,7 @@ pub enum KeeperAction<Address: BasicAddress> {
     // Reserved: 41-49
 }
 
-impl<Address: BasicAddress> KeeperAction<Address> {
+impl<Address> KeeperAction<Address> {
     /// Returns the specific admin type required for this keeper operation.
     #[must_use]
     pub fn required_admin_type(&self) -> AdminType {

@@ -2,8 +2,6 @@
 
 use std::collections::BTreeMap;
 
-use sov_rollup_interface::BasicAddress;
-
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::string::CustomString;
 use crate::types::{AssetId, MarketId, TokenId, TradingMode};
@@ -342,8 +340,7 @@ pub struct UpdatePerpLiquidationConfigArgs {
     serde::Serialize,
     sov_universal_wallet::UniversalWallet,
 )]
-#[serde(bound = "Address: BasicAddress")]
-pub struct UpdateGlobalConfigArgs<Address: BasicAddress> {
+pub struct UpdateGlobalConfigArgs<Address> {
     pub max_orders_per_user: Option<u16>,
     pub max_trigger_orders_per_user: Option<u16>,
     pub max_orders_per_batch_msg: Option<u16>,
