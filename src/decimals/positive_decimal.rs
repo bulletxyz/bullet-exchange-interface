@@ -129,27 +129,27 @@ impl TryDecimalOps for PositiveDecimal {
             })
     }
 
-    /// Performs a saturating subtraction for PositiveDecimal,
-    /// Temporarily do this due to dust accumulation issues...
     #[inline]
     fn try_sub(self, v: impl Into<Decimal>) -> Result<Self, ArithmeticError> {
         let v = v.into();
+
+        // be able to find errors in tests
+        #[cfg(test)]
         if self.as_dec().lt(&v) {
             panic!(
-                "Unintended saturating subtraction for PositiveDecimal: {} - {}",
+                "Unintended subtraction for PositiveDecimal: {} - {}",
                 self, v
             );
-            Ok(Self::ZERO)
-        } else {
-            self.as_dec()
-                .checked_sub(v)
-                .and_then(Self::new)
-                .ok_or_else(|| ArithmeticError::DecimalFailed {
-                    operation: ArithmeticOperation::Subtraction,
-                    left: self.as_dec(),
-                    right: v,
-                })
         }
+
+        self.as_dec()
+            .checked_sub(v)
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
+                operation: ArithmeticOperation::Subtraction,
+                left: self.as_dec(),
+                right: v,
+            })
     }
 
     #[inline]
