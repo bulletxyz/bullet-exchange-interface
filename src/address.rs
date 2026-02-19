@@ -14,6 +14,10 @@ use sov_rollup_interface::BasicAddress;
     borsh::BorshSerialize,
     sov_universal_wallet::UniversalWallet,
 )]
+#[cfg_attr(
+    feature = "arbitrary",
+    derive(proptest_derive::Arbitrary, arbitrary::Arbitrary)
+)]
 pub struct Address(#[sov_wallet(display = "base58")] pub [u8; 32]);
 
 impl Copy for Address {}
