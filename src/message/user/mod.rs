@@ -1,245 +1,230 @@
 //! User operations.
 
 use crate::decimals::PositiveDecimal;
+use crate::define_enum;
 use crate::types::{AssetId, MarketId, SpotCollateralTransferDirection, TriggerOrderId, TwapId};
 
 mod args;
 pub use args::*;
 
-/// User operations requiring account ownership or delegation.
-///
-/// These operations are authorized via `context.sender()` with optional delegate resolution.
-/// Operations include account management, trading, vault deposits, and user-initiated liquidations.
-#[derive(
-    Clone,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    borsh::BorshDeserialize,
-    borsh::BorshSerialize,
-    schemars::JsonSchema,
-    serde::Deserialize,
-    serde::Serialize,
-    sov_universal_wallet::UniversalWallet,
-    strum::AsRefStr,
-)]
-#[serde(rename_all = "snake_case")]
-#[borsh(use_discriminant = true)]
-#[repr(u8)]
-pub enum UserAction<Address> {
-    // =========================================================================
-    // Account Operations (0-19)
-    // =========================================================================
-    /// Deposit assets to perp margin account.
-    Deposit {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-    } = 0,
+define_enum! {
+    /// User operations requiring account ownership or delegation.
+    ///
+    /// These operations are authorized via `context.sender()` with optional delegate resolution.
+    /// Operations include account management, trading, vault deposits, and user-initiated liquidations.
 
-    /// Withdraw assets from perp margin account.
-    Withdraw {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-    } = 1,
+    enum UserAction<Address> {
+        // =========================================================================
+        // Account Operations (0-19)
+        // =========================================================================
+        /// Deposit assets to perp margin account.
+        Deposit {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+        } = 0,
 
-    /// Deposit assets to spot collateral.
-    DepositSpotCollateral {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-    } = 2,
+        /// Withdraw assets from perp margin account.
+        Withdraw {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+        } = 1,
 
-    /// Withdraw assets from spot collateral.
-    WithdrawSpotCollateral {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-    } = 3,
+        /// Deposit assets to spot collateral.
+        DepositSpotCollateral {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+        } = 2,
 
-    /// Transfer assets between perp margin and spot collateral.
-    TransferSpotCollateral {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-        direction: SpotCollateralTransferDirection,
-        sub_account_index: Option<u8>,
-    } = 4,
+        /// Withdraw assets from spot collateral.
+        WithdrawSpotCollateral {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+        } = 3,
 
-    /// Borrow assets from spot pool.
-    BorrowSpot {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-        sub_account_index: Option<u8>,
-    } = 5,
+        /// Transfer assets between perp margin and spot collateral.
+        TransferSpotCollateral {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+            direction: SpotCollateralTransferDirection,
+            sub_account_index: Option<u8>,
+        } = 4,
 
-    /// Create a new sub-account.
-    CreateSubAccount { index: u8 } = 6,
+        /// Borrow assets from spot pool.
+        BorrowSpot {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+            sub_account_index: Option<u8>,
+        } = 5,
 
-    /// Transfer assets between main account and sub-account.
-    TransferToSubAccount {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-        sub_account_index: u8,
-        to_sub_account: bool,
-    } = 7,
+        /// Create a new sub-account.
+        CreateSubAccount { index: u8 } = 6,
 
-    /// Delegate trading permissions to another address.
-    DelegateUser { delegate: Address } = 8,
+        /// Transfer assets between main account and sub-account.
+        TransferToSubAccount {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+            sub_account_index: u8,
+            to_sub_account: bool,
+        } = 7,
 
-    /// Revoke delegation from an address.
-    RevokeDelegation { delegate: Address } = 9,
+        /// Delegate trading permissions to another address.
+        DelegateUser { delegate: Address } = 8,
 
-    /// Update maximum leverage for a market.
-    UpdateMaxLeverage {
-        market_id: MarketId,
-        max_leverage: u16,
-        sub_account_index: Option<u8>,
-    } = 10,
+        /// Revoke delegation from an address.
+        RevokeDelegation { delegate: Address } = 9,
 
-    /// Claim your own referral rewards.
-    ClaimReferralRewards { asset_id: AssetId } = 11,
-    // Reserved: 12-19
+        /// Update maximum leverage for a market.
+        UpdateMaxLeverage {
+            market_id: MarketId,
+            max_leverage: u16,
+            sub_account_index: Option<u8>,
+        } = 10,
 
-    // =========================================================================
-    // Order Operations (20-39)
-    // =========================================================================
-    /// Place new orders on a market.
-    PlaceOrders {
-        market_id: MarketId,
-        orders: Vec<NewOrderArgs>,
-        replace: bool,
-        sub_account_index: Option<u8>,
-    } = 20,
+        /// Claim your own referral rewards.
+        ClaimReferralRewards { asset_id: AssetId } = 11,
+        // Reserved: 12-19
 
-    /// Amend existing orders (cancel + place).
-    AmendOrders {
-        market_id: MarketId,
-        orders: Vec<AmendOrderArgs>,
-        sub_account_index: Option<u8>,
-    } = 21,
+        // =========================================================================
+        // Order Operations (20-39)
+        // =========================================================================
+        /// Place new orders on a market.
+        PlaceOrders {
+            market_id: MarketId,
+            orders: Vec<NewOrderArgs>,
+            replace: bool,
+            sub_account_index: Option<u8>,
+        } = 20,
 
-    /// Cancel specific orders.
-    CancelOrders {
-        market_id: MarketId,
-        orders: Vec<CancelOrderArgs>,
-        sub_account_index: Option<u8>,
-    } = 22,
+        /// Amend existing orders (cancel + place).
+        AmendOrders {
+            market_id: MarketId,
+            orders: Vec<AmendOrderArgs>,
+            sub_account_index: Option<u8>,
+        } = 21,
 
-    /// Cancel all orders on a market.
-    CancelMarketOrders {
-        market_id: MarketId,
-        sub_account_index: Option<u8>,
-    } = 23,
+        /// Cancel specific orders.
+        CancelOrders {
+            market_id: MarketId,
+            orders: Vec<CancelOrderArgs>,
+            sub_account_index: Option<u8>,
+        } = 22,
 
-    /// Create trigger orders for spot markets.
-    CreateTriggerOrders {
-        market_id: MarketId,
-        trigger_orders: Vec<NewTriggerOrderArgs>,
-        sub_account_index: Option<u8>,
-    } = 24,
+        /// Cancel all orders on a market.
+        CancelMarketOrders {
+            market_id: MarketId,
+            sub_account_index: Option<u8>,
+        } = 23,
 
-    /// Create take-profit/stop-loss for a perp position.
-    CreatePositionTpsl {
-        market_id: MarketId,
-        tpsl_pair: TpslPair,
-        size: Option<PositiveDecimal>,
-        sub_account_index: Option<u8>,
-    } = 25,
+        /// Create trigger orders for spot markets.
+        CreateTriggerOrders {
+            market_id: MarketId,
+            trigger_orders: Vec<NewTriggerOrderArgs>,
+            sub_account_index: Option<u8>,
+        } = 24,
 
-    /// Cancel trigger orders.
-    CancelTriggerOrders {
-        market_id: MarketId,
-        trigger_order_ids: Vec<TriggerOrderId>,
-        sub_account_index: Option<u8>,
-    } = 26,
+        /// Create take-profit/stop-loss for a perp position.
+        CreatePositionTpsl {
+            market_id: MarketId,
+            tpsl_pair: TpslPair,
+            size: Option<PositiveDecimal>,
+            sub_account_index: Option<u8>,
+        } = 25,
 
-    /// Create TWAP orders
-    CreateTwapOrder {
-        market_id: MarketId,
-        twap_order_args: NewTwapOrderArgs,
-        sub_account_index: Option<u8>,
-    } = 27,
+        /// Cancel trigger orders.
+        CancelTriggerOrders {
+            market_id: MarketId,
+            trigger_order_ids: Vec<TriggerOrderId>,
+            sub_account_index: Option<u8>,
+        } = 26,
 
-    /// Cancel a TWAP order
-    CancelTwapOrder {
-        market_id: MarketId,
-        twap_id: TwapId,
-        sub_account_index: Option<u8>,
-    } = 28,
+        /// Create TWAP orders
+        CreateTwapOrder {
+            market_id: MarketId,
+            twap_order_args: NewTwapOrderArgs,
+            sub_account_index: Option<u8>,
+        } = 27,
 
-    /// Cancel all orders for perp or spot
-    CancelAllOrders { sub_account_index: Option<u8> } = 29,
-    // Reserved: 30-39
+        /// Cancel a TWAP order
+        CancelTwapOrder {
+            market_id: MarketId,
+            twap_id: TwapId,
+            sub_account_index: Option<u8>,
+        } = 28,
 
-    // =========================================================================
-    // Pool Operations (40-49)
-    // =========================================================================
-    /// Deposit USDC to the PnL pool.
-    DepositToPnlPool { usdc_amount: PositiveDecimal } = 40,
+        /// Cancel all orders for perp or spot
+        CancelAllOrders { sub_account_index: Option<u8> } = 29,
+        // Reserved: 30-39
 
-    /// Settle user's PnL from the pool.
-    SettleFromPnlPool { sub_account_index: Option<u8> } = 41,
+        // =========================================================================
+        // Pool Operations (40-49)
+        // =========================================================================
+        /// Deposit USDC to the PnL pool.
+        DepositToPnlPool { usdc_amount: PositiveDecimal } = 40,
 
-    /// Deposit to the insurance fund.
-    DepositToInsuranceFund { usdc_amount: PositiveDecimal } = 42,
+        /// Settle user's PnL from the pool.
+        SettleFromPnlPool { sub_account_index: Option<u8> } = 41,
 
-    /// Deposit to protocol treasury.
-    DepositToTreasury {
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-    } = 43,
+        /// Deposit to the insurance fund.
+        DepositToInsuranceFund { usdc_amount: PositiveDecimal } = 42,
 
-    /// Claim accumulated borrow/lend protocol fees.
-    ClaimBorrowLendFees {} = 44,
-    // Reserved: 45-49
+        /// Deposit to protocol treasury.
+        DepositToTreasury {
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+        } = 43,
 
-    // =========================================================================
-    // Vault User Operations (50-59)
-    // =========================================================================
-    /// Create a new vault (caller becomes the vault leader).
-    CreateVault { args: CreateVaultArgs<Address> } = 50,
+        /// Claim accumulated borrow/lend protocol fees.
+        ClaimBorrowLendFees {} = 44,
+        // Reserved: 45-49
 
-    /// Deposit assets to a vault.
-    DepositToVault {
-        vault_address: Address,
-        asset_id: AssetId,
-        amount: PositiveDecimal,
-    } = 51,
+        // =========================================================================
+        // Vault User Operations (50-59)
+        // =========================================================================
+        /// Create a new vault (caller becomes the vault leader).
+        CreateVault { args: CreateVaultArgs<Address> } = 50,
 
-    /// Queue a withdrawal from a vault.
-    QueueWithdrawal {
-        vault_address: Address,
-        shares: PositiveDecimal,
-    } = 52,
+        /// Deposit assets to a vault.
+        DepositToVault {
+            vault_address: Address,
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+        } = 51,
 
-    /// Cancel a queued withdrawal.
-    CancelQueuedWithdrawal { vault_address: Address } = 53,
+        /// Queue a withdrawal from a vault.
+        QueueWithdrawal {
+            vault_address: Address,
+            shares: PositiveDecimal,
+        } = 52,
 
-    /// Force withdraw from a vault (bypasses queue).
-    ForceWithdrawVault {
-        vault_address: Address,
-        shares: PositiveDecimal,
-    } = 54,
+        /// Cancel a queued withdrawal.
+        CancelQueuedWithdrawal { vault_address: Address } = 53,
 
-    // Reserved: 55-59
+        /// Force withdraw from a vault (bypasses queue).
+        ForceWithdrawVault {
+            vault_address: Address,
+            shares: PositiveDecimal,
+        } = 54,
 
-    // =========================================================================
-    // User-Initiated Liquidation Operations (60-69)
-    // =========================================================================
-    /// Backstop liquidation for perp positions (user provides capital).
-    BackstopLiquidatePerpPositions {
-        address: Address,
-        positions: Option<Vec<BackstopLiquidatePerpPositionArgs>>,
-        sub_account_index: Option<u8>,
-    } = 60,
+        // Reserved: 55-59
 
-    /// Liquidate borrow/lend liability (user provides capital).
-    LiquidateBorrowLendLiability {
-        liquidatee_address: Address,
-        liability_asset_id: AssetId,
-        collateral_asset_id: AssetId,
-        liability_amount: PositiveDecimal,
-        sub_account_index: Option<u8>,
-    } = 61,
-    // Reserved: 62-255
+        // =========================================================================
+        // User-Initiated Liquidation Operations (60-69)
+        // =========================================================================
+        /// Backstop liquidation for perp positions (user provides capital).
+        BackstopLiquidatePerpPositions {
+            address: Address,
+            positions: Option<Vec<BackstopLiquidatePerpPositionArgs>>,
+            sub_account_index: Option<u8>,
+        } = 60,
+
+        /// Liquidate borrow/lend liability (user provides capital).
+        LiquidateBorrowLendLiability {
+            liquidatee_address: Address,
+            liability_asset_id: AssetId,
+            collateral_asset_id: AssetId,
+            liability_amount: PositiveDecimal,
+            sub_account_index: Option<u8>,
+        } = 61,
+        // Reserved: 62-255
+    }
 }

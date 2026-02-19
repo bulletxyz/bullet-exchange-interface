@@ -1,64 +1,43 @@
+/// Define a structure with a set of default derives.
 #[macro_export]
 macro_rules! define_struct {
-    ($(#[doc=$doc:literal])* struct $type_name:ident$(<$a:ident:$b:ident>)?{$($name:ident : $type:ty),* $(,)?} $(- $constraint:literal)?) => {
-	$(#[doc=$doc])*
-	#[derive(
-	    Clone,
-	    Debug,
-	    Eq,
-	    Hash,
-	    Ord,
-	    PartialEq,
-	    PartialOrd,
-	    borsh::BorshDeserialize,
+    ($(#[$structmeta:meta])* struct $type_name:ident$(<$a:ident>)?{$($(#[$meta:meta])*$name:ident : $type:ty),* $(,)?}) => {
+        $(#[$structmeta])*
+        #[derive(
+            Clone,
+            Debug,
+            Eq,
+            Hash,
+            Ord,
+            PartialEq,
+            PartialOrd,
+            borsh::BorshDeserialize,
             borsh::BorshSerialize,
             schemars::JsonSchema,
             serde::Deserialize,
             serde::Serialize,
             sov_universal_wallet::UniversalWallet,
-	)]
-	$(#[serde(bound = $constraint)]
-          #[schemars(bound = $constraint)])*
-	pub struct $type_name$(<$a:$b>)* {
-	    $(pub $name : $type),*
-	}
+        )]
+        pub struct $type_name$(<$a>)* {
+            $($(#[$meta])*
+              pub $name : $type),*
+        }
     };
-    ($(#[doc=$doc:literal])* struct $type_name:ident$(<$a:ident:$b:ident>)?{$($name:ident : $type:ty),* $(,)?} $(- $constraint:literal)? $(+ $serde_opt:tt)*) => {
-	$(#[doc=$doc])*
-	#[derive(
-	    Clone,
-	    Debug,
-	    Eq,
-	    Hash,
-	    Ord,
-	    PartialEq,
-	    PartialOrd,
-	    borsh::BorshDeserialize,
-            borsh::BorshSerialize,
-            schemars::JsonSchema,
-            serde::Deserialize,
-            serde::Serialize,
-            sov_universal_wallet::UniversalWallet,
-	)]
-	$(#[serde(bound = $constraint)]
-          #[schemars(bound = $constraint)])*
-	pub struct $type_name$(<$a:$b>)* {
-	    $(pub $name : $type),*
-	}
-    }
 }
 
 #[macro_export]
 macro_rules! define_simple_type {
-    ($(#[doc=$doc:literal])* $name:ident($inner:ty)) => {
-        define_simple_type!($(#[doc=$doc])* $name($inner) + Debug +  sov_universal_wallet::UniversalWallet);
+    ($(#[$enummeta:meta])* $name:ident($inner:ty)) => {
+        define_simple_type!(
+            $(#[$enummeta])*
+                $name($inner) + Debug + sov_universal_wallet::UniversalWallet);
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}", self.0)
             }
         }
         impl Copy for $name {}
-	impl std::str::FromStr for $name {
+        impl std::str::FromStr for $name {
             type Err = $crate::error::ConfigError;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -73,8 +52,8 @@ macro_rules! define_simple_type {
             }
         }
     };
-    ($(#[doc=$doc:literal])* $name:ident($inner:ty) $(+ $derive:path)+) => {
-	$(#[doc=$doc])*
+    ($(#[$enummeta:meta])* $name:ident($inner:ty) $(+ $derive:path)*) => {
+        $(#[$enummeta])*
         #[derive(
             Clone,
             Eq,
@@ -87,7 +66,7 @@ macro_rules! define_simple_type {
             schemars::JsonSchema,
             serde::Deserialize,
             serde::Serialize,
-	    $($derive),*
+            $($derive),*
         )]
         #[serde(transparent)]
         pub struct $name(pub $inner);
@@ -96,67 +75,40 @@ macro_rules! define_simple_type {
 
 #[macro_export]
 macro_rules! define_simple_enum {
-    ($type_name:ident{$($(#[doc=$edoc:literal])* $name:ident $(= $value:literal)?),*$(,)?} $(+ $derive:path)*) => {
-	$crate::define_enum!(enum $type_name{$($(#[doc=$edoc])* $name $(= $value)*),*} + Copy + strum::Display $(+ $derive)*);
+    ($(#[$enummeta:meta])* $type_name:ident{$($(#[$meta:meta])* $name:ident $(= $value:literal)?),*$(,)?}) => {
+        $crate::define_enum!(
+            $(#[$enummeta])*
+            #[derive(Copy, strum::Display)]
+            enum $type_name{$($(#[$meta])* $name $(= $value)*),*});
     }
 }
 
 #[macro_export]
 macro_rules! define_enum {
-    ($(#[doc=$doc:literal])* enum $type_name:ident $(<$a:ident:$b:ident>)?{$($(#[doc=$edoc:literal])*$name:ident $({$($arg_name:ident: $arg_type:ty),+$(,)?})? $(= $value:literal)?),*$(,)?} $(- $constraint:literal)? $(+ $derive:path)*) => {
-	$(#[doc=$doc])*
-	#[derive(
-	    Clone,
-	    Debug,
-	    Eq,
-	    Hash,
-	    Ord,
-	    PartialEq,
-	    PartialOrd,
-	    borsh::BorshDeserialize,
-	    borsh::BorshSerialize,
-	    serde::Deserialize,
-	    serde::Serialize,
+    ($(#[$enummeta:meta])* enum $type_name:ident $(<$a:ident>)?{$($(#[$meta:meta])*$name:ident $({$($arg_name:ident: $arg_type1:ty),*$(,)?})? $(($($arg_type2:ty),*))? $(= $value:literal)?),+$(,)?}) => {
+        $(#[$enummeta])*
+        #[derive(
+            Clone,
+            Debug,
+            Eq,
+            Hash,
+            Ord,
+            PartialEq,
+            PartialOrd,
+            borsh::BorshDeserialize,
+            borsh::BorshSerialize,
+            serde::Deserialize,
+            serde::Serialize,
             schemars::JsonSchema,
-	    sov_universal_wallet::UniversalWallet,
-	    $($derive),*
-	)]
-	#[repr(u8)]
-	#[serde(rename_all = "snake_case")]
-	#[borsh(use_discriminant = true)]
-	$(#[serde(bound = $constraint)]
-          #[schemars(bound = $constraint)])*
-        pub enum $type_name$(<$a:$b>)* {
-	    $($(#[doc=$edoc])*
-	      $name $({$($arg_name: $arg_type),* })* $(= $value)*),*
-	}
-    };
-    ($(#[doc=$doc:literal])* enum $type_name:ident $(<$a:ident:$b:ident>)?{$($(#[doc=$edoc:literal])*$name:ident ($arg_type:ty) $(= $value:literal)?),+$(,)?} $(- $constraint:literal)? $(+ $derive:path)*) => {
-	$(#[doc=$doc])*
-	#[derive(
-	    Clone,
-	    Debug,
-	    Eq,
-	    Hash,
-	    Ord,
-	    PartialEq,
-	    PartialOrd,
-	    borsh::BorshDeserialize,
-	    borsh::BorshSerialize,
-	    serde::Deserialize,
-	    serde::Serialize,
-            schemars::JsonSchema,
-	    sov_universal_wallet::UniversalWallet,
-	    $($derive),*
-	)]
-	#[repr(u8)]
-	#[serde(rename_all = "snake_case")]
-	#[borsh(use_discriminant = true)]
-	$(#[serde(bound = $constraint)]
-          #[schemars(bound = $constraint)])*
-	pub enum $type_name$(<$a:$b>)* {
-	    $($(#[doc=$edoc])*
-	      $name ($arg_type) $(= $value)*),*
-	}
+            sov_universal_wallet::UniversalWallet,
+            strum::AsRefStr,
+        )]
+        #[repr(u8)]
+        #[serde(rename_all = "snake_case")]
+        #[borsh(use_discriminant = true)]
+        pub enum $type_name$(<$a>)* {
+            $($(#[$meta])*
+              $name $({$($arg_name: $arg_type1),* })* $(($($arg_type2),*))* $(= $value)*),*
+        }
     }
 }

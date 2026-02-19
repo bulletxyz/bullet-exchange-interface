@@ -1,24 +1,12 @@
 //! Argument types for vault operations.
 
 use crate::decimals::PositiveDecimal;
+use crate::define_struct;
 
-#[derive(
-    Clone,
-    Debug,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    borsh::BorshDeserialize,
-    borsh::BorshSerialize,
-    schemars::JsonSchema,
-    serde::Deserialize,
-    serde::Serialize,
-    sov_universal_wallet::UniversalWallet,
-)]
-pub struct UpdateVaultConfigArgs {
-    pub deposit_limit: Option<PositiveDecimal>,
-    pub withdraw_lockup_period_hours: Option<u8>,
-    pub profit_share_percentage: Option<u8>,
+define_struct! {
+    struct UpdateVaultConfigArgs {
+        deposit_limit: Option<PositiveDecimal>,
+        withdraw_lockup_period_hours: Option<u8>,
+        profit_share_percentage: Option<u8>,
+    }
 }

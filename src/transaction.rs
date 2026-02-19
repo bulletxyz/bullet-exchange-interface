@@ -55,39 +55,42 @@ pub struct Version0 {
     pub details: TxDetails,
 }
 
-define_struct!(
+define_struct! {
     /// The transaction to be signed.
     struct UnsignedTransaction {
         runtime_call: RuntimeCall,
         uniqueness: UniquenessData,
         details: TxDetails,
     }
-);
+}
 
-define_enum!(
+define_enum! {
     /// The enum to distinguish the rollup modules.
     enum RuntimeCall {
         Exchange(ExchangeCall) = 7,
     }
-);
+}
 
-define_enum!(
+define_enum! {
     /// A nonce to detect replays.
     enum UniquenessData {
         Nonce(u64) = 0,
         Generation(u64) = 1,
     }
-);
+}
 
-define_struct!(
+define_struct! {
     /// Metadata to be given to any transactions.
     struct TxDetails {
         max_priority_fee_bips: PriorityFeeBips,
+        /// The max fee one is willing to pay for this transaction.
         max_fee: Amount,
+        /// Optionally limit the number of gas to be used.
         gas_limit: Option<Gas>,
+        /// The chain-id from the schema.
         chain_id: u64,
     }
-);
+}
 
 define_simple_type!(Gas([u64; 2]) + Debug + sov_universal_wallet::UniversalWallet);
 define_simple_type!(PriorityFeeBips(u64));

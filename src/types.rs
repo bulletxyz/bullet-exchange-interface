@@ -65,15 +65,16 @@ impl Side {
     }
 }
 
-define_simple_enum!(
+define_simple_enum! {
+    #[derive(strum::EnumIter)]
     FeeTier {
         Tier0,
         Tier1,
         Tier2,
         Tier3,
         Tier4
-    } + strum::EnumIter
-);
+    }
+}
 #[allow(clippy::derivable_impls)]
 impl Default for FeeTier {
     fn default() -> Self {
@@ -81,7 +82,10 @@ impl Default for FeeTier {
     }
 }
 define_simple_enum!(TriggerPriceCondition{Mark = 0, Oracle = 1, LastTrade = 2});
-define_simple_enum!(TriggerDirection{ GreaterThanOrEqual = 0, LessThanOrEqual = 1} + strum::EnumIter);
+define_simple_enum!(
+    #[derive(strum::EnumIter)]
+    TriggerDirection{ GreaterThanOrEqual = 0, LessThanOrEqual = 1}
+);
 define_simple_enum!(OrderType {
     Limit = 0,
     PostOnly = 1,
