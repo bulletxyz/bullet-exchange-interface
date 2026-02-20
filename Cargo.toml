@@ -3,13 +3,9 @@ name = "bullet-exchange-interface"
 version = "0.1.0"
 edition = "2024"
 license = "UNLICENSED"
-authors = [
-  "Tristan Frizza <tristan@sierra.team>, Kelvin Lau <kelvin@sierra.team>, Filip Drazovic <filip@sierra.team>",
-]
 homepage = "https://www.bullet.xyz"
 repository = "https://github.com/zetamarkets/bullet"
 publish = false
-rust-version = "1.88"
 
 [dependencies]
 borsh = "1.5"
