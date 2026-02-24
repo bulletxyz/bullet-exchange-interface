@@ -21,17 +21,16 @@ fn main() {
     let right = serde_json::to_string_pretty(&right).unwrap();
     let mut faults = 0;
     for (l, r) in left.lines().zip(right.lines()) {
-	if l != r {
-	    faults +=1;
+        if l != r {
+            faults += 1;
             println!("< {r}");
             println!("> {l}");
-	    if faults >= 10 {
-		break
-	    }
-	}
-	else {
+            if faults >= 10 {
+                break;
+            }
+        } else {
             println!("  {l}");
-	}
-    } 
+        }
+    }
     assert_eq!(left, right);
 }

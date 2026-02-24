@@ -80,9 +80,3 @@ impl UnixTimestampMicros {
         delta as u64
     }
 }
-
-impl Default for UnixTimestampMicros {
-    fn default() -> Self {
-        Self::ZERO
-    }
-}

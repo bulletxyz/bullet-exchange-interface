@@ -30,7 +30,7 @@ macro_rules! define_simple_type {
     ($(#[$enummeta:meta])* $name:ident($inner:ty)) => {
         define_simple_type!(
             $(#[$enummeta])*
-                $name($inner) + Debug + sov_universal_wallet::UniversalWallet);
+                $name($inner) + Default + Debug + sov_universal_wallet::UniversalWallet);
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}", self.0)
@@ -103,6 +103,8 @@ macro_rules! define_enum {
             sov_universal_wallet::UniversalWallet,
             strum::AsRefStr,
         )]
+	#[derive(strum::EnumDiscriminants)]
+	#[strum_discriminants(derive(strum::EnumIter, strum::EnumString, strum::Display))]
         #[repr(u8)]
         #[serde(rename_all = "snake_case")]
         #[borsh(use_discriminant = true)]
