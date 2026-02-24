@@ -19,7 +19,7 @@ hex = { version = "0.4", features = ["serde"] }
 
 sov-rollup-interface = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev = "1f5afcc00c879d3601947d09fdf9f5b17239d72b" }
 sov-universal-wallet = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev = "1f5afcc00c879d3601947d09fdf9f5b17239d72b", features=["serde"] }
-bullet-bs58 = { git = "https://github.com/zetamarkets/bullet-bs58.git" }
+bullet-bs58 = { git = "https://github.com/bulletxyz/bullet-bs58.git" }
 
 [features]
 default = []
