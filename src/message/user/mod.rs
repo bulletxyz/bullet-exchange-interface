@@ -81,7 +81,11 @@ define_enum! {
 
         /// Claim your own referral rewards.
         ClaimReferralRewards { asset_id: AssetId } = 11,
-        // Reserved: 12-19
+
+        /// Update the name of a delegate.
+        UpdateDelegateName { delegate: Address, name: Option<CustomString> } = 12,
+
+        // Reserved: 13-19
 
         // =========================================================================
         // Order Operations (20-39)

@@ -164,6 +164,8 @@ define_enum! {
             asset_id: AssetId,
             amount: PositiveDecimal,
         } = 64,
-        // Reserved: 65-255
+
+        ForceRemoveDelegate { delegate: Address } = 65,
+        // Reserved: 66-255
     }
 }
