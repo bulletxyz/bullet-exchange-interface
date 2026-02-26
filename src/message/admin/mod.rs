@@ -165,7 +165,7 @@ define_enum! {
             amount: PositiveDecimal,
         } = 64,
 
-        ForceRemoveDelegate { delegate: Address } = 65,
+        ForceRemoveDelegate { delegator: Address, delegate: Address } = 65,
         // Reserved: 66-255
     }
 }
