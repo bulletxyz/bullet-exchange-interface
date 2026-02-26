@@ -67,7 +67,7 @@ define_enum! {
         } = 7,
 
         /// Delegate trading permissions to another address.
-        DelegateUser { delegate: Address, name: Option<CustomString> } = 8,
+        DelegateUser { delegate: Address, name: CustomString } = 8,
 
         /// Revoke delegation from an address.
         RevokeDelegation { delegate: Address } = 9,

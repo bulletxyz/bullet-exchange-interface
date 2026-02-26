@@ -510,7 +510,7 @@ pub enum Event<Address> {
     DelegateUser {
         delegator: Address,
         delegate: Address,
-        name: Option<String>,
+        name: String,
         execution_timestamp: UnixTimestampMicros,
     },
     RevokeDelegation {

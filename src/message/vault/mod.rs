@@ -35,7 +35,7 @@ define_enum! {
         DelegateVaultUser {
             vault_address: Address,
             delegate: Address,
-            name: Option<CustomString>,
+            name: CustomString,
         } = 4,
 
         /// Revoke vault trading delegation.
