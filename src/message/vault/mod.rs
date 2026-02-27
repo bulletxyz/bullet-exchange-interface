@@ -1,6 +1,6 @@
 //! Vault operations.
 use crate::define_enum;
-
+use crate::string::CustomString;
 mod args;
 pub use args::*;
 
@@ -35,6 +35,7 @@ define_enum! {
         DelegateVaultUser {
             vault_address: Address,
             delegate: Address,
+            name: CustomString,
         } = 4,
 
         /// Revoke vault trading delegation.

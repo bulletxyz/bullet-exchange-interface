@@ -2,8 +2,8 @@
 
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
+use crate::string::CustomString;
 use crate::types::{AssetId, MarketId, SpotCollateralTransferDirection, TriggerOrderId, TwapId};
-
 mod args;
 pub use args::*;
 
@@ -67,7 +67,7 @@ define_enum! {
         } = 7,
 
         /// Delegate trading permissions to another address.
-        DelegateUser { delegate: Address } = 8,
+        DelegateUser { delegate: Address, name: CustomString } = 8,
 
         /// Revoke delegation from an address.
         RevokeDelegation { delegate: Address } = 9,
@@ -81,6 +81,7 @@ define_enum! {
 
         /// Claim your own referral rewards.
         ClaimReferralRewards { asset_id: AssetId } = 11,
+
         // Reserved: 12-19
 
         // =========================================================================

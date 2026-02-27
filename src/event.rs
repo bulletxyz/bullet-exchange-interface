@@ -507,6 +507,28 @@ pub enum Event<Address> {
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
     },
+    DelegateUser {
+        delegator: Address,
+        delegate: Address,
+        name: String,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    RevokeDelegation {
+        delegator: Address,
+        delegate: Address,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    AdminRevokeDelegation {
+        delegator: Address,
+        delegate: Address,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    AdminDeleteDelegateConfig {
+        delegator: Address,
+        delegate: Address,
+        name: String,
+        execution_timestamp: UnixTimestampMicros,
+    }
 }
 
 impl<Address> Event<Address> {
@@ -582,6 +604,10 @@ impl<Address> Event<Address> {
             Self::Withdraw { .. } => "Exchange/Withdraw",
             Self::WithdrawSpotCollateral { .. } => "Exchange/WithdrawSpotCollateral",
             Self::WithdrawSpotCollateralV2 { .. } => "Exchange/WithdrawSpotCollateralV2",
+            Self::DelegateUser { .. } => "Exchange/DelegateUser",
+            Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
+            Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
+            Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
         }
     }
 }
