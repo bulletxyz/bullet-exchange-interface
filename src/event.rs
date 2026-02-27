@@ -518,6 +518,17 @@ pub enum Event<Address> {
         delegate: Address,
         execution_timestamp: UnixTimestampMicros,
     },
+    AdminRevokeDelegation {
+        delegator: Address,
+        delegate: Address,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    AdminDeleteDelegateConfig {
+        delegator: Address,
+        delegate: Address,
+        name: String,
+        execution_timestamp: UnixTimestampMicros,
+    }
 }
 
 impl<Address> Event<Address> {
