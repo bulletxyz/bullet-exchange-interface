@@ -606,6 +606,8 @@ impl<Address> Event<Address> {
             Self::WithdrawSpotCollateralV2 { .. } => "Exchange/WithdrawSpotCollateralV2",
             Self::DelegateUser { .. } => "Exchange/DelegateUser",
             Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
+            Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
+            Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
         }
     }
 }
