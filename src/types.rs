@@ -115,7 +115,7 @@ impl std::str::FromStr for TokenId {
     }
 }
 
-define_simple_enum!(TradingMode{ Iso = 0, Cross = 1, None = 2 });
+define_simple_enum!(TradingMode{ Iso = 0, Cross = 1 });
 
 define_simple_enum!(BorrowType {
     /// Internal borrows from trading operations (PnL, margin, etc.)
