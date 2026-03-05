@@ -621,6 +621,8 @@ impl<Address> Event<Address> {
             Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
             Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
             Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
+            Self::DepositIso { .. } => "Exchange/DepositIso",
+            Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
         }
     }
 }
