@@ -528,7 +528,20 @@ pub enum Event<Address> {
         delegate: Address,
         name: String,
         execution_timestamp: UnixTimestampMicros,
-    }
+    },
+    DepositIso {
+        user_address: Address,
+        market_id: MarketId,
+        amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    WithdrawIso {
+        user_address: Address,
+        market_id: MarketId,
+        amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+
 }
 
 impl<Address> Event<Address> {
