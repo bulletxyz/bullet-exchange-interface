@@ -78,7 +78,7 @@ macro_rules! define_simple_enum {
     ($(#[$enummeta:meta])* $type_name:ident{$($(#[$meta:meta])* $name:ident $(= $value:literal)?),*$(,)?}) => {
         $crate::define_enum!(
             $(#[$enummeta])*
-            #[derive(Copy, strum::Display)]
+            #[derive(Copy, strum::Display, strum::FromRepr)]
             enum $type_name{$($(#[$meta])* $name $(= $value)*),*});
     }
 }
