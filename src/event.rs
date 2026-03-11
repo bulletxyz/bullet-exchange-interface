@@ -22,6 +22,8 @@ use crate::types::{
 #[serde(rename_all = "snake_case")]
 #[schemars(rename = "Event")]
 pub enum Event<Address> {
+    /// Generic event for all transactions
+    Transaction { sender: Address, msg_type: String },
     /// Market initialized
     InitializePerpMarket {
         market_id: MarketId,
@@ -528,12 +530,13 @@ pub enum Event<Address> {
         delegate: Address,
         name: String,
         execution_timestamp: UnixTimestampMicros,
-    }
+    },
 }
 
 impl<Address> Event<Address> {
     pub fn event_key(&self) -> &'static str {
         match self {
+            Self::Transaction { .. } => "Exchange/Transaction",
             Self::AccrueInterestOnBorrowLend { .. } => "Exchange/AccrueInterestOnBorrowLend",
             Self::ActivateTriggerOrder { .. } => "Exchange/ActivateTriggerOrder",
             Self::AdminAddTradingCredits { .. } => "Exchange/AdminAddTradingCredits",
