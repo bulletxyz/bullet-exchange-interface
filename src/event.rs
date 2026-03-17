@@ -539,6 +539,7 @@ pub enum Event<Address> {
         user_address: Address,
         market_id: MarketId,
         amount: PositiveDecimal,
+        fee: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
 
