@@ -1,9 +1,10 @@
 //! Keeper operations.
 
+use crate::bounds::MAX_KEEPER_BATCH;
 use crate::decimals::PositiveDecimal;
-use crate::define_enum;
 use crate::time::UnixTimestampMicros;
 use crate::types::{AdminType, AssetId, FeeTier, MarketId};
+use crate::{SafeVec, define_enum};
 
 mod args;
 pub use args::*;
@@ -21,25 +22,25 @@ define_enum! {
         // =========================================================================
         /// Update oracle prices (PricingAdmin).
         UpdateOraclePrices {
-            prices: Vec<OraclePriceUpdateArgs>,
+            prices: SafeVec<OraclePriceUpdateArgs, MAX_KEEPER_BATCH>,
             publish_timestamp: UnixTimestampMicros,
         } = 0,
 
         /// Update mark prices (PricingAdmin).
         UpdateMarkPrices {
-            prices: Vec<MarkPriceUpdateArgs>,
+            prices: SafeVec<MarkPriceUpdateArgs, MAX_KEEPER_BATCH>,
             publish_timestamp: UnixTimestampMicros,
         } = 1,
 
         /// Update premium indexes for markets (PricingAdmin).
-        UpdatePremiumIndexes { market_ids: Vec<MarketId> } = 2,
+        UpdatePremiumIndexes { market_ids: SafeVec<MarketId, MAX_KEEPER_BATCH> } = 2,
         // Reserved: 3-9
 
         // =========================================================================
         // Funding Admin Operations (10-19)
         // =========================================================================
         /// Update funding rates for markets (FundingAdmin).
-        UpdateFunding { market_ids: Vec<MarketId> } = 10,
+        UpdateFunding { market_ids: SafeVec<MarketId, MAX_KEEPER_BATCH> } = 10,
         // Reserved: 11-19
 
         // =========================================================================

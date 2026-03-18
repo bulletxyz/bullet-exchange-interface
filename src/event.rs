@@ -528,7 +528,7 @@ pub enum Event<Address> {
         delegate: Address,
         name: String,
         execution_timestamp: UnixTimestampMicros,
-    }
+    },
 }
 
 impl<Address> Event<Address> {

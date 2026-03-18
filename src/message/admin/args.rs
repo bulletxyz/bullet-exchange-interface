@@ -2,10 +2,11 @@
 
 use std::collections::BTreeMap;
 
+use crate::bounds::{MAX_DEPOSIT_LIMITS, MAX_FEE_TIERS, MAX_WHITELISTED_DEPOSITORS};
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
-use crate::define_struct;
 use crate::string::CustomString;
 use crate::types::{AssetId, MarketId, TokenId, TradingMode};
+use crate::{SafeVec, define_struct};
 
 // =============================================================================
 // Market Args
@@ -33,8 +34,8 @@ define_struct! {
         impact_margin: PositiveDecimal,
         interest_rate: SurrogateDecimal,
         leverage_table_args: SurrogateLeverageTableArgs,
-        taker_fees_tenth_bps: Vec<i16>,
-        maker_fees_tenth_bps: Vec<i16>,
+        taker_fees_tenth_bps: SafeVec<i16, MAX_FEE_TIERS>,
+        maker_fees_tenth_bps: SafeVec<i16, MAX_FEE_TIERS>,
     }
 }
 
@@ -44,7 +45,7 @@ define_struct! {
         impact_margin: Option<PositiveDecimal>,
         interest_rate: Option<SurrogateDecimal>,
         leverage_table_args: Option<SurrogateLeverageTableArgs>,
-        maker_fees_tenth_bps: Option<Vec<i16>>,
+        maker_fees_tenth_bps: Option<SafeVec<i16, MAX_FEE_TIERS>>,
         max_funding_rate_clamp: Option<SurrogateDecimal>,
         max_interest_rate_clamp: Option<SurrogateDecimal>,
         max_oi_notional: Option<PositiveDecimal>,
@@ -58,7 +59,7 @@ define_struct! {
         min_interest_rate_clamp: Option<SurrogateDecimal>,
         min_lot_size: Option<PositiveDecimal>,
         min_tick_size: Option<PositiveDecimal>,
-        taker_fees_tenth_bps: Option<Vec<i16>>,
+        taker_fees_tenth_bps: Option<SafeVec<i16, MAX_FEE_TIERS>>,
     }
 }
 
@@ -72,8 +73,8 @@ define_struct! {
         max_orders_per_side: u16,
         max_orders_per_user: u16,
         max_trigger_orders_per_user: u16,
-        taker_fees_tenth_bps: Vec<i16>,
-        maker_fees_tenth_bps: Vec<i16>,
+        taker_fees_tenth_bps: SafeVec<i16, MAX_FEE_TIERS>,
+        maker_fees_tenth_bps: SafeVec<i16, MAX_FEE_TIERS>,
         max_order_to_trigger_price_deviation_ratio: PositiveDecimal,
         name: CustomString,
     }
@@ -87,8 +88,8 @@ define_struct! {
         max_orders_per_side: Option<u16>,
         max_orders_per_user: Option<u16>,
         max_trigger_orders_per_user: Option<u16>,
-        taker_fees_tenth_bps: Option<Vec<i16>>,
-        maker_fees_tenth_bps: Option<Vec<i16>>,
+        taker_fees_tenth_bps: Option<SafeVec<i16, MAX_FEE_TIERS>>,
+        maker_fees_tenth_bps: Option<SafeVec<i16, MAX_FEE_TIERS>>,
         max_order_to_trigger_price_deviation_ratio: Option<PositiveDecimal>,
     }
 }
@@ -191,8 +192,8 @@ define_struct! {
         min_notional_twap_value: Option<PositiveDecimal>,
         min_notional_twap_value_per_order: Option<PositiveDecimal>,
         twap_execution_interval_seconds: Option<u64>,
-        deposit_limits_per_user: Option<Vec<(AssetId, PositiveDecimal)>>,
-        whitelisted_users_for_deposit: Option<Vec<Address>>,
+        deposit_limits_per_user: Option<SafeVec<(AssetId, PositiveDecimal), MAX_DEPOSIT_LIMITS>>,
+        whitelisted_users_for_deposit: Option<SafeVec<Address, MAX_WHITELISTED_DEPOSITORS>>,
     }
 }
 

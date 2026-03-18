@@ -1,9 +1,10 @@
 //! User operations.
 
+use crate::bounds::MAX_USER_BATCH;
 use crate::decimals::PositiveDecimal;
-use crate::define_enum;
 use crate::string::CustomString;
 use crate::types::{AssetId, MarketId, SpotCollateralTransferDirection, TriggerOrderId, TwapId};
+use crate::{SafeVec, define_enum};
 mod args;
 pub use args::*;
 
@@ -90,7 +91,7 @@ define_enum! {
         /// Place new orders on a market.
         PlaceOrders {
             market_id: MarketId,
-            orders: Vec<NewOrderArgs>,
+            orders: SafeVec<NewOrderArgs, MAX_USER_BATCH>,
             replace: bool,
             sub_account_index: Option<u8>,
         } = 20,
@@ -98,14 +99,14 @@ define_enum! {
         /// Amend existing orders (cancel + place).
         AmendOrders {
             market_id: MarketId,
-            orders: Vec<AmendOrderArgs>,
+            orders: SafeVec<AmendOrderArgs, MAX_USER_BATCH>,
             sub_account_index: Option<u8>,
         } = 21,
 
         /// Cancel specific orders.
         CancelOrders {
             market_id: MarketId,
-            orders: Vec<CancelOrderArgs>,
+            orders: SafeVec<CancelOrderArgs, MAX_USER_BATCH>,
             sub_account_index: Option<u8>,
         } = 22,
 
@@ -118,7 +119,7 @@ define_enum! {
         /// Create trigger orders for spot markets.
         CreateTriggerOrders {
             market_id: MarketId,
-            trigger_orders: Vec<NewTriggerOrderArgs>,
+            trigger_orders: SafeVec<NewTriggerOrderArgs, MAX_USER_BATCH>,
             sub_account_index: Option<u8>,
         } = 24,
 
@@ -133,7 +134,7 @@ define_enum! {
         /// Cancel trigger orders.
         CancelTriggerOrders {
             market_id: MarketId,
-            trigger_order_ids: Vec<TriggerOrderId>,
+            trigger_order_ids: SafeVec<TriggerOrderId, MAX_USER_BATCH>,
             sub_account_index: Option<u8>,
         } = 26,
 
@@ -213,7 +214,7 @@ define_enum! {
         /// Backstop liquidation for perp positions (user provides capital).
         BackstopLiquidatePerpPositions {
             address: Address,
-            positions: Option<Vec<BackstopLiquidatePerpPositionArgs>>,
+            positions: Option<SafeVec<BackstopLiquidatePerpPositionArgs, MAX_USER_BATCH>>,
             sub_account_index: Option<u8>,
         } = 60,
 

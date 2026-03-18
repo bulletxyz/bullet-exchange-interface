@@ -1,7 +1,8 @@
 //! Permissionless operations.
 
-use crate::define_enum;
+use crate::bounds::MAX_USER_BATCH;
 use crate::types::MarketId;
+use crate::{SafeVec, define_enum};
 
 define_enum! {
     /// Permissionless operations anyone can call.
@@ -20,7 +21,7 @@ define_enum! {
         ExecuteTriggerOrders { market_id: MarketId } = 2,
 
         /// Apply funding to user accounts (permissionless).
-        ApplyFunding { addresses: Vec<Address> } = 3,
+        ApplyFunding { addresses: SafeVec<Address, MAX_USER_BATCH> } = 3,
 
         /// Accrue borrow/lend interest (permissionless).
         AccrueBorrowLendInterest {} = 4,
@@ -29,7 +30,7 @@ define_enum! {
         ExecuteTwapOrders { market_id: MarketId } = 5,
 
         /// Activate TWAP orders  (permissionless)
-        ActivateTwapOrders { market_ids: Vec<MarketId> } = 6,
+        ActivateTwapOrders { market_ids: SafeVec<MarketId, MAX_USER_BATCH> } = 6,
         // Reserved: 7-255
     }
 }

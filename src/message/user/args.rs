@@ -1,12 +1,13 @@
 //! Argument types for user operations.
 
+use crate::bounds::MAX_USER_BATCH;
 use crate::decimals::PositiveDecimal;
-use crate::define_struct;
 use crate::string::CustomString;
 use crate::types::{
     AssetId, ClientOrderId, MarketId, OrderId, OrderType, Side, TriggerDirection,
     TriggerPriceCondition,
 };
+use crate::{SafeVec, define_struct};
 
 define_struct! {
     struct NewOrderArgs {
@@ -90,7 +91,7 @@ define_struct! {
         name: CustomString,
         description: CustomString,
         leader: Address,
-        deposit_asset_ids: Vec<AssetId>,
+        deposit_asset_ids: SafeVec<AssetId, MAX_USER_BATCH>,
         withdraw_asset_id: AssetId,
         withdraw_lockup_period_hours: u8,
         whitelist_deposits: bool,

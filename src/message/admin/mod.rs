@@ -1,8 +1,9 @@
 //! Protocol admin operations.
 
+use crate::bounds::MAX_ADMIN_BATCH;
 use crate::decimals::PositiveDecimal;
-use crate::define_enum;
 use crate::types::{AdminType, AssetId, MarketId, OrderId, TriggerOrderId};
+use crate::{SafeVec, define_enum};
 
 mod args;
 pub use args::*;
@@ -52,7 +53,7 @@ define_enum! {
         /// Cleanup user market state.
         CleanupUserMarketState {
             market_id: MarketId,
-            users: Vec<Address>,
+            users: SafeVec<Address, MAX_ADMIN_BATCH>,
         } = 10,
 
         /// Update perp market leverage table.
@@ -132,18 +133,18 @@ define_enum! {
         // =========================================================================
         /// Force cancel user orders.
         CancelOrders {
-            cancels: Vec<(MarketId, OrderId, Address)>,
+            cancels: SafeVec<(MarketId, OrderId, Address), MAX_ADMIN_BATCH>,
         } = 60,
 
         /// Force cancel user trigger orders.
         CancelTriggerOrders {
-            cancels: Vec<(MarketId, TriggerOrderId, Address)>,
+            cancels: SafeVec<(MarketId, TriggerOrderId, Address), MAX_ADMIN_BATCH>,
         } = 61,
 
         /// Force settle perp positions.
         ForceSettlePerpPosition {
             market_id: MarketId,
-            users: Vec<Address>,
+            users: SafeVec<Address, MAX_ADMIN_BATCH>,
         } = 62,
 
         /// Auto-deleverage positions.
