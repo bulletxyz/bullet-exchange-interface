@@ -21,14 +21,16 @@ permissions:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on:
+      - nscloud-ubuntu-22.04-amd64-4x8-with-cache
+      - nscloud-cache-tag-bullet-exchange-interface
+      - nscloud-cache-size-50gb
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
-      - uses: Swatinem/rust-cache@v2
       - name: Format check (nightly)
         run: cargo +nightly fmt --all -- --config-path rustfmt.nightly.toml --check
       - name: Clippy
