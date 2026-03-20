@@ -82,7 +82,19 @@ define_enum! {
         /// Claim your own referral rewards.
         ClaimReferralRewards { asset_id: AssetId } = 11,
 
-        // Reserved: 12-19
+        // Deposit USDC into an isolated market / isolated margin position
+        DepositIso {
+            market_id: MarketId,
+            amount: PositiveDecimal,
+        } = 12,
+
+        // Withdraw USDC from an isolated market / isolated margin position
+        WithdrawIso {
+            market_id: MarketId,
+            amount: PositiveDecimal,
+        } = 13,
+
+        // Reserved: 14-19
 
         // =========================================================================
         // Order Operations (20-39)

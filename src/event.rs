@@ -528,7 +528,21 @@ pub enum Event<Address> {
         delegate: Address,
         name: String,
         execution_timestamp: UnixTimestampMicros,
-    }
+    },
+    DepositIso {
+        user_address: Address,
+        market_id: MarketId,
+        amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    WithdrawIso {
+        user_address: Address,
+        market_id: MarketId,
+        amount: PositiveDecimal,
+        fee: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+
 }
 
 impl<Address> Event<Address> {
@@ -608,6 +622,8 @@ impl<Address> Event<Address> {
             Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
             Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
             Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
+            Self::DepositIso { .. } => "Exchange/DepositIso",
+            Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
         }
     }
 }
