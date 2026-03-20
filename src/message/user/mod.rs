@@ -237,6 +237,12 @@ define_enum! {
             liability_amount: PositiveDecimal,
             sub_account_index: Option<u8>,
         } = 61,
-        // Reserved: 62-255
+
+        BackstopLiquidateIsoPerpPosition {
+            address: Address,
+            position: BackstopLiquidatePerpPositionArgs,
+            sub_account_index: Option<u8>,
+        } = 62,
+        // Reserved: 63-255
     }
 }
