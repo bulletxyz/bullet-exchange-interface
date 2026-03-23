@@ -187,7 +187,10 @@ define_enum! {
 
         /// Claim accumulated borrow/lend protocol fees.
         ClaimBorrowLendFees {} = 44,
-        // Reserved: 45-49
+
+        /// Deposit to the iso insurance fund.
+        DepositToIsoInsuranceFund { usdc_amount: PositiveDecimal } = 45,
+        // Reserved: 46-49
 
         // =========================================================================
         // Vault User Operations (50-59)
