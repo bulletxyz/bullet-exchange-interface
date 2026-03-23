@@ -189,7 +189,7 @@ define_enum! {
         ClaimBorrowLendFees {} = 44,
 
         /// Deposit to the iso insurance fund.
-        DepositToIsoInsuranceFund { usdc_amount: PositiveDecimal } = 45,
+        DepositToIsoInsuranceFund { market_id: MarketId, amount: PositiveDecimal } = 45,
         // Reserved: 46-49
 
         // =========================================================================
