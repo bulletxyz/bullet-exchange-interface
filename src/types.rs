@@ -147,3 +147,8 @@ define_simple_enum!(MarketTradingStatus {
     /// Once the market is cleaned, it can become active again or it can be safely deleted.
     Cleaned = 3,
 });
+
+define_simple_enum!(TakeFromInsuranceFundReason {
+    LiquidateBorrowLendLiability = 0,
+    LiquidateIsoPerpPosition = 1,
+});
