@@ -4,7 +4,8 @@ use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
     AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, OrderId, OrderType, RepayType, Side,
-    TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition, TwapId,
+    TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition,
+    TwapId,
 };
 
 #[derive(
@@ -542,7 +543,11 @@ pub enum Event<Address> {
         fee: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-
+    TakeFromInsuranceFund {
+        reason: TakeFromInsuranceFundReason,
+        amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -624,6 +629,7 @@ impl<Address> Event<Address> {
             Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
             Self::DepositIso { .. } => "Exchange/DepositIso",
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
+            Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
         }
     }
 }

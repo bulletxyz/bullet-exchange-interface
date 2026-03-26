@@ -10,10 +10,10 @@ define_enum! {
     /// Typically used for MEV opportunities (liquidations) or protocol maintenance
     /// (interest accrual, funding application).
     enum PublicAction<Address> {
-        /// Liquidate perp positions for an underwater account (permissionless).
+        /// Try to force close cross margin perp positions for a user account under maintenance margin but above backstop liquidation margin (permissionless).
         LiquidatePerpPositions { address: Address } = 0,
 
-        /// Force cancel orders for a liquidatable user (permissionless).
+        /// Force cancel orders for a user under initial margin on cross margin positions (permissionless).
         ForceCancelOrders { user_address: Address } = 1,
 
         /// Execute active trigger orders (permissionless).
@@ -30,6 +30,13 @@ define_enum! {
 
         /// Activate TWAP orders  (permissionless)
         ActivateTwapOrders { market_ids: Vec<MarketId> } = 6,
-        // Reserved: 7-255
+
+        /// Force cancel orders for a user under initial margin for an iso margin position (permissionless)
+        ForceCancelIsoOrders { user_address: Address, market_id: MarketId } = 7,
+
+        /// Try to force close an iso margin position for a user under maintenance margin but above backstop liquidation margin (permissionless)
+        LiquidateIsoPerpPosition { user_address: Address, market_id: MarketId } = 8,
+
+        // Reserved: 9-255
     }
 }
