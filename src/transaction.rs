@@ -7,6 +7,7 @@ pub const MAX_TX_SIZE: usize = 8000;
 
 /// Fix the Address type for this module.
 pub type ExchangeCall = crate::message::CallMessage<crate::address::Address>;
+pub type BankCall = bank::CallMessage<crate::address::Address>;
 
 #[derive(
     Clone,
@@ -70,6 +71,7 @@ define_struct! {
 define_enum! {
     /// The enum to distinguish the rollup modules.
     enum RuntimeCall {
+        Bank(BankCall) = 2,
         Exchange(ExchangeCall) = 7,
     }
 }
@@ -98,3 +100,45 @@ define_struct! {
 define_simple_type!(Gas([u64; 2]) + Debug + sov_universal_wallet::UniversalWallet);
 define_simple_type!(PriorityFeeBips(u64));
 define_simple_type!(Amount(u128));
+impl sov_universal_wallet::ty::IntegerDisplayable for Amount {
+    fn integer_type() -> sov_universal_wallet::ty::IntegerType {
+        sov_universal_wallet::ty::IntegerType::u128
+    }
+}
+
+pub mod bank {
+    use crate::string::CustomString;
+    use crate::transaction::Amount;
+    use crate::{define_enum, define_simple_type, define_struct};
+
+    define_simple_type!(
+        TokenId(
+            #[sov_wallet(display(bech32m(prefix = "token_id_prefix()")))]
+            [u8; 32]
+        ) + sov_universal_wallet::UniversalWallet
+            + Debug
+    );
+
+    fn token_id_prefix() -> &'static str {
+        "token_"
+    }
+    define_enum! {
+        /// CallMessage for the Bank module.
+        enum CallMessage<Address> {
+            #[sov_wallet(show_as = "Transfer to address {} {} with memo `{}`.")]
+            TransferWithMemo {
+                to: Address,
+                coins: Coins,
+                memo: CustomString,
+            } = 6,
+        }
+    }
+    define_struct! {
+        #[sov_wallet(show_as = "{} coins of token ID {}")]
+        struct Coins {
+            #[sov_wallet(fixed_point(from_field(1, offset = 31)))]
+            amount: Amount,
+            token_id: TokenId,
+        }
+    }
+}
