@@ -3,7 +3,7 @@
 pub use rust_decimal::Decimal;
 
 use crate::string::CustomString;
-use crate::{define_simple_enum, define_simple_type};
+use crate::{define_enum, define_simple_enum, define_simple_type};
 
 pub const RESERVED_ORDER_ID: OrderId = OrderId(0); // 0 is reserved for OTC (liquidation) orders
 pub const RESERVED_TRADE_ID: TradeId = TradeId(0); // 0 is reserved for force settlement of positions
@@ -148,7 +148,9 @@ define_simple_enum!(MarketTradingStatus {
     Cleaned = 3,
 });
 
-define_simple_enum!(TakeFromInsuranceFundReason {
-    LiquidateBorrowLendLiability = 0,
-    LiquidateIsoPerpPosition = 1,
-});
+define_enum!(
+    enum TakeFromInsuranceFundReason {
+        LiquidateBorrowLendLiability,
+        LiquidateIsoPerpPosition(MarketId),
+    }
+);
