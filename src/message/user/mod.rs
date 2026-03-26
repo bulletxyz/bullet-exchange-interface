@@ -100,6 +100,7 @@ define_enum! {
         SetPerpLedgerTradingMode {
             market_id: MarketId,
             trading_mode: TradingMode,
+            sub_account_index: Option<u8>,
         } = 14,
 
         // Reserved: 15-19
