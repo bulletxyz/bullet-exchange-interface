@@ -20,20 +20,6 @@ define_struct! {
     }
 }
 
-impl NewOrderArgs {
-    pub fn new_liquidate(price: PositiveDecimal, size: PositiveDecimal, side: Side) -> Self {
-        Self {
-            price,
-            size,
-            side,
-            order_type: OrderType::ImmediateOrCancel,
-            reduce_only: false,
-            client_order_id: None,
-            pending_tpsl_pair: None,
-        }
-    }
-}
-
 define_struct! {
     struct AmendOrderArgs {
         cancel: CancelOrderArgs,
