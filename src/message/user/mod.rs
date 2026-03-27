@@ -3,7 +3,9 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::string::CustomString;
-use crate::types::{AssetId, MarketId, SpotCollateralTransferDirection, TriggerOrderId, TwapId};
+use crate::types::{
+    AssetId, MarketId, SpotCollateralTransferDirection, TradingMode, TriggerOrderId, TwapId,
+};
 mod args;
 pub use args::*;
 
@@ -94,17 +96,25 @@ define_enum! {
             amount: PositiveDecimal,
         } = 13,
 
+        // Set the trading mode of a perp ledger to cross or iso
+        SetPerpLedgerTradingMode {
+            market_id: MarketId,
+            trading_mode: TradingMode,
+            sub_account_index: Option<u8>,
+        } = 14,
+
         DelegateUserV1 {
             delegate: Address,
             name: CustomString,
             sub_account_index: Option<u8>,
-        } = 14,
+        } = 15,
 
         RevokeDelegationV1 {
             delegate: Address,
             sub_account_index: Option<u8>,
-        } = 15,
-        // Reserved: 16-19
+        } = 16,
+
+        // Reserved: 17-19
 
         // =========================================================================
         // Order Operations (20-39)
@@ -197,7 +207,10 @@ define_enum! {
 
         /// Claim accumulated borrow/lend protocol fees.
         ClaimBorrowLendFees {} = 44,
-        // Reserved: 45-49
+
+        /// Deposit to the iso insurance fund.
+        DepositToIsoInsuranceFund { market_id: MarketId, amount: PositiveDecimal } = 45,
+        // Reserved: 46-49
 
         // =========================================================================
         // Vault User Operations (50-59)
@@ -247,6 +260,12 @@ define_enum! {
             liability_amount: PositiveDecimal,
             sub_account_index: Option<u8>,
         } = 61,
-        // Reserved: 62-255
+
+        BackstopLiquidateIsoPerpPosition {
+            address: Address,
+            position: BackstopLiquidatePerpPositionArgs,
+            sub_account_index: Option<u8>,
+        } = 62,
+        // Reserved: 63-255
     }
 }
