@@ -94,7 +94,17 @@ define_enum! {
             amount: PositiveDecimal,
         } = 13,
 
-        // Reserved: 14-19
+        DelegateUserV1 {
+            delegate: Address,
+            name: CustomString,
+            sub_account_index: Option<u8>,
+        } = 14,
+
+        RevokeDelegationV1 {
+            delegate: Address,
+            sub_account_index: Option<u8>,
+        } = 15,
+        // Reserved: 16-19
 
         // =========================================================================
         // Order Operations (20-39)
