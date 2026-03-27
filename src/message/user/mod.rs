@@ -3,7 +3,9 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::string::CustomString;
-use crate::types::{AssetId, MarketId, SpotCollateralTransferDirection, TriggerOrderId, TwapId};
+use crate::types::{
+    AssetId, MarketId, SpotCollateralTransferDirection, TradingMode, TriggerOrderId, TwapId,
+};
 mod args;
 pub use args::*;
 
@@ -94,7 +96,14 @@ define_enum! {
             amount: PositiveDecimal,
         } = 13,
 
-        // Reserved: 14-19
+        // Set the trading mode of a perp ledger to cross or iso
+        SetPerpLedgerTradingMode {
+            market_id: MarketId,
+            trading_mode: TradingMode,
+            sub_account_index: Option<u8>,
+        } = 14,
+
+        // Reserved: 15-19
 
         // =========================================================================
         // Order Operations (20-39)

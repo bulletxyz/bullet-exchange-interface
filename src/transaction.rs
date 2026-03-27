@@ -2,6 +2,9 @@
 
 use crate::{define_enum, define_simple_type, define_struct};
 
+/// The maxium size of each transaction.
+pub const MAX_TX_SIZE: usize = 8000;
+
 /// Fix the Address type for this module.
 pub type ExchangeCall = crate::message::CallMessage<crate::address::Address>;
 
