@@ -84,31 +84,33 @@ define_enum! {
         /// Claim your own referral rewards.
         ClaimReferralRewards { asset_id: AssetId } = 11,
 
-        // Deposit USDC into an isolated market / isolated margin position
+        /// Deposit USDC into an isolated market / isolated margin position.
         DepositIso {
             market_id: MarketId,
             amount: PositiveDecimal,
         } = 12,
 
-        // Withdraw USDC from an isolated market / isolated margin position
+        /// Withdraw USDC from an isolated market / isolated margin position.
         WithdrawIso {
             market_id: MarketId,
             amount: PositiveDecimal,
         } = 13,
 
-        // Set the trading mode of a perp ledger to cross or iso
+        /// Set the trading mode of a perp ledger to cross or iso.
         SetPerpLedgerTradingMode {
             market_id: MarketId,
             trading_mode: TradingMode,
             sub_account_index: Option<u8>,
         } = 14,
 
+        /// Delegate trading permissions to another address allowing for sub accounts to be delegated.
         DelegateUserV1 {
             delegate: Address,
             name: CustomString,
             sub_account_index: Option<u8>,
         } = 15,
 
+        /// Revoke delegation from an address allowing for sub accounts to revoke delegation.
         RevokeDelegationV1 {
             delegate: Address,
             sub_account_index: Option<u8>,
