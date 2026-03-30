@@ -48,7 +48,6 @@ fn trim_internal(
             }
         }
         Ty::Tuple(ref mut value) => {
-            assert!(value.template.is_none());
             for f in &mut value.fields {
                 let UnnamedField::<IndexLinking> {
                     value,
@@ -59,7 +58,6 @@ fn trim_internal(
             }
         }
         Ty::Struct(ref mut value) => {
-            assert!(value.template.is_none());
             for f in &mut value.fields {
                 let NamedField::<IndexLinking> {
                     value,

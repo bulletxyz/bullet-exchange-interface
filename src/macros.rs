@@ -2,7 +2,6 @@
 #[macro_export]
 macro_rules! define_struct {
     ($(#[$structmeta:meta])* struct $type_name:ident$(<$a:ident>)?{$($(#[$meta:meta])*$name:ident : $type:ty),* $(,)?}) => {
-        $(#[$structmeta])*
         #[derive(
             Clone,
             Debug,
@@ -18,6 +17,7 @@ macro_rules! define_struct {
             serde::Serialize,
             sov_universal_wallet::UniversalWallet,
         )]
+        $(#[$structmeta])*
         pub struct $type_name$(<$a>)* {
             $($(#[$meta])*
               pub $name : $type),*
@@ -52,8 +52,7 @@ macro_rules! define_simple_type {
             }
         }
     };
-    ($(#[$enummeta:meta])* $name:ident($inner:ty) $(+ $derive:path)*) => {
-        $(#[$enummeta])*
+    ($(#[$enummeta:meta])* $name:ident($(#[$innermeta:meta])* $inner:ty) $(+ $derive:path)*) => {
         #[derive(
             Clone,
             Eq,
@@ -69,7 +68,10 @@ macro_rules! define_simple_type {
             $($derive),*
         )]
         #[serde(transparent)]
-        pub struct $name(pub $inner);
+        $(#[$enummeta])*
+        pub struct $name(
+	    $(#[$innermeta])*
+	    pub $inner);
     };
 }
 

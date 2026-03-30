@@ -4,8 +4,8 @@ use bullet_exchange_interface::transaction::Transaction;
 fn main() {
     let filter_variants = |name: &str, variant: &str| match name {
         "Transaction" => variant == "V0",
-        "RuntimeCall" => variant == "Exchange",
-        "CallMessage" => variant == "Keeper",
+        "RuntimeCall" => matches!(variant, "Exchange" | "Bank"),
+        "CallMessage" => matches!(variant, "Keeper" | "TransferWithMemo"),
         "KeeperAction" => matches!(variant, "UpdateOraclePrices" | "UpdateMarkPrices"),
         "UniquenessData" => variant == "Generation",
         _ => panic!("'{name}::{variant}' is unknown"),
