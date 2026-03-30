@@ -5,8 +5,10 @@ use crate::define_enum;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, MarketId, SpotCollateralTransferDirection, TradingMode, TriggerOrderId, TwapId,
+    AssetId, CancelRange, MarketId, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
+    TwapId,
 };
+use crate::time::UnixTimestampMicros;
 mod args;
 pub use args::*;
 
@@ -197,7 +199,18 @@ define_enum! {
 
         /// Cancel all orders for perp or spot
         CancelAllOrders { sub_account_index: Option<u8> } = 29,
-        // Reserved: 30-39
+
+        /// Place expiring orders and cancel a range of orders.
+        PlaceOrdersV1 {
+            market_id: MarketId,
+            orders: Vec<NewOrderArgs>,
+            expiry_timestamp: Option<UnixTimestampMicros>,
+            cancel: Option<CancelRange>,
+            sub_account_index: Option<u8>,
+        } = 30,
+
+        // Reserved: 31-39
+
 
         // =========================================================================
         // Pool Operations (40-49)
