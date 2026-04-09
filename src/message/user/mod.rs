@@ -3,6 +3,7 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::string::CustomString;
+use crate::time::UnixTimestampMicros;
 use crate::types::{
     AssetId, MarketId, SpotCollateralTransferDirection, TradingMode, TriggerOrderId, TwapId,
 };
@@ -116,7 +117,16 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 16,
 
-        // Reserved: 17-19
+        /// Delegate trading permissions with optional expiry and flags
+        DelegateUserV2 {
+            delegate: Address,
+            name: CustomString,
+            sub_account_index: Option<u8>,
+            expires_at: Option<UnixTimestampMicros>,
+            flags: Option<u32>,
+        } = 17,
+
+        // Reserved: 18-19
 
         // =========================================================================
         // Order Operations (20-39)

@@ -1,6 +1,7 @@
 //! Vault operations.
 use crate::define_enum;
 use crate::string::CustomString;
+use crate::time::UnixTimestampMicros;
 mod args;
 pub use args::*;
 
@@ -43,6 +44,15 @@ define_enum! {
             vault_address: Address,
             delegate: Address,
         } = 5,
-        // Reserved: 6-255
+
+        /// Delegate vault trading with optional expiry and flags
+        DelegateVaultUserV2 {
+            vault_address: Address,
+            delegate: Address,
+            name: CustomString,
+            expires_at: Option<UnixTimestampMicros>,
+            flags: Option<u32>,
+        } = 6,
+        // Reserved: 7-255
     }
 }
