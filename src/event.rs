@@ -512,7 +512,14 @@ pub enum Event<Address> {
         delegator: Address,
         delegate: Address,
         name: String,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    DelegateUserV2 {
+        delegator: Address,
+        delegate: Address,
+        name: String,
         expires_at: Option<UnixTimestampMicros>,
+        flags: Option<u32>,
         execution_timestamp: UnixTimestampMicros,
     },
     RevokeDelegation {
@@ -625,6 +632,7 @@ impl<Address> Event<Address> {
             Self::WithdrawSpotCollateral { .. } => "Exchange/WithdrawSpotCollateral",
             Self::WithdrawSpotCollateralV2 { .. } => "Exchange/WithdrawSpotCollateralV2",
             Self::DelegateUser { .. } => "Exchange/DelegateUser",
+            Self::DelegateUserV2 { .. } => "Exchange/DelegateUserV2",
             Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
             Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
             Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
