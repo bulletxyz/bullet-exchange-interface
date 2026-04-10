@@ -51,7 +51,7 @@ define_enum! {
             delegate: Address,
             name: CustomString,
             expires_at: Option<UnixTimestampMicros>,
-            flags: Option<u32>,
+            flags: u32,
         } = 6,
         // Reserved: 7-255
     }

@@ -123,7 +123,7 @@ define_enum! {
             name: CustomString,
             sub_account_index: Option<u8>,
             expires_at: Option<UnixTimestampMicros>,
-            flags: Option<u32>,
+            flags: u32,
         } = 17,
 
         // Reserved: 18-19

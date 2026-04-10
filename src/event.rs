@@ -553,7 +553,7 @@ pub enum Event<Address> {
         delegate: Address,
         name: String,
         expires_at: Option<UnixTimestampMicros>,
-        flags: Option<u32>,
+        flags: u32,
         execution_timestamp: UnixTimestampMicros,
     },
 }
