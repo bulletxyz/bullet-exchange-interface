@@ -514,14 +514,6 @@ pub enum Event<Address> {
         name: String,
         execution_timestamp: UnixTimestampMicros,
     },
-    DelegateUserV2 {
-        delegator: Address,
-        delegate: Address,
-        name: String,
-        expires_at: Option<UnixTimestampMicros>,
-        flags: Option<u32>,
-        execution_timestamp: UnixTimestampMicros,
-    },
     RevokeDelegation {
         delegator: Address,
         delegate: Address,
@@ -554,6 +546,14 @@ pub enum Event<Address> {
     TakeFromInsuranceFund {
         reason: TakeFromInsuranceFundReason,
         amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    DelegateUserV2 {
+        delegator: Address,
+        delegate: Address,
+        name: String,
+        expires_at: Option<UnixTimestampMicros>,
+        flags: Option<u32>,
         execution_timestamp: UnixTimestampMicros,
     },
 }
@@ -632,13 +632,13 @@ impl<Address> Event<Address> {
             Self::WithdrawSpotCollateral { .. } => "Exchange/WithdrawSpotCollateral",
             Self::WithdrawSpotCollateralV2 { .. } => "Exchange/WithdrawSpotCollateralV2",
             Self::DelegateUser { .. } => "Exchange/DelegateUser",
-            Self::DelegateUserV2 { .. } => "Exchange/DelegateUserV2",
             Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
             Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
             Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
             Self::DepositIso { .. } => "Exchange/DepositIso",
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
+            Self::DelegateUserV2 { .. } => "Exchange/DelegateUserV2",
         }
     }
 }
