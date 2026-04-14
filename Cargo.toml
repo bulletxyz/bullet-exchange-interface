@@ -17,8 +17,8 @@ rust_decimal = { version = "1.41", features = ["maths", "borsh"] }
 schemars = { version = "0.8", features = ["rust_decimal"] }
 hex = { version = "0.4", features = ["serde"] }
 
-sov-rollup-interface = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev="d0480b69cb3ea9e8d57a7a763fd1eac04958c367" }
-sov-universal-wallet = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev="d0480b69cb3ea9e8d57a7a763fd1eac04958c367", features=["serde"] }
+sov-rollup-interface = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev="1c0d743b302b0101d67b6aaef64f8ed3c8004965" }
+sov-universal-wallet = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev="1c0d743b302b0101d67b6aaef64f8ed3c8004965", features=["serde"] }
 bullet-bs58 = { git = "https://github.com/bulletxyz/bullet-bs58.git" }
 
 [features]
