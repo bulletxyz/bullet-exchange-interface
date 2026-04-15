@@ -3,7 +3,7 @@
 pub use rust_decimal::Decimal;
 
 use crate::string::CustomString;
-use crate::{define_enum, define_simple_enum, define_simple_type, define_struct};
+use crate::{define_enum, define_simple_enum, define_simple_type};
 
 pub const RESERVED_ORDER_ID: OrderId = OrderId(0); // 0 is reserved for OTC (liquidation) orders
 pub const RESERVED_TRADE_ID: TradeId = TradeId(0); // 0 is reserved for force settlement of positions
@@ -42,6 +42,14 @@ impl TradeId {
 define_simple_type!(TriggerOrderId(u64));
 define_simple_type!(TwapId(u64));
 define_simple_type!(ClientOrderId(u64));
+define_enum! {
+    enum OrderIds {
+        Server(OrderId)  = 0,
+        Client(ClientOrderId) = 1,
+        Trigger(TriggerOrderId) = 2,
+        Twap(TwapId) = 3,
+    }
+}
 define_simple_type!(AssetId(u16));
 define_simple_type!(MarketId(u16));
 impl MarketId {
@@ -163,23 +171,3 @@ define_enum!(
         LiquidateIsoPerpPosition(MarketId),
     }
 );
-
-define_struct! {
-    /// A closed range of orders to cancel.
-    ///
-    /// Orders without a ClientId are mapped to zero.
-    struct CancelRange {
-        start: ClientOrderId,
-        end: ClientOrderId,
-    }
-}
-
-impl Default for CancelRange {
-    /// Cancel all orders.
-    fn default() -> Self {
-        Self {
-            start: ClientOrderId(0),
-            end: ClientOrderId(u64::MAX),
-        }
-    }
-}

@@ -5,10 +5,9 @@ use crate::define_enum;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, CancelRange, MarketId, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
+    AssetId, MarketId, OrderIds, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
     TwapId,
 };
-use crate::time::UnixTimestampMicros;
 mod args;
 pub use args::*;
 
@@ -133,23 +132,23 @@ define_enum! {
         // =========================================================================
         // Order Operations (20-39)
         // =========================================================================
-        /// Place new orders on a market.
-        PlaceOrders {
+        /// Place new orders on a market  - use `ReplaceOrders` instead.
+        PlaceOrdersDeprecated {
             market_id: MarketId,
             orders: Vec<NewOrderArgs>,
             replace: bool,
             sub_account_index: Option<u8>,
         } = 20,
 
-        /// Amend existing orders (cancel + place).
-        AmendOrders {
+        /// Amend existing orders (cancel + place) - use `ReplaceOrders` instead.
+        AmendOrdersDeprecated {
             market_id: MarketId,
             orders: Vec<AmendOrderArgs>,
             sub_account_index: Option<u8>,
         } = 21,
 
-        /// Cancel specific orders.
-        CancelOrders {
+        /// Cancel specific orders  - use `ReplaceOrders` instead.
+        CancelOrdersDeprecated {
             market_id: MarketId,
             orders: Vec<CancelOrderArgs>,
             sub_account_index: Option<u8>,
@@ -176,8 +175,8 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 25,
 
-        /// Cancel trigger orders.
-        CancelTriggerOrders {
+        /// Cancel trigger orders  - use ReplaceOrders instead.
+        CancelTriggerOrdersDeprecated {
             market_id: MarketId,
             trigger_order_ids: Vec<TriggerOrderId>,
             sub_account_index: Option<u8>,
@@ -190,8 +189,8 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 27,
 
-        /// Cancel a TWAP order
-        CancelTwapOrder {
+        /// Cancel a TWAP order - use ReplaceOrders instead.
+        CancelTwapOrderDeprecated {
             market_id: MarketId,
             twap_id: TwapId,
             sub_account_index: Option<u8>,
@@ -200,12 +199,12 @@ define_enum! {
         /// Cancel all orders for perp or spot
         CancelAllOrders { sub_account_index: Option<u8> } = 29,
 
-        /// Place expiring orders and cancel a range of orders.
-        PlaceOrdersV1 {
+        /// Place expiring orders after canceling a list of orders.
+        ReplaceOrders {
             market_id: MarketId,
-            orders: Vec<NewOrderArgs>,
+            cancel: Vec<OrderIds>,
+            place: Vec<NewOrderArgs>,
             expiry_timestamp: Option<UnixTimestampMicros>,
-            cancel: Option<CancelRange>,
             sub_account_index: Option<u8>,
         } = 30,
 
