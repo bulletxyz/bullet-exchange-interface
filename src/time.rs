@@ -75,6 +75,12 @@ impl UnixTimestampMicros {
             })
     }
 
+
+    /// Returns the microseconds elapsed. Or zero on errors.
+    pub fn elapsed_micros(self, other: UnixTimestampMicros) -> i64 {
+        self.0.checked_sub(other.0).unwrap_or(0).max(0)
+    }
+
     /// Returns the seconds elapsed. Or zero on errors.
     pub fn elapsed_secs(self, other: UnixTimestampMicros) -> u64 {
         let delta = self
