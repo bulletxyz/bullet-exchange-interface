@@ -43,7 +43,7 @@ define_simple_type!(TriggerOrderId(u64));
 define_simple_type!(TwapId(u64));
 define_simple_type!(ClientOrderId(u64));
 define_enum! {
-    enum OrderIds {
+    enum OrderIdKind {
         Server(OrderId)  = 0,
         Client(ClientOrderId) = 1,
     }

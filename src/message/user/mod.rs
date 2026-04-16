@@ -5,7 +5,7 @@ use crate::define_enum;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, MarketId, OrderIds, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
+    AssetId, MarketId, OrderIdKind, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
     TwapId,
 };
 mod args;
@@ -202,7 +202,7 @@ define_enum! {
         /// Place (expiring) orders after canceling a list of orders.
         ReplaceOrders {
             market_id: MarketId,
-            cancel: Vec<OrderIds>,
+            cancel: Vec<OrderIdKind>,
             place: Vec<NewOrderArgs>,
             expiry_timestamp: Option<UnixTimestampMicros>,
             sub_account_index: Option<u8>,
