@@ -46,8 +46,6 @@ define_enum! {
     enum OrderIds {
         Server(OrderId)  = 0,
         Client(ClientOrderId) = 1,
-        Trigger(TriggerOrderId) = 2,
-        Twap(TwapId) = 3,
     }
 }
 define_simple_type!(AssetId(u16));
