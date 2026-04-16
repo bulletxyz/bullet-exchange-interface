@@ -166,14 +166,6 @@ define_enum! {
         } = 64,
 
         ForceRemoveDelegate { delegator: Address, delegate: Address } = 65,
-        // Reserved: 66-159
-
-        // =========================================================================
-        // Migration Operations (160 - 255)
-        // =========================================================================
-        /// Migrate cross margined perp markets to also have iso assets for iso margin positions.
-        MigratePerpMarketAssets { market_ids: Vec<MarketId> } = 160,
-
-        // Reserved: 161-255
+        // Reserved: 66-69
     }
 }
