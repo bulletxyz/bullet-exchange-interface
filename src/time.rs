@@ -4,6 +4,9 @@ use crate::error::{ArithmeticError, ArithmeticOperation};
 // Stores microseconds since Unix Epoch.
 define_simple_type!(UnixTimestampMicros(i64));
 
+pub const MICROSECONDS_PER_HOUR: i64 = 3600_000_000;
+pub const ONE_HOUR: UnixTimestampMicros = UnixTimestampMicros(MICROSECONDS_PER_HOUR);
+
 impl UnixTimestampMicros {
     pub const ZERO: Self = Self(0);
     pub fn from_secs(secs: i64) -> Result<Self, ArithmeticError> {
@@ -55,6 +58,10 @@ impl UnixTimestampMicros {
         self.0
     }
 
+    pub fn as_hour(&self) -> i64 {
+        self.0 / MICROSECONDS_PER_HOUR
+    }
+
     pub fn checked_add_secs(&self, other: i64) -> Result<Self, ArithmeticError> {
         self.checked_add(Self::from_secs(other)?)
     }
@@ -67,6 +74,12 @@ impl UnixTimestampMicros {
                 left: self.0 as i128,
                 right: other.0 as i128,
             })
+    }
+
+
+    /// Returns the microseconds elapsed. Or zero on errors.
+    pub fn elapsed_micros(self, other: UnixTimestampMicros) -> i64 {
+        self.0.checked_sub(other.0).unwrap_or(0).max(0)
     }
 
     /// Returns the seconds elapsed. Or zero on errors.

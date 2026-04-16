@@ -125,7 +125,7 @@ define_enum! {
             amount: PositiveDecimal,
             to: Address,
         } = 50,
-        // Reserved: 52-59
+        // Reserved: 51-59
 
         // =========================================================================
         // Force/Emergency Operations (60-69)
@@ -166,6 +166,6 @@ define_enum! {
         } = 64,
 
         ForceRemoveDelegate { delegator: Address, delegate: Address } = 65,
-        // Reserved: 66-255
+        // Reserved: 66-69
     }
 }
