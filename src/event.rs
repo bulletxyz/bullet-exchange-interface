@@ -548,7 +548,7 @@ pub enum Event<Address> {
         amount: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    DelegateUserV2 {
+    DelegateUserV1 {
         delegator: Address,
         delegate: Address,
         name: String,
@@ -638,7 +638,7 @@ impl<Address> Event<Address> {
             Self::DepositIso { .. } => "Exchange/DepositIso",
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
-            Self::DelegateUserV2 { .. } => "Exchange/DelegateUserV2",
+            Self::DelegateUserV1 { .. } => "Exchange/DelegateUserV1",
         }
     }
 }
