@@ -46,7 +46,7 @@ define_enum! {
         } = 5,
 
         /// Delegate vault trading with optional expiry and flags
-        DelegateVaultUserV2 {
+        DelegateVaultUserV1 {
             vault_address: Address,
             delegate: Address,
             name: CustomString,
