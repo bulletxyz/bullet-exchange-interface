@@ -73,7 +73,11 @@ define_simple_enum! {
         Tier2,
         Tier3,
         Tier4,
-        Tier5
+        Tier5,
+        Tier6,
+        Tier7,
+        Tier8,
+        Tier9
     }
 }
 #[allow(clippy::derivable_impls)]
