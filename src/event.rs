@@ -303,6 +303,12 @@ pub enum Event<Address> {
         client_order_id: Option<ClientOrderId>,
         execution_timestamp: UnixTimestampMicros,
         fee_asset: AssetId,
+        // cumulative filled size on the order after this fill
+        filled_size: PositiveDecimal,
+        // cumulative filled notional (cost-of-trade) on the order after this fill
+        filled_cot: PositiveDecimal,
+        // unfilled size remaining on the order after this fill
+        remaining_size: PositiveDecimal,
     },
     ForceSettlePerpPosition {
         user_address: Address,
