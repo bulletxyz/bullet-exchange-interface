@@ -303,12 +303,6 @@ pub enum Event<Address> {
         client_order_id: Option<ClientOrderId>,
         execution_timestamp: UnixTimestampMicros,
         fee_asset: AssetId,
-        // cumulative filled size on the order after this fill
-        filled_size: PositiveDecimal,
-        // cumulative filled notional (cost-of-trade) on the order after this fill
-        filled_cot: PositiveDecimal,
-        // unfilled size remaining on the order after this fill
-        remaining_size: PositiveDecimal,
     },
     ForceSettlePerpPosition {
         user_address: Address,
@@ -562,6 +556,31 @@ pub enum Event<Address> {
         flags: u32,
         execution_timestamp: UnixTimestampMicros,
     },
+    // supersedes Trade; adds cumulative order progress (filled_size, filled_cot, remaining_size)
+    TradeV1 {
+        user_address: Address,
+        market_id: MarketId,
+        price: PositiveDecimal,
+        size: PositiveDecimal,
+        side: Side,
+        order_id: OrderId,
+        is_maker: bool,
+        is_full_fill: bool,
+        realized_pnl: Decimal,
+        fee: Decimal,
+        net_fee: PositiveDecimal,
+        trade_id: TradeId,
+        is_liquidation: bool,
+        client_order_id: Option<ClientOrderId>,
+        execution_timestamp: UnixTimestampMicros,
+        fee_asset: AssetId,
+        // cumulative filled size on the order after this fill
+        filled_size: PositiveDecimal,
+        // cumulative filled notional (cost-of-trade) on the order after this fill
+        filled_cot: PositiveDecimal,
+        // unfilled size remaining on the order after this fill
+        remaining_size: PositiveDecimal,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -613,6 +632,7 @@ impl<Address> Event<Address> {
             Self::SuccessfulExecuteTriggerOrder { .. } => "Exchange/SuccessfulExecuteTriggerOrder",
             Self::SuccessfulExecuteTwapOrder { .. } => "Exchange/SuccessfulExecuteTwapOrder",
             Self::Trade { .. } => "Exchange/Trade",
+            Self::TradeV1 { .. } => "Exchange/TradeV1",
             Self::TryExecuteTriggerOrder { .. } => "Exchange/TryExecuteTriggerOrder",
             Self::UnhaltBorrowLendPool { .. } => "Exchange/UnhaltBorrowLendPool",
             Self::UnhaltPerpMarket { .. } => "Exchange/UnhaltPerpMarket",
