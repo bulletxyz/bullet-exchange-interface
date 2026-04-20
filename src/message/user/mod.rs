@@ -132,7 +132,7 @@ define_enum! {
         // =========================================================================
         // Order Operations (20-39)
         // =========================================================================
-        /// Place new orders on a market. Deprecated use `ReplaceOrders` instead.
+        /// Place new orders on a market.
         PlaceOrders {
             market_id: MarketId,
             orders: Vec<NewOrderArgs>,
@@ -140,14 +140,14 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 20,
 
-        /// Amend existing orders (cancel + place). Deprecated use `ReplaceOrders` instead.
+        /// Amend existing orders (cancel + place).
         AmendOrders {
             market_id: MarketId,
             orders: Vec<AmendOrderArgs>,
             sub_account_index: Option<u8>,
         } = 21,
 
-        /// Cancel specific orders. Deprecated use `ReplaceOrders` instead.
+        /// Cancel specific orders.
         CancelOrders {
             market_id: MarketId,
             orders: Vec<CancelOrderArgs>,
@@ -175,7 +175,7 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 25,
 
-        /// Cancel trigger orders
+        /// Cancel trigger orders.
         CancelTriggerOrders {
             market_id: MarketId,
             trigger_order_ids: Vec<TriggerOrderId>,
