@@ -2,6 +2,7 @@
 
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
+use crate::message::CreateVaultArgs;
 use crate::types::{AdminType, AssetId, MarketId, OrderId, TriggerOrderId};
 
 mod args;
@@ -166,6 +167,13 @@ define_enum! {
         } = 64,
 
         ForceRemoveDelegate { delegator: Address, delegate: Address } = 65,
-        // Reserved: 66-69
+
+        /// Initialize a new protocol-owned vault.
+        ///
+        /// Behaves identically to a user-created vault but is flagged with
+        /// `AccountVariant::ProtocolVault` so future protocol-specific behavior
+        /// (e.g. governance-only withdrawals, fee exemptions) can branch on it.
+        InitProtocolVault { args: CreateVaultArgs<Address> } = 66,
+        // Reserved: 67-69
     }
 }
