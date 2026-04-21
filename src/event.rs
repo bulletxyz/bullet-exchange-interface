@@ -574,12 +574,12 @@ pub enum Event<Address> {
         client_order_id: Option<ClientOrderId>,
         execution_timestamp: UnixTimestampMicros,
         fee_asset: AssetId,
-        // cumulative filled size on the order after this fill
-        filled_size: PositiveDecimal,
-        // cumulative filled notional (cost-of-trade) on the order after this fill
-        filled_cot: PositiveDecimal,
-        // unfilled size remaining on the order after this fill
-        remaining_size: PositiveDecimal,
+        // None for OTC fills (backstop liquidation, ADL): these originate from a position,
+        // not an order, so per-order cumulative progress is undefined. Some(_) for all
+        // matching-engine fills.
+        filled_size: Option<PositiveDecimal>,
+        filled_cot: Option<PositiveDecimal>,
+        remaining_size: Option<PositiveDecimal>,
     },
 }
 
