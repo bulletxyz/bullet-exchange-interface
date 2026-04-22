@@ -26,6 +26,7 @@ pub enum FillType {
     Orderbook,
     Liquidation,
     BackstopLiquidation,
+    #[serde(rename = "adl")]
     ADL,
 }
 
