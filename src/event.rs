@@ -21,6 +21,27 @@ use crate::types::{
     strum::Display,
 )]
 #[serde(rename_all = "snake_case")]
+#[schemars(rename = "FillType")]
+pub enum FillType {
+    Orderbook,
+    Liquidation,
+    BackstopLiquidation,
+    ADL
+};
+
+#[derive(
+    borsh::BorshDeserialize,
+    borsh::BorshSerialize,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
+    Clone,
+    Debug,
+    schemars::JsonSchema,
+    strum::AsRefStr,
+    strum::Display,
+)]
+#[serde(rename_all = "snake_case")]
 #[schemars(rename = "Event")]
 pub enum Event<Address> {
     /// Market initialized
@@ -570,15 +591,16 @@ pub enum Event<Address> {
         fee: Decimal,
         net_fee: PositiveDecimal,
         trade_id: TradeId,
-        is_liquidation: bool,
         client_order_id: Option<ClientOrderId>,
         execution_timestamp: UnixTimestampMicros,
         fee_asset: AssetId,
+        fill_type: FillType,
         // None for OTC fills (backstop liquidation, ADL): these originate from a position,
         // not an order, so per-order cumulative progress is undefined. Some(_) for all
         // matching-engine fills.
-        filled_size: Option<PositiveDecimal>,
-        filled_cot: Option<PositiveDecimal>,
+        cumulative_filled_size: Option<PositiveDecimal>,
+        cumulative_filled_cot: Option<PositiveDecimal>,
+        // None for OTC fills
         remaining_size: Option<PositiveDecimal>,
     },
 }
