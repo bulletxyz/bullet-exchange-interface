@@ -21,6 +21,28 @@ use crate::types::{
     strum::Display,
 )]
 #[serde(rename_all = "snake_case")]
+#[schemars(rename = "FillType")]
+pub enum FillType {
+    Orderbook,
+    Liquidation,
+    BackstopLiquidation,
+    #[serde(rename = "adl")]
+    ADL,
+}
+
+#[derive(
+    borsh::BorshDeserialize,
+    borsh::BorshSerialize,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
+    Clone,
+    Debug,
+    schemars::JsonSchema,
+    strum::AsRefStr,
+    strum::Display,
+)]
+#[serde(rename_all = "snake_case")]
 #[schemars(rename = "Event")]
 pub enum Event<Address> {
     /// Market initialized
@@ -556,6 +578,32 @@ pub enum Event<Address> {
         flags: u32,
         execution_timestamp: UnixTimestampMicros,
     },
+    // supersedes Trade; adds cumulative order progress (filled_size, filled_cot, remaining_size)
+    TradeV1 {
+        user_address: Address,
+        market_id: MarketId,
+        price: PositiveDecimal,
+        size: PositiveDecimal,
+        side: Side,
+        order_id: OrderId,
+        is_maker: bool,
+        is_full_fill: bool,
+        realized_pnl: Decimal,
+        fee: Decimal,
+        net_fee: PositiveDecimal,
+        trade_id: TradeId,
+        client_order_id: Option<ClientOrderId>,
+        execution_timestamp: UnixTimestampMicros,
+        fee_asset: AssetId,
+        fill_type: FillType,
+        // None for OTC fills (backstop liquidation, ADL): these originate from a position,
+        // not an order, so per-order cumulative progress is undefined. Some(_) for all
+        // matching-engine fills.
+        cumulative_filled_size: Option<PositiveDecimal>,
+        cumulative_filled_cot: Option<PositiveDecimal>,
+        // None for OTC fills
+        remaining_size: Option<PositiveDecimal>,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -607,6 +655,7 @@ impl<Address> Event<Address> {
             Self::SuccessfulExecuteTriggerOrder { .. } => "Exchange/SuccessfulExecuteTriggerOrder",
             Self::SuccessfulExecuteTwapOrder { .. } => "Exchange/SuccessfulExecuteTwapOrder",
             Self::Trade { .. } => "Exchange/Trade",
+            Self::TradeV1 { .. } => "Exchange/TradeV1",
             Self::TryExecuteTriggerOrder { .. } => "Exchange/TryExecuteTriggerOrder",
             Self::UnhaltBorrowLendPool { .. } => "Exchange/UnhaltBorrowLendPool",
             Self::UnhaltPerpMarket { .. } => "Exchange/UnhaltPerpMarket",
