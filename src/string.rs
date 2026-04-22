@@ -1,9 +1,11 @@
+#[cfg(feature = "schema")]
 use sov_universal_wallet::schema::{IndexLinking, Item, Link, Primitive, Schema, UniversalWallet};
 
 use crate::define_simple_type;
 
 define_simple_type!(CustomString(String) + Debug);
 
+#[cfg(feature = "schema")]
 impl UniversalWallet for CustomString {
     fn scaffold() -> Item<IndexLinking> {
         Item::Atom(Primitive::String)
