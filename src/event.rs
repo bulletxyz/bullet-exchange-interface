@@ -26,8 +26,8 @@ pub enum FillType {
     Orderbook,
     Liquidation,
     BackstopLiquidation,
-    ADL
-};
+    ADL,
+}
 
 #[derive(
     borsh::BorshDeserialize,
