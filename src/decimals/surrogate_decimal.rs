@@ -3,24 +3,14 @@ use std::str::FromStr;
 use borsh::{BorshDeserialize, BorshSerialize};
 use rust_decimal::Decimal;
 use schemars;
-use sov_universal_wallet::UniversalWallet;
 
 use super::TryDecimalOps;
 use crate::error::ConfigError;
 
 #[derive(
-    BorshDeserialize,
-    BorshSerialize,
-    Clone,
-    Copy,
-    Default,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    UniversalWallet,
+    BorshDeserialize, BorshSerialize, Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
+#[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
 #[allow(dead_code)]
 pub struct SurrogateDecimal {
     flags: u32,

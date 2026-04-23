@@ -15,8 +15,8 @@ macro_rules! define_struct {
             schemars::JsonSchema,
             serde::Deserialize,
             serde::Serialize,
-            sov_universal_wallet::UniversalWallet,
         )]
+        #[cfg_attr(feature="schema", derive(sov_universal_wallet::UniversalWallet))]
         $(#[$structmeta])*
         pub struct $type_name$(<$a>)* {
             $($(#[$meta])*
@@ -30,7 +30,8 @@ macro_rules! define_simple_type {
     ($(#[$enummeta:meta])* $name:ident($inner:ty)) => {
         define_simple_type!(
             $(#[$enummeta])*
-                $name($inner) + Default + Debug + sov_universal_wallet::UniversalWallet);
+		#[cfg_attr(feature="schema", derive(sov_universal_wallet::UniversalWallet))]
+                $name($inner) + Default + Debug);
         impl std::fmt::Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}", self.0)
@@ -102,9 +103,9 @@ macro_rules! define_enum {
             serde::Deserialize,
             serde::Serialize,
             schemars::JsonSchema,
-            sov_universal_wallet::UniversalWallet,
             strum::AsRefStr,
         )]
+	#[cfg_attr(feature="schema", derive(sov_universal_wallet::UniversalWallet))]
 	#[derive(strum::EnumDiscriminants)]
 	#[strum_discriminants(derive(strum::EnumIter, strum::EnumString, strum::Display))]
         #[repr(u8)]

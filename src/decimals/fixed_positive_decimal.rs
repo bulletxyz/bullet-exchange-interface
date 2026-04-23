@@ -1,5 +1,3 @@
-use sov_universal_wallet::UniversalWallet;
-
 use super::{PositiveDecimal, RoundingMode};
 
 pub const FIXED_DECIMALS: u32 = 12;
@@ -17,8 +15,8 @@ pub const FIXED_DECIMALS: u32 = 12;
     serde::Deserialize,
     borsh::BorshSerialize,
     borsh::BorshDeserialize,
-    UniversalWallet,
 )]
+#[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
 #[serde(transparent)]
 pub struct FixedPositiveDecimal(PositiveDecimal);
 

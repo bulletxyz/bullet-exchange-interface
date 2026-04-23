@@ -1,16 +1,9 @@
 //! Base58 address.
 #[derive(
-    Clone,
-    Eq,
-    Hash,
-    Ord,
-    PartialEq,
-    PartialOrd,
-    borsh::BorshDeserialize,
-    borsh::BorshSerialize,
-    sov_universal_wallet::UniversalWallet,
+    Clone, Eq, Hash, Ord, PartialEq, PartialOrd, borsh::BorshDeserialize, borsh::BorshSerialize,
 )]
-pub struct Address(#[sov_wallet(display = "base58")] pub [u8; 32]);
+#[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+pub struct Address(#[cfg_attr(feature = "schema", sov_wallet(display = "base58"))] pub [u8; 32]);
 
 impl Copy for Address {}
 

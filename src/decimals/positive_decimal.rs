@@ -5,9 +5,10 @@ use std::str::FromStr;
 use borsh::{BorshDeserialize, BorshSerialize};
 use rust_decimal::{Decimal, MathematicalOps};
 use serde::{Deserialize, Serialize};
-use sov_universal_wallet::UniversalWallet;
 
-use super::{FixedPositiveDecimal, RoundingMode, SurrogateDecimal, TryDecimalOps};
+#[cfg(feature = "schema")]
+use super::SurrogateDecimal;
+use super::{FixedPositiveDecimal, RoundingMode, TryDecimalOps};
 use crate::error::{ArithmeticError, ArithmeticOperation, ConfigError};
 
 #[derive(
@@ -23,10 +24,12 @@ use crate::error::{ArithmeticError, ArithmeticOperation, ConfigError};
     PartialEq,
     PartialOrd,
     Serialize,
-    UniversalWallet,
 )]
+#[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
 #[serde(into = "Decimal", try_from = "Decimal")]
-pub struct PositiveDecimal(#[sov_wallet(as_ty = "SurrogateDecimal")] Decimal);
+pub struct PositiveDecimal(
+    #[cfg_attr(feature = "schema", sov_wallet(as_ty = "SurrogateDecimal"))] Decimal,
+);
 
 impl std::fmt::Display for PositiveDecimal {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

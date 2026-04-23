@@ -21,8 +21,8 @@ pub type BankCall = bank::CallMessage<crate::address::Address>;
     serde::Deserialize,
     borsh::BorshDeserialize,
     borsh::BorshSerialize,
-    sov_universal_wallet::UniversalWallet,
 )]
+#[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
 #[repr(u8)]
 #[serde(rename_all = "snake_case")]
 #[borsh(use_discriminant = true)]
@@ -44,15 +44,15 @@ pub enum Transaction {
     serde::Deserialize,
     borsh::BorshDeserialize,
     borsh::BorshSerialize,
-    sov_universal_wallet::UniversalWallet,
 )]
+#[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
 pub struct Version0 {
     /// The signature of the transaction.
     #[serde(with = "hex::serde")]
-    #[sov_wallet(display = "hex")]
+    #[cfg_attr(feature = "schema", sov_wallet(display = "hex"))]
     pub signature: [u8; 64],
     #[serde(with = "hex::serde")]
-    #[sov_wallet(display = "hex")]
+    #[cfg_attr(feature = "schema", sov_wallet(display = "hex"))]
     pub pub_key: [u8; 32],
     pub runtime_call: RuntimeCall,
     pub uniqueness: UniquenessData,
@@ -97,9 +97,14 @@ define_struct! {
     }
 }
 
-define_simple_type!(Gas([u64; 2]) + Debug + sov_universal_wallet::UniversalWallet);
+define_simple_type!(
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    Gas([u64; 2])
+        + Debug
+);
 define_simple_type!(PriorityFeeBips(u64));
 define_simple_type!(Amount(u128));
+#[cfg(feature = "schema")]
 impl sov_universal_wallet::ty::IntegerDisplayable for Amount {
     fn integer_type() -> sov_universal_wallet::ty::IntegerType {
         sov_universal_wallet::ty::IntegerType::u128
@@ -112,20 +117,24 @@ pub mod bank {
     use crate::{define_enum, define_simple_type, define_struct};
 
     define_simple_type!(
+        #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
         TokenId(
-            #[sov_wallet(display(bech32m(prefix = "token_id_prefix()")))]
+            #[cfg_attr(
+                feature = "schema",
+                sov_wallet(display(bech32m(prefix = "token_id_prefix()")))
+            )]
             [u8; 32]
-        ) + sov_universal_wallet::UniversalWallet
-            + Debug
+        ) + Debug
     );
 
+    #[cfg(feature = "schema")]
     fn token_id_prefix() -> &'static str {
         "token_"
     }
     define_enum! {
         /// CallMessage for the Bank module.
         enum CallMessage<Address> {
-            #[sov_wallet(show_as = "Transfer to address {} {} with memo `{}`.")]
+            #[cfg_attr(feature="schema", sov_wallet(show_as = "Transfer to address {} {} with memo `{}`."))]
             TransferWithMemo {
                 to: Address,
                 coins: Coins,
@@ -134,9 +143,9 @@ pub mod bank {
         }
     }
     define_struct! {
-        #[sov_wallet(show_as = "{} coins of token ID {}")]
+        #[cfg_attr(feature="schema", sov_wallet(show_as = "{} coins of token ID {}"))]
         struct Coins {
-            #[sov_wallet(fixed_point(from_field(1, offset = 31)))]
+            #[cfg_attr(feature="schema", sov_wallet(fixed_point(from_field(1, offset = 31))))]
             amount: Amount,
             token_id: TokenId,
         }

@@ -8,6 +8,7 @@ pub mod error;
 pub mod event;
 mod macros;
 pub mod message;
+#[cfg(feature = "schema")]
 pub mod schema;
 pub mod string;
 pub mod time;

@@ -112,7 +112,11 @@ define_simple_enum!(AdminType {
     Referrals
 });
 
-define_simple_type!(TokenId(CustomString) + Debug + sov_universal_wallet::UniversalWallet);
+define_simple_type!(
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    TokenId(CustomString)
+        + Debug
+);
 impl std::str::FromStr for TokenId {
     type Err = ();
     fn from_str(v: &str) -> Result<Self, Self::Err> {
