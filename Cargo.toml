@@ -24,6 +24,10 @@ bullet-bs58 = { git = "https://github.com/bulletxyz/bullet-bs58.git" }
 default = []
 schema = [ "dep:sov-universal-wallet" ]
 
+[[example]]
+name = "trim"
+required-features = ["schema"]
+
 [lints.rust]
 dead_code = "deny"
 non_ascii_idents = "deny" # Bad for readability and it can also be a security vulnerability
