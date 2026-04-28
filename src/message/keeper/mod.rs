@@ -36,7 +36,7 @@ define_enum! {
 
         /// Update oracle prices using signed Pyth payloads (PricingAdmin).
         UpdateOraclePricesWithPythProofs {
-            prices: Vec<PythOraclePriceUpdateArgs>,
+            prices: Vec<OraclePriceUpdateWithPythProofArgs>,
             publish_timestamp: UnixTimestampMicros,
         } = 3,
         // Reserved: 4-9

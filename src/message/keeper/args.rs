@@ -12,17 +12,11 @@ define_struct! {
 }
 
 define_struct! {
-    struct PythProofArgs {
-        primary_message: Vec<u8>,
-        quote_message: Option<Vec<u8>>,
-    }
-}
-
-define_struct! {
-    struct PythOraclePriceUpdateArgs {
+    struct OraclePriceUpdateWithPythProofArgs {
         asset_id: AssetId,
         oracle_price: PositiveDecimal,
-        proof: PythProofArgs,
+        primary_message: Vec<u8>,
+        quote_message: Option<Vec<u8>>,
     }
 }
 

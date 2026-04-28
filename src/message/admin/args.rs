@@ -115,6 +115,7 @@ define_struct! {
         token_id: Option<TokenId>,
         decimals: u8,
         withdraw_fee: PositiveDecimal,
+        pyth_lazer_feed_id: Option<u32>,
     }
 }
 
@@ -122,6 +123,7 @@ define_struct! {
     struct UpdateAssetInfoArgs {
         asset_id: AssetId,
         withdraw_fee: PositiveDecimal,
+        pyth_lazer_feed_id: Option<u32>,
     }
 }
 
@@ -193,6 +195,7 @@ define_struct! {
         twap_execution_interval_seconds: Option<u64>,
         deposit_limits_per_user: Option<Vec<(AssetId, PositiveDecimal)>>,
         whitelisted_users_for_deposit: Option<Vec<Address>>,
+        pyth_lazer_trusted_signers: Option<Vec<[u8; 32]>>,
     }
 }
 
