@@ -604,6 +604,24 @@ pub enum Event<Address> {
         // None for OTC fills
         remaining_size: Option<PositiveDecimal>,
     },
+    InitializeAssetInfo {
+        asset_id: AssetId,
+        name: String,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    InitializePerpMarketV1 {
+        market_id: MarketId,
+        name: String,
+        base_asset_id: AssetId,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    InitializeSpotMarketV1 {
+        market_id: MarketId,
+        name: String,
+        base_asset_id: AssetId,
+        quote_asset_id: AssetId,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -688,6 +706,9 @@ impl<Address> Event<Address> {
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
             Self::DelegateUserV1 { .. } => "Exchange/DelegateUserV1",
+            Self::InitializeAssetInfo { .. } => "Exchange/InitializeAssetInfo",
+            Self::InitializePerpMarketV1 { .. } => "Exchange/InitializePerpMarketV1",
+            Self::InitializeSpotMarketV1 { .. } => "Exchange/InitializeSpotMarketV1",
         }
     }
 }
