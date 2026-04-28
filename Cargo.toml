@@ -29,6 +29,7 @@ bullet-bs58 = "0.1"
 
 [features]
 default = []
+fixtures = []
 schema = [ "dep:sov-universal-wallet" ]
 
 [[example]]
