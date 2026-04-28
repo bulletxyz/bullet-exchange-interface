@@ -200,10 +200,10 @@ define_enum! {
         CancelAllOrders { sub_account_index: Option<u8> } = 29,
 
         /// Place (expiring) orders after canceling a list of orders.
-        ReplaceOrders {
+        CancelAndPlaceOrders {
             market_id: MarketId,
-            cancel: Vec<OrderIdKind>,
-            place: Vec<NewOrderArgs>,
+            cancels: Vec<OrderIdKind>,
+            places: Vec<NewOrderArgs>,
             expiry_timestamp: Option<UnixTimestampMicros>,
             sub_account_index: Option<u8>,
         } = 30,
