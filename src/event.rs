@@ -45,8 +45,8 @@ pub enum FillType {
     strum::Display,
 )]
 #[serde(rename_all = "snake_case")]
-#[schemars(rename = "CancellationReason")]
-pub enum CancellationReason {
+#[schemars(rename = "CancelReason")]
+pub enum CancelReason {
     // user-initiated
     /// User invoked a cancel action directly (CancelOrders / CancelMarketOrders /
     /// CancelAllOrders / CancelTriggerOrders / CancelTwapOrder)
@@ -681,7 +681,7 @@ pub enum Event<Address> {
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
         client_order_id: Option<ClientOrderId>,
-        reason: CancellationReason,
+        reason: CancelReason,
     },
     /// supersedes CancelTriggerOrder; adds reason
     CancelTriggerOrderV1 {
@@ -689,14 +689,14 @@ pub enum Event<Address> {
         trigger_order_id: TriggerOrderId,
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
-        reason: CancellationReason,
+        reason: CancelReason,
     },
     /// supersedes CancelTwap; adds reason
     CancelTwapV1 {
         user_address: Address,
         twap_id: TwapId,
         execution_timestamp: UnixTimestampMicros,
-        reason: CancellationReason,
+        reason: CancelReason,
     },
 }
 
