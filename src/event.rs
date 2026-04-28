@@ -53,12 +53,16 @@ pub enum CancelReason {
     UserRequested,
     /// User amended an order (cancel + replace)
     Amended,
+    /// User placed orders with replace=true; existing market orders wiped
+    Replaced,
 
     // admin-initiated
     /// AdminAction::CancelOrders / AdminCancelTriggerOrders
     AdminRequested,
     /// Admin pruned the market
     MarketPruned,
+    /// Market was halted; resting orders cleared
+    MarketHalted,
 
     // risk-driven
     /// Account undercollateralized — covers cross-margin
@@ -75,11 +79,26 @@ pub enum CancelReason {
     BackstopLiquidation,
 
     // matching-engine / lifecycle
-    /// Reduce-only order auto-cancelled because the position it would have
+    /// Reduce-only order auto-canceled because the position it would have
     /// reduced shrank to zero
     ReduceOnlyZeroSize,
-    /// Market was halted; resting orders cleared
-    MarketHalted,
+
+    /// A trigger that would have opened/added position was
+    /// auto-canceled because a fill made it stale
+    OpeningTriggerOrphaned,
+
+    /// Linked TPSL sibling canceled because its pair leg fired, was
+    /// rejected, or failed during execution
+    TpslSiblingCancelled,
+
+    /// Trigger fired but couldn't execute — no position to close,
+    /// post-execution margin failure, no liquidity, or runtime error.
+    /// The accompanying RejectTriggerOrder / FailureExecuteTriggerOrder
+    /// event in the same tx carries the specific cause.
+    TriggerExecutionFailed,
+
+    /// TWAP slice schedule exhausted (next-slice size rounded to zero)
+    TwapCompleted,
 }
 
 #[derive(
