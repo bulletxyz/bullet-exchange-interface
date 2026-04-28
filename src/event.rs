@@ -36,6 +36,58 @@ pub enum FillType {
     serde::Serialize,
     serde::Deserialize,
     PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    Debug,
+    schemars::JsonSchema,
+    strum::AsRefStr,
+    strum::Display,
+)]
+#[serde(rename_all = "snake_case")]
+#[schemars(rename = "CancellationReason")]
+pub enum CancellationReason {
+    // user-initiated
+    /// User invoked a cancel action directly (CancelOrders / CancelMarketOrders /
+    /// CancelAllOrders / CancelTriggerOrders / CancelTwapOrder)
+    UserRequested,
+    /// User amended an order (cancel + replace)
+    Amended,
+
+    // admin-initiated
+    /// AdminAction::CancelOrders / AdminCancelTriggerOrders
+    AdminRequested,
+    /// Admin pruned the market
+    MarketPruned,
+
+    // risk-driven
+    /// Account undercollateralized — covers cross-margin
+    /// (PublicAction::ForceCancelOrders) and iso-margin
+    /// (PublicAction::ForceCancelIsoOrders). The cancelled order's margin
+    /// mode disambiguates which one fired.
+    MarginCall,
+    /// User's resting orders cancelled as part of regular liquidation
+    /// (public/liquidate_perp_positions, public/liquidate_iso_perp_position)
+    Liquidation,
+    /// User's resting orders cancelled as part of backstop / insurance-fund
+    /// liquidation. Applies to liquidatee and any liquidator whose trigger
+    /// orders on that market are cleared during takeover.
+    BackstopLiquidation,
+
+    // matching-engine / lifecycle
+    /// Reduce-only order auto-cancelled because the position it would have
+    /// reduced shrank to zero
+    ReduceOnlyZeroSize,
+    /// Market was halted; resting orders cleared
+    MarketHalted,
+}
+
+#[derive(
+    borsh::BorshDeserialize,
+    borsh::BorshSerialize,
+    serde::Serialize,
+    serde::Deserialize,
+    PartialEq,
     Clone,
     Debug,
     schemars::JsonSchema,
@@ -622,6 +674,30 @@ pub enum Event<Address> {
         quote_asset_id: AssetId,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// supersedes CancelOrder; adds reason
+    CancelOrderV1 {
+        user_address: Address,
+        order_id: OrderId,
+        market_id: MarketId,
+        execution_timestamp: UnixTimestampMicros,
+        client_order_id: Option<ClientOrderId>,
+        reason: CancellationReason,
+    },
+    /// supersedes CancelTriggerOrder; adds reason
+    CancelTriggerOrderV1 {
+        user_address: Address,
+        trigger_order_id: TriggerOrderId,
+        market_id: MarketId,
+        execution_timestamp: UnixTimestampMicros,
+        reason: CancellationReason,
+    },
+    /// supersedes CancelTwap; adds reason
+    CancelTwapV1 {
+        user_address: Address,
+        twap_id: TwapId,
+        execution_timestamp: UnixTimestampMicros,
+        reason: CancellationReason,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -709,6 +785,9 @@ impl<Address> Event<Address> {
             Self::InitializeAssetInfo { .. } => "Exchange/InitializeAssetInfo",
             Self::InitializePerpMarketV1 { .. } => "Exchange/InitializePerpMarketV1",
             Self::InitializeSpotMarketV1 { .. } => "Exchange/InitializeSpotMarketV1",
+            Self::CancelOrderV1 { .. } => "Exchange/CancelOrderV1",
+            Self::CancelTriggerOrderV1 { .. } => "Exchange/CancelTriggerOrderV1",
+            Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
         }
     }
 }
