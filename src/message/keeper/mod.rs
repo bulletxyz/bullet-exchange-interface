@@ -33,7 +33,13 @@ define_enum! {
 
         /// Update premium indexes for markets (PricingAdmin).
         UpdatePremiumIndexes { market_ids: Vec<MarketId> } = 2,
-        // Reserved: 3-9
+
+        /// Update oracle prices using signed Pyth payloads (PricingAdmin).
+        UpdateOraclePricesWithPythProofs {
+            prices: Vec<PythOraclePriceUpdateArgs>,
+            publish_timestamp: UnixTimestampMicros,
+        } = 3,
+        // Reserved: 4-9
 
         // =========================================================================
         // Funding Admin Operations (10-19)
@@ -90,7 +96,8 @@ impl<Address> KeeperAction<Address> {
         match self {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
-            | Self::UpdatePremiumIndexes { .. } => AdminType::Pricing,
+            | Self::UpdatePremiumIndexes { .. }
+            | Self::UpdateOraclePricesWithPythProofs { .. } => AdminType::Pricing,
             Self::UpdateFunding { .. } => AdminType::Funding,
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
