@@ -714,6 +714,7 @@ pub enum Event<Address> {
     CancelTwapV1 {
         user_address: Address,
         twap_id: TwapId,
+        market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
         reason: CancelReason,
     },
