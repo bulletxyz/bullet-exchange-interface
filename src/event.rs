@@ -101,7 +101,6 @@ pub enum CancelReason {
     TwapCompleted,
 
     /// Order evicted to make room when orderbook hit its capacity limit
-    /// (replaces the standalone Event::BootOrder going forward)
     OrderbookOverflow,
 }
 
