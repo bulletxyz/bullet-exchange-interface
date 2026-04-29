@@ -99,6 +99,10 @@ pub enum CancelReason {
 
     /// TWAP slice schedule exhausted (next-slice size rounded to zero)
     TwapCompleted,
+
+    /// Order evicted to make room when orderbook hit its capacity limit
+    /// (replaces the standalone Event::BootOrder going forward)
+    OrderbookOverflow,
 }
 
 #[derive(
