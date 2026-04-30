@@ -65,6 +65,32 @@ impl<Address> CallMessage<Address> {
     }
 }
 
+impl<Address> From<UserAction<Address>> for CallMessage<Address> {
+    fn from(v: UserAction<Address>) -> Self {
+        Self::User(v)
+    }
+}
+impl<Address> From<VaultAction<Address>> for CallMessage<Address> {
+    fn from(v: VaultAction<Address>) -> Self {
+        Self::Vault(v)
+    }
+}
+impl<Address> From<KeeperAction<Address>> for CallMessage<Address> {
+    fn from(v: KeeperAction<Address>) -> Self {
+        Self::Keeper(v)
+    }
+}
+impl<Address> From<PublicAction<Address>> for CallMessage<Address> {
+    fn from(v: PublicAction<Address>) -> Self {
+        Self::Public(v)
+    }
+}
+impl<Address> From<AdminAction<Address>> for CallMessage<Address> {
+    fn from(v: AdminAction<Address>) -> Self {
+        Self::Admin(v)
+    }
+}
+
 #[test]
 fn test_msg_type() {
     assert_eq!(
