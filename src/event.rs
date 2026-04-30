@@ -102,6 +102,11 @@ pub enum CancelReason {
 
     /// Order evicted to make room when orderbook hit its capacity limit
     OrderbookOverflow,
+
+    /// TWAP slice fired but couldn't execute — runtime error, no liquidity,
+    /// etc. The accompanying RejectTwapOrder event in the same tx carries
+    /// the specific cause.
+    TwapExecutionFailed,
 }
 
 #[derive(
