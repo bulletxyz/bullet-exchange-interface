@@ -73,10 +73,7 @@ impl TryFrom<&[u8]> for Address {
 
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let key: [u8; 32] = value.try_into().map_err(|_| {
-            format!(
-                "Invalid base58 address. Got {} instead of 32 bytes.",
-                value.len()
-            )
+            format!("Invalid base58 address. Got {} instead of 32 bytes.", value.len())
         })?;
         Ok(Self(key))
     }

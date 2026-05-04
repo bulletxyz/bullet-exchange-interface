@@ -56,7 +56,8 @@ impl FixedPositiveDecimal {
         // SAFETY: Rounding down a PositiveDecimal (non-negative) with RoundingMode::Down
         // always produces a valid FixedPositiveDecimal. The only way FixedPositiveDecimal::new
         // can fail is if PositiveDecimal::new returns None, which only happens for negative
-        // values. Since we're rounding down a non-negative value, the result is always non-negative.
+        // values. Since we're rounding down a non-negative value, the result is always
+        // non-negative.
         #[allow(
             clippy::expect_used,
             reason = "Rounding down a PositiveDecimal is infallible - result is always non-negative"

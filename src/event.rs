@@ -393,7 +393,8 @@ pub enum Event<Address> {
         is_full_fill: bool,
         realized_pnl: Decimal,
         fee: Decimal,
-        net_fee: PositiveDecimal, // Taker fee netted against maker rebate. For perps this is USDC, for spot it is in the maker's collateral asset
+        net_fee: PositiveDecimal, /* Taker fee netted against maker rebate. For perps this is
+                                   * USDC, for spot it is in the maker's collateral asset */
         trade_id: TradeId,
         is_liquidation: bool,
         client_order_id: Option<ClientOrderId>,
@@ -525,7 +526,8 @@ pub enum Event<Address> {
         amount: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    // deprecated - can't be removed since used in old slots and discriminators have to stay constant
+    // deprecated - can't be removed since used in old slots and discriminators have to stay
+    // constant
     WithdrawSpotCollateral {
         user_address: Address,
         asset_id: AssetId,
@@ -815,10 +817,4 @@ impl<Address> Event<Address> {
     }
 }
 
-crate::define_simple_enum!(OrderSource {
-    Admin,
-    Liquidate,
-    User,
-    Trigger,
-    Twap,
-});
+crate::define_simple_enum!(OrderSource { Admin, Liquidate, User, Trigger, Twap });

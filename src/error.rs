@@ -20,11 +20,7 @@ pub enum ArithmeticError {
     },
 
     #[error("Integer arithmetic failed: {operation} with {left} and {right}")]
-    IntegerFailed {
-        operation: ArithmeticOperation,
-        left: i128,
-        right: i128,
-    },
+    IntegerFailed { operation: ArithmeticOperation, left: i128, right: i128 },
 }
 
 /// Types of arithmetic operations
