@@ -11,6 +11,9 @@ keywords = ["bullet", "trading", "exchange"]
 categories = ["api-bindings", "encoding"]
 publish = true
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dependencies]
 borsh = "1.5"
 serde = "1"
