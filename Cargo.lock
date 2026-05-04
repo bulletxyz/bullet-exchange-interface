@@ -119,7 +119,8 @@ dependencies = [
 [[package]]
 name = "bullet-bs58"
 version = "0.1.0"
-source = "git+https://github.com/bulletxyz/bullet-bs58.git#a5f90364fa0f413566011ffdefcf3bd495ab0203"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e67218f4455dc3cffdccd9ce3623157bd990102e466199969c5834543baa9121"
 
 [[package]]
 name = "bullet-exchange-interface"
