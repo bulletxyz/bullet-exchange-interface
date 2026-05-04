@@ -73,11 +73,11 @@ impl FromStr for SurrogateDecimal {
 }
 
 impl schemars::JsonSchema for SurrogateDecimal {
-    fn schema_name() -> std::borrow::Cow<'static, str> {
-        "Decimal".into()
+    fn schema_name() -> String {
+        "Decimal".to_string()
     }
 
-    fn json_schema(generator: &mut schemars::SchemaGenerator) -> schemars::Schema {
+    fn json_schema(generator: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
         Decimal::json_schema(generator)
     }
 }
