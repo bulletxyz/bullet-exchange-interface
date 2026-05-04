@@ -22,7 +22,10 @@ fn main() {
     let mut faults = 0;
     for (l, r) in left.lines().zip(right.lines()) {
         if l != r {
-            faults += 1;
+            #[allow(clippy::arithmetic_side_effects)]
+            {
+                faults += 1;
+            }
             println!("< {r}");
             println!("> {l}");
             if faults >= 10 {
