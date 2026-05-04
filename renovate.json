@@ -32,14 +32,6 @@
       "minimumReleaseAge": "7 days",
       "internalChecksFilter": "strict",
       "automerge": true
-    },
-    {
-      "description": "Group bullet internal git deps — must be last so automerge: false overrides cargo rule above",
-      "matchPackageNames": [
-        "https://github.com/bulletxyz/bullet-bs58.git"
-      ],
-      "groupName": "bullet-git-deps",
-      "automerge": false
     }
   ]
 }
