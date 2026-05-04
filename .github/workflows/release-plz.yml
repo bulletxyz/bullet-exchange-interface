@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+env:
+  # Use the system git CLI for fetching git deps; libgit2 can fail on private/auth flows.
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+
 permissions:
   pull-requests: write
   contents: write
