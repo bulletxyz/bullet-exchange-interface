@@ -4,7 +4,7 @@ use crate::error::{ArithmeticError, ArithmeticOperation};
 // Stores microseconds since Unix Epoch.
 define_simple_type!(UnixTimestampMicros(i64));
 
-pub const MICROSECONDS_PER_HOUR: i64 = 3600_000_000;
+pub const MICROSECONDS_PER_HOUR: i64 = 3_600_000_000;
 pub const ONE_HOUR: UnixTimestampMicros = UnixTimestampMicros(MICROSECONDS_PER_HOUR);
 
 impl UnixTimestampMicros {
