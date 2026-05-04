@@ -38,9 +38,7 @@ fn trim_internal(
     match elem {
         Ty::Enum(ref mut value) => {
             let type_name = value.type_name.as_str();
-            value
-                .variants
-                .retain(|x| filter_variants(type_name, x.name.as_str()));
+            value.variants.retain(|x| filter_variants(type_name, x.name.as_str()));
             for v in &mut value.variants {
                 if let Some(x) = &mut v.value {
                     replace_link(x, types, filter_variants, map, res);
@@ -49,37 +47,22 @@ fn trim_internal(
         }
         Ty::Tuple(ref mut value) => {
             for f in &mut value.fields {
-                let UnnamedField::<IndexLinking> {
-                    value,
-                    silent: _,
-                    doc: _,
-                } = f;
+                let UnnamedField::<IndexLinking> { value, silent: _, doc: _ } = f;
                 replace_link(value, types, filter_variants, map, res);
             }
         }
         Ty::Struct(ref mut value) => {
             for f in &mut value.fields {
-                let NamedField::<IndexLinking> {
-                    value,
-                    silent: _,
-                    doc: _,
-                    display_name: _,
-                } = f;
+                let NamedField::<IndexLinking> { value, silent: _, doc: _, display_name: _ } = f;
                 replace_link(value, types, filter_variants, map, res);
             }
         }
         Ty::Option { ref mut value }
         | Ty::Vec { ref mut value }
-        | Ty::Array {
-            ref mut value,
-            len: _,
-        } => {
+        | Ty::Array { ref mut value, len: _ } => {
             replace_link(value, types, filter_variants, map, res);
         }
-        Ty::Map {
-            ref mut key,
-            ref mut value,
-        } => {
+        Ty::Map { ref mut key, ref mut value } => {
             replace_link(key, types, filter_variants, map, res);
             replace_link(value, types, filter_variants, map, res);
         }
