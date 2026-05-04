@@ -2,10 +2,14 @@
 name = "bullet-exchange-interface"
 version = "0.1.0"
 edition = "2024"
-license = "UNLICENSED"
+license = "MIT"
+description = "Type definitions and message formats for the Bullet exchange protocol."
 homepage = "https://www.bullet.xyz"
-repository = "https://github.com/zetamarkets/bullet"
-publish = false
+repository = "https://github.com/bulletxyz/bullet-exchange-interface"
+readme = "README.md"
+keywords = ["bullet", "trading", "exchange"]
+categories = ["api-bindings", "encoding"]
+publish = false # flip to true once bullet-bs58 is published to crates.io
 
 [dependencies]
 borsh = "1.5"
