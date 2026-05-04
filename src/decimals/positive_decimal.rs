@@ -103,11 +103,11 @@ impl BorshDeserialize for PositiveDecimal {
 }
 
 impl schemars::JsonSchema for PositiveDecimal {
-    fn schema_name() -> String {
-        "PositiveDecimal".to_string()
+    fn schema_name() -> std::borrow::Cow<'static, str> {
+        "PositiveDecimal".into()
     }
 
-    fn json_schema(generator: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+    fn json_schema(generator: &mut schemars::SchemaGenerator) -> schemars::Schema {
         Decimal::json_schema(generator)
     }
 }
