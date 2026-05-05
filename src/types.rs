@@ -53,7 +53,7 @@ impl MarketId {
     }
 }
 
-define_simple_enum!(MarketKind{ Perp = 0, Spot = 1 });
+define_simple_enum!(MarketKind{ Perp = 0, Spot = 1, RwaPerp = 2 });
 
 define_simple_enum!(Side{ Bid = 0, Ask = 1});
 impl Side {
