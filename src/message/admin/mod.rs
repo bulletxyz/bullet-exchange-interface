@@ -13,6 +13,7 @@ define_enum! {
     ///
     /// These operations require Protocol admin authorization and are used for
     /// protocol-level configuration, market management, and emergency actions.
+    #[non_exhaustive]
     enum AdminAction<Address> {
         // =========================================================================
         // Market Operations (0-19)

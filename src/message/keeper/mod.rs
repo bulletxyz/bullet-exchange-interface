@@ -15,6 +15,7 @@ define_enum! {
     /// and require specific admin types (Pricing, Funding, Credits,
     /// FeeTier, Referrals). However, one can also update all admin
     /// addresses with it.
+    #[non_exhaustive]
     enum KeeperAction<Address> {
         // =========================================================================
         // Pricing Admin Operations (0-9)
