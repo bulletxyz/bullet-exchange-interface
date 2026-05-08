@@ -6,7 +6,10 @@ fn main() {
         "Transaction" => variant == "V0",
         "RuntimeCall" => matches!(variant, "Exchange" | "Bank"),
         "CallMessage" => matches!(variant, "Keeper" | "TransferWithMemo"),
-        "KeeperAction" => matches!(variant, "UpdateOraclePrices" | "UpdateMarkPrices"),
+        "KeeperAction" => matches!(
+            variant,
+            "UpdateOraclePrices" | "UpdateMarkPrices" | "UpdateOraclePricesWithPythProofs"
+        ),
         "UniquenessData" => variant == "Generation",
         _ => panic!("'{name}::{variant}' is unknown"),
     };
@@ -19,13 +22,10 @@ fn main() {
 
     let left = serde_json::to_string_pretty(&left).unwrap();
     let right = serde_json::to_string_pretty(&right).unwrap();
-    let mut faults = 0;
+    let mut faults = 0usize;
     for (l, r) in left.lines().zip(right.lines()) {
         if l != r {
-            #[allow(clippy::arithmetic_side_effects)]
-            {
-                faults += 1;
-            }
+            faults = faults.saturating_add(1);
             println!("< {r}");
             println!("> {l}");
             if faults >= 10 {

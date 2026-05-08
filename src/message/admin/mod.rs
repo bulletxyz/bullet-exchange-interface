@@ -75,7 +75,14 @@ define_enum! {
 
         /// Update asset info.
         UpdateAssetInfo { args: UpdateAssetInfoArgs } = 21,
-        // Reserved: 22-29
+
+        /// Initialize asset info with Pyth Lazer feed configuration.
+        InitAssetInfoV1 { args: InitAssetInfoArgsV1 } = 22,
+
+        /// Update asset info with Pyth Lazer feed configuration.
+        UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 23,
+
+        // Reserved: 24-29
 
         // =========================================================================
         // Borrow/Lend Operations (30-39)
@@ -115,7 +122,12 @@ define_enum! {
             new_admin: Address,
         } = 43,
 
-        // Reserved: 44-49
+        /// Update global configuration with Pyth Lazer trusted signers.
+        UpdateGlobalConfigV1 {
+            args: UpdateGlobalConfigArgsV1<Address>,
+        } = 44,
+
+        // Reserved: 45-49
 
         // =========================================================================
         // Treasury Operations (50-59)
