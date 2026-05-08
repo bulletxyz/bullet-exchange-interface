@@ -102,6 +102,15 @@ pub enum CancelReason {
 
     /// Order evicted to make room when orderbook hit its capacity limit
     OrderbookOverflow,
+
+    /// TWAP slice fired but couldn't execute — runtime error, no liquidity, etc
+    TwapExecutionFailed,
+
+    /// User's resting orders cancelled because their position is being
+    /// force-closed via auto-deleverage (last-resort protocol action when
+    /// backstop liquidation can't absorb the loss). Applies to both ADL
+    /// counterparties.
+    AutoDeleverage,
 }
 
 #[derive(
