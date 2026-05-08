@@ -25,6 +25,7 @@ pub use self::vault::*;
 
 define_enum! {
     /// Top-level call message enum organized by authorization role.
+    #[non_exhaustive]
     enum CallMessage<Address> {
         /// User-facing operations requiring account ownership.
         ///
