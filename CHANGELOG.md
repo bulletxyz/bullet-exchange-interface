@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.1.1...v0.2.0) - 2026-05-08
+
+### Documentation
+
+- configure docs.rs all-features and add README badges ([#42](https://github.com/bulletxyz/bullet-exchange-interface/pull/42))
+
+### Features
+
+- enums are non-exhaustive to not break semver with new variants ([#45](https://github.com/bulletxyz/bullet-exchange-interface/pull/45))
+- *(security)* added pyth signature support ([#26](https://github.com/bulletxyz/bullet-exchange-interface/pull/26))
+
 ## [0.1.0](https://github.com/bulletxyz/bullet-exchange-interface/releases/tag/v0.1.0) - 2026-05-04
 
 ### Bug Fixes
