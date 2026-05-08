@@ -46,14 +46,14 @@ define_simple_type!(AssetId(u16));
 define_simple_type!(MarketId(u16));
 impl MarketId {
     pub fn kind(&self) -> MarketKind {
-        match self.0 {
-            id if id < SPOT_MARKET_ID_OFFSET => MarketKind::Perp,
-            _ => MarketKind::Spot,
+        if self.0 < SPOT_MARKET_ID_OFFSET {
+            return MarketKind::Perp;
         }
+        MarketKind::Spot
     }
 }
 
-define_simple_enum!(MarketKind{ Perp = 0, Spot = 1, RwaPerp = 2 });
+define_simple_enum!(MarketKind{ Perp = 0, Spot = 1 });
 
 define_simple_enum!(Side{ Bid = 0, Ask = 1});
 impl Side {
