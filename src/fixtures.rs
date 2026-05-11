@@ -49,37 +49,20 @@ pub mod admin_asset_serialization {
 
     use crate::address::Address;
     use crate::decimals::PositiveDecimal;
-    use crate::message::{AdminAction, InitAssetInfoArgsV1, UpdateAssetInfoArgsV1};
-    use crate::string::CustomString;
-    use crate::types::{AssetId, TokenId};
+    use crate::message::{AdminAction, UpdateAssetInfoArgsV1};
+    use crate::types::AssetId;
 
     pub const ASSET_ID: AssetId = AssetId(42);
     pub const PRIMARY_PYTH_LAZER_FEED_ID: u32 = 10_001;
     pub const QUOTE_PYTH_LAZER_FEED_ID: u32 = 10_002;
 
-    pub fn init_asset_info_v1() -> InitAssetInfoArgsV1 {
-        InitAssetInfoArgsV1 {
-            asset_id: ASSET_ID,
-            asset_name: CustomString::from("SOL"),
-            token_id: Some(TokenId(CustomString::from("token_SOL"))),
-            decimals: 9,
-            withdraw_fee: PositiveDecimal::from(1_u8),
-            pyth_lazer_feed_id: Some(PRIMARY_PYTH_LAZER_FEED_ID),
-            pyth_lazer_quote_feed_id: Some(QUOTE_PYTH_LAZER_FEED_ID),
-        }
-    }
-
     pub fn update_asset_info_v1() -> UpdateAssetInfoArgsV1 {
         UpdateAssetInfoArgsV1 {
             asset_id: ASSET_ID,
-            withdraw_fee: PositiveDecimal::from(2_u8),
+            withdraw_fee: Some(PositiveDecimal::from(2_u8)),
             pyth_lazer_feed_id: Some(PRIMARY_PYTH_LAZER_FEED_ID),
             pyth_lazer_quote_feed_id: Some(QUOTE_PYTH_LAZER_FEED_ID),
         }
-    }
-
-    pub fn init_asset_info_v1_action() -> AdminAction<Address> {
-        AdminAction::InitAssetInfoV1 { args: init_asset_info_v1() }
     }
 
     pub fn update_asset_info_v1_action() -> AdminAction<Address> {

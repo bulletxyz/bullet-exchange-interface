@@ -119,18 +119,6 @@ define_struct! {
 }
 
 define_struct! {
-    struct InitAssetInfoArgsV1 {
-        asset_id: AssetId,
-        asset_name: CustomString,
-        token_id: Option<TokenId>,
-        decimals: u8,
-        withdraw_fee: PositiveDecimal,
-        pyth_lazer_feed_id: Option<u32>,
-        pyth_lazer_quote_feed_id: Option<u32>,
-    }
-}
-
-define_struct! {
     struct UpdateAssetInfoArgs {
         asset_id: AssetId,
         withdraw_fee: PositiveDecimal,
@@ -140,7 +128,7 @@ define_struct! {
 define_struct! {
     struct UpdateAssetInfoArgsV1 {
         asset_id: AssetId,
-        withdraw_fee: PositiveDecimal,
+        withdraw_fee: Option<PositiveDecimal>,
         pyth_lazer_feed_id: Option<u32>,
         pyth_lazer_quote_feed_id: Option<u32>,
     }

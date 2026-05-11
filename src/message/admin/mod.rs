@@ -77,12 +77,10 @@ define_enum! {
         /// Update asset info.
         UpdateAssetInfo { args: UpdateAssetInfoArgs } = 21,
 
-        /// Initialize asset info with Pyth Lazer feed configuration.
-        InitAssetInfoV1 { args: InitAssetInfoArgsV1 } = 22,
-
         /// Update asset info with Pyth Lazer feed configuration.
-        UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 23,
+        UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 22,
 
+        // Reserved: 23 - until Testnet is wiped
         // Reserved: 24-29
 
         // =========================================================================
