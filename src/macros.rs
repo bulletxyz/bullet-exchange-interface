@@ -108,6 +108,7 @@ macro_rules! define_enum {
 	#[cfg_attr(feature="schema", derive(sov_universal_wallet::UniversalWallet))]
 	#[derive(strum::EnumDiscriminants)]
 	#[strum_discriminants(derive(strum::EnumIter, strum::EnumString, strum::Display))]
+        #[strum_discriminants(non_exhaustive)]
         #[repr(u8)]
         #[serde(rename_all = "snake_case")]
         #[borsh(use_discriminant = true)]
