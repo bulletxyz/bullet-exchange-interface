@@ -1,6 +1,6 @@
 [package]
 name = "bullet-exchange-interface"
-version = "0.1.1"
+version = "0.3.0"
 edition = "2024"
 license = "MIT"
 description = "Type definitions and message formats for the Bullet exchange protocol."
@@ -29,6 +29,7 @@ bullet-bs58 = "0.1"
 
 [features]
 default = []
+fixtures = []
 schema = [ "dep:sov-universal-wallet" ]
 
 [[example]]

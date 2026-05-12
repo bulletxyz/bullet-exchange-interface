@@ -9,7 +9,7 @@ define_enum! {
     /// Vault management operations requiring vault leadership.
     ///
     /// These operations can only be called by the vault leader (the address that created the vault).
-
+    #[non_exhaustive]
     enum VaultAction<Address> {
         /// Update vault configuration (leader only).
         UpdateVaultConfig {

@@ -42,6 +42,12 @@ impl TradeId {
 define_simple_type!(TriggerOrderId(u64));
 define_simple_type!(TwapId(u64));
 define_simple_type!(ClientOrderId(u64));
+define_enum! {
+    enum OrderIdKind {
+        Server(OrderId)  = 0,
+        Client(ClientOrderId) = 1,
+    }
+}
 define_simple_type!(AssetId(u16));
 define_simple_type!(MarketId(u16));
 impl MarketId {

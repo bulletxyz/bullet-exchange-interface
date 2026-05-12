@@ -119,9 +119,30 @@ define_struct! {
 }
 
 define_struct! {
+    struct InitAssetInfoArgsV1 {
+        asset_id: AssetId,
+        asset_name: CustomString,
+        token_id: Option<TokenId>,
+        decimals: u8,
+        withdraw_fee: PositiveDecimal,
+        pyth_lazer_feed_id: Option<u32>,
+        pyth_lazer_quote_feed_id: Option<u32>,
+    }
+}
+
+define_struct! {
     struct UpdateAssetInfoArgs {
         asset_id: AssetId,
         withdraw_fee: PositiveDecimal,
+    }
+}
+
+define_struct! {
+    struct UpdateAssetInfoArgsV1 {
+        asset_id: AssetId,
+        withdraw_fee: PositiveDecimal,
+        pyth_lazer_feed_id: Option<u32>,
+        pyth_lazer_quote_feed_id: Option<u32>,
     }
 }
 
@@ -193,6 +214,21 @@ define_struct! {
         twap_execution_interval_seconds: Option<u64>,
         deposit_limits_per_user: Option<Vec<(AssetId, PositiveDecimal)>>,
         whitelisted_users_for_deposit: Option<Vec<Address>>,
+    }
+}
+
+define_struct! {
+    struct UpdateGlobalConfigArgsV1<Address> {
+        max_orders_per_user: Option<u16>,
+        max_trigger_orders_per_user: Option<u16>,
+        max_orders_per_batch_msg: Option<u16>,
+        max_trigger_orders_to_execute_per_msg: Option<u16>,
+        min_notional_twap_value: Option<PositiveDecimal>,
+        min_notional_twap_value_per_order: Option<PositiveDecimal>,
+        twap_execution_interval_seconds: Option<u64>,
+        deposit_limits_per_user: Option<Vec<(AssetId, PositiveDecimal)>>,
+        whitelisted_users_for_deposit: Option<Vec<Address>>,
+        pyth_lazer_trusted_signers: Option<Vec<[u8; 32]>>,
     }
 }
 

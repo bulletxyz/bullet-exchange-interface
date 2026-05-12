@@ -118,6 +118,7 @@ pub enum CancelReason {
 )]
 #[serde(rename_all = "snake_case")]
 #[schemars(rename = "Event")]
+#[non_exhaustive]
 pub enum Event<Address> {
     /// Market initialized
     InitializePerpMarket {
