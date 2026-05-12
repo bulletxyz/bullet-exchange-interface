@@ -111,6 +111,10 @@ pub enum CancelReason {
     /// backstop liquidation can't absorb the loss). Applies to both ADL
     /// counterparties.
     AutoDeleverage,
+
+    /// Maker order encountered during matching had passed its expiry timestamp
+    /// and was removed from the orderbook
+    Expired,
 }
 
 #[derive(
