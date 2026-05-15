@@ -842,6 +842,7 @@ impl<Address> Event<Address> {
             Self::UpdateInternalPrice { .. } => "Exchange/UpdateInternalPrice",
             Self::ToggleInternalPriceFailed { .. } => "Exchange/ToggleInternalPriceFailed",
             Self::ToggleInternalPrice { .. } => "Exchange/ToggleInternalPrice",
+            Self::UpdateRwaPriceConfig { .. } => "Exchange/UpdateRwaPriceConfig",
         }
     }
 }
