@@ -103,7 +103,8 @@ impl<Address> KeeperAction<Address> {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
             | Self::UpdatePremiumIndexes { .. }
-            | Self::UpdateOraclePricesWithPythProofs { .. } => AdminType::Pricing,
+            | Self::UpdateOraclePricesWithPythProofs { .. }
+            | Self::UpdateInternalPrices { .. } => AdminType::Pricing,
             Self::UpdateFunding { .. } => AdminType::Funding,
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
