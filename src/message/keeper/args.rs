@@ -2,7 +2,7 @@
 
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::define_struct;
-use crate::types::{AssetId, MarketId};
+use crate::types::{AssetId, InternalPriceUpdateAction, MarketId};
 
 define_struct! {
     struct OraclePriceUpdateArgs {
@@ -24,5 +24,12 @@ define_struct! {
         market_id: MarketId,
         median_cex_price: PositiveDecimal,
         diff_ema: SurrogateDecimal,
+    }
+}
+
+define_struct! {
+    struct InternalPriceUpdateArgs {
+        market_id: MarketId,
+        action: InternalPriceUpdateAction,
     }
 }

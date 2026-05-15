@@ -66,7 +66,13 @@ define_enum! {
         /// Delete an asset.
         DeleteAsset { asset_id: AssetId } = 12,
 
-        // Reserved: 13-19
+        ///
+        UpdateRwaPriceConfig {
+            market_id: MarketId,
+            args: UpdateRwaPriceConfigArgs,
+        } = 13,
+
+        // Reserved: 14-19
 
         // =========================================================================
         // Asset Operations (20-29)

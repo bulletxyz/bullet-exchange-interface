@@ -40,12 +40,12 @@ define_enum! {
             prices: Vec<OraclePriceUpdateWithPythProofArgs>,
             publish_timestamp: UnixTimestampMicros,
         } = 3,
-        // Reserved: 4-9
 
         /// Update internal pricing for rwa perp markets (PricingAdmin).
         UpdateInternalPrices {
-            market_ids: Vec<MarketId>,
+            args: Vec<InternalPriceUpdateArgs>,
         } = 4,
+        // Reserved: 5-9
 
         // =========================================================================
         // Funding Admin Operations (10-19)
