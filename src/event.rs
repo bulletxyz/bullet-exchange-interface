@@ -734,6 +734,20 @@ pub enum Event<Address> {
         price: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    ToggleInternalPriceFailed {
+        market_id: MarketId,
+        error: String,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    ToggleInternalPrice {
+        market_id: MarketId,
+        enabled: bool,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    UpdateRwaPriceConfig {
+        market_id: MarketId,
+        execution_timestamp: UnixTimestampMicros,
+    }
 }
 
 impl<Address> Event<Address> {
@@ -826,6 +840,8 @@ impl<Address> Event<Address> {
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::UpdateInternalPriceFailed { .. } => "Exchange/UpdateInternalPriceFailed",
             Self::UpdateInternalPrice { .. } => "Exchange/UpdateInternalPrice",
+            Self::ToggleInternalPriceFailed { .. } => "Exchange/ToggleInternalPriceFailed",
+            Self::ToggleInternalPrice { .. } => "Exchange/ToggleInternalPrice",
         }
     }
 }

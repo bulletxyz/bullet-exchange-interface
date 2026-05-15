@@ -243,9 +243,9 @@ define_struct! {
 
 define_struct! {
     struct UpdateRwaPriceConfigArgs {
-        oracle_threshold_ratio: PositiveDecimal,
-        max_bound_n: u8,
-        funding_dampening_multiplier: PositiveDecimal,
-        internal_pricing_time_constants: UnixTimestampMicros,
+        oracle_threshold_ratio: Option<PositiveDecimal>,
+        max_bound_n: Option<u8>,
+        funding_dampening_multiplier: Option<PositiveDecimal>,
+        internal_pricing_time_constants: Option<UnixTimestampMicros>,
     }
 }
