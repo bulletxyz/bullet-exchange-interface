@@ -246,6 +246,6 @@ define_struct! {
         oracle_threshold_ratio: Option<PositiveDecimal>,
         max_bound_n: Option<u8>,
         funding_dampening_multiplier: Option<PositiveDecimal>,
-        internal_pricing_time_constants: Option<UnixTimestampMicros>,
+        internal_pricing_time_constant: Option<UnixTimestampMicros>,
     }
 }
