@@ -43,7 +43,7 @@ define_enum! {
 
         /// Update internal pricing for rwa perp markets (PricingAdmin).
         UpdateInternalPrices {
-            markets: Vec<MarketId>,
+            market_ids: Vec<MarketId>,
         } = 4,
         // Reserved: 5-9
 
