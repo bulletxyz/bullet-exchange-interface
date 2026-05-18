@@ -744,10 +744,6 @@ pub enum Event<Address> {
         enabled: bool,
         execution_timestamp: UnixTimestampMicros,
     },
-    UpdateRwaPriceConfig {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    }
 }
 
 impl<Address> Event<Address> {
