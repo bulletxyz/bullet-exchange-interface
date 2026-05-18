@@ -104,7 +104,7 @@ define_enum! {
         // =========================================================================
         // Configuration Operations (40-49)
         // =========================================================================
-        /// Update global configuration.
+        /// Update global configuration - deprecated.
         UpdateGlobalConfig {
             args: UpdateGlobalConfigArgs<Address>,
         } = 40,
