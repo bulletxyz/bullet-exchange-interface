@@ -1,4 +1,4 @@
-# Requires nightly rustfmt: cargo +nightly fmt --config-path rustfmt.nightly.toml
+# Requires nightly rustfmt: cargo +nightly fmt --all -- --config-path rustfmt.nightly.toml
 edition = "2024"
 style_edition = "2024"
 max_width = 100
