@@ -5,6 +5,7 @@ use std::collections::BTreeMap;
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::define_struct;
 use crate::string::CustomString;
+use crate::time::UnixTimestampMicros;
 use crate::types::{AssetId, MarketId, TokenId, TradingMode};
 
 // =============================================================================
@@ -237,5 +238,14 @@ define_struct! {
         leader_minimum_holding_percentage: Option<u8>,
         creation_fee_usdc: Option<PositiveDecimal>,
         min_deposit_value: Option<PositiveDecimal>,
+    }
+}
+
+define_struct! {
+    struct UpdateRwaPriceConfigArgs {
+        oracle_threshold_ratio: Option<PositiveDecimal>,
+        max_bound_n: Option<u8>,
+        funding_dampening_multiplier: Option<PositiveDecimal>,
+        internal_pricing_time_constant: Option<UnixTimestampMicros>,
     }
 }

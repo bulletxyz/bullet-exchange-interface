@@ -40,7 +40,12 @@ define_enum! {
             prices: Vec<OraclePriceUpdateWithPythProofArgs>,
             publish_timestamp: UnixTimestampMicros,
         } = 3,
-        // Reserved: 4-9
+
+        /// Update internal pricing for rwa perp markets (PricingAdmin).
+        UpdateInternalPrices {
+            market_ids: Vec<MarketId>,
+        } = 4,
+        // Reserved: 5-9
 
         // =========================================================================
         // Funding Admin Operations (10-19)
@@ -98,7 +103,8 @@ impl<Address> KeeperAction<Address> {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
             | Self::UpdatePremiumIndexes { .. }
-            | Self::UpdateOraclePricesWithPythProofs { .. } => AdminType::Pricing,
+            | Self::UpdateOraclePricesWithPythProofs { .. }
+            | Self::UpdateInternalPrices { .. } => AdminType::Pricing,
             Self::UpdateFunding { .. } => AdminType::Funding,
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits

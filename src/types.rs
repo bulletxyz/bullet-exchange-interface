@@ -8,6 +8,7 @@ use crate::{define_enum, define_simple_enum, define_simple_type};
 pub const RESERVED_ORDER_ID: OrderId = OrderId(0); // 0 is reserved for OTC (liquidation) orders
 pub const RESERVED_TRADE_ID: TradeId = TradeId(0); // 0 is reserved for force settlement of positions
 pub const SPOT_MARKET_ID_OFFSET: u16 = 10_000;
+pub const RWA_PERP_MARKET_ID_OFFSET: u16 = 20_000;
 
 define_simple_type!(OrderId(u64));
 impl OrderId {
@@ -54,12 +55,13 @@ impl MarketId {
     pub fn kind(&self) -> MarketKind {
         match self.0 {
             id if id < SPOT_MARKET_ID_OFFSET => MarketKind::Perp,
-            _ => MarketKind::Spot,
+            id if id < RWA_PERP_MARKET_ID_OFFSET => MarketKind::Spot,
+            _ => MarketKind::RwaPerp,
         }
     }
 }
 
-define_simple_enum!(MarketKind{ Perp = 0, Spot = 1 });
+define_simple_enum!(MarketKind{ Perp = 0, Spot = 1, RwaPerp = 2 });
 
 define_simple_enum!(Side{ Bid = 0, Ask = 1});
 impl Side {
