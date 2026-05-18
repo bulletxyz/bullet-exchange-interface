@@ -66,7 +66,7 @@ define_enum! {
         /// Delete an asset.
         DeleteAsset { asset_id: AssetId } = 12,
 
-        ///
+        /// Update rwa pricing configuration.
         UpdateRwaPriceConfig {
             market_id: MarketId,
             args: UpdateRwaPriceConfigArgs,
