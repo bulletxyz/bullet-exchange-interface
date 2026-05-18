@@ -93,7 +93,7 @@ define_struct! {
         deposit_asset_ids: Vec<AssetId>,
         withdraw_asset_id: AssetId,
         withdraw_lockup_period_hours: u8,
-        whitelist_deposits: bool,
+        _whitelist_deposits: bool,
         profit_share_percentage: u8,
         withdrawal_fee_bps: u8,
         deposit_limit: PositiveDecimal,
