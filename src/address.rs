@@ -42,18 +42,16 @@ impl std::fmt::Display for Address {
 }
 
 impl schemars::JsonSchema for Address {
-    fn schema_name() -> String {
-        "Address".to_string()
+    fn schema_name() -> std::borrow::Cow<'static, str> {
+        "Address".into()
     }
 
-    fn json_schema(_gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        // a new version of schemars has a json_schema! macro which would simplify this
-        serde_json::from_value(serde_json::json!({
+    fn json_schema(_gen: &mut schemars::SchemaGenerator) -> schemars::Schema {
+        schemars::json_schema!({
             "type": "string",
             "pattern": "[1-9A-HJ-NP-Za-km-z]{32,44}",
             "description": "Address",
-        }))
-        .unwrap()
+        })
     }
 }
 
