@@ -729,11 +729,6 @@ pub enum Event<Address> {
         error: String,
         execution_timestamp: UnixTimestampMicros,
     },
-    UpdateInternalPrice {
-        market_id: MarketId,
-        price: PositiveDecimal,
-        execution_timestamp: UnixTimestampMicros,
-    },
 }
 
 impl<Address> Event<Address> {
@@ -825,7 +820,6 @@ impl<Address> Event<Address> {
             Self::CancelTriggerOrderV1 { .. } => "Exchange/CancelTriggerOrderV1",
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::UpdateInternalPriceFailed { .. } => "Exchange/UpdateInternalPriceFailed",
-            Self::UpdateInternalPrice { .. } => "Exchange/UpdateInternalPrice",
         }
     }
 }
