@@ -171,11 +171,3 @@ define_enum!(
         LiquidateIsoPerpPosition(MarketId),
     }
 );
-
-define_enum! {
-    enum InternalPriceUpdateAction {
-        Enable = 0,
-        Disable = 1,
-        UpdatePriceOnly = 2,
-    }
-}
