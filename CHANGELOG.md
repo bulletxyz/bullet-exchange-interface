@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.4.0...v0.4.1) - 2026-05-19
+
+### Bug Fixes
+
+- use sov-universal-wallet from crates.io ([#55](https://github.com/bulletxyz/bullet-exchange-interface/pull/55))
+
 ## [0.4.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.3.0...v0.4.0) - 2026-05-18
 
 ### Features
