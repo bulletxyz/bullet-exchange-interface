@@ -23,12 +23,8 @@ rust_decimal = { version = "1.41", features = ["maths", "borsh"] }
 schemars = { version = "1.2", features = ["rust_decimal1"] }
 hex = { version = "0.4", features = ["serde"] }
 
-sov-universal-wallet = { version="0.3", features=["serde", "macros"], optional = true }
+sov-universal-wallet = { version="0.4", features=["serde", "macros"], optional = true }
 bullet-bs58 = "0.1"
-
-[patch.crates-io]
-# patch the upstream version until a new one is published on crates.io
-sov-universal-wallet = { git = "https://github.com/Sovereign-Labs/sovereign-sdk.git", rev = "cf2641b7a39a2171d6747ce7b9c01ab4e5e7b6a4" }
 
 [dev-dependencies]
 serde_json = "1"
