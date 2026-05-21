@@ -47,22 +47,11 @@ pub enum FillType {
 #[serde(rename_all = "snake_case")]
 #[schemars(rename = "CancelReason")]
 pub enum CancelReason {
-    // user-initiated
-    /// User invoked a cancel action directly (CancelOrders / CancelMarketOrders /
-    /// CancelAllOrders / CancelTriggerOrders / CancelTwapOrder)
+    /// User invoked a cancel action.
     UserRequested,
-    /// User amended an order (cancel + replace)
-    Amended,
-    /// User placed orders with replace=true; existing market orders wiped
-    Replaced,
 
-    // admin-initiated
-    /// AdminAction::CancelOrders / AdminCancelTriggerOrders
+    /// An Admin invoked a cancel action.
     AdminRequested,
-    /// Admin pruned the market
-    MarketPruned,
-    /// Market was halted; resting orders cleared
-    MarketHalted,
 
     // risk-driven
     /// Account undercollateralized — covers cross-margin
@@ -105,12 +94,6 @@ pub enum CancelReason {
 
     /// TWAP slice fired but couldn't execute — runtime error, no liquidity, etc
     TwapExecutionFailed,
-
-    /// User's resting orders cancelled because their position is being
-    /// force-closed via auto-deleverage (last-resort protocol action when
-    /// backstop liquidation can't absorb the loss). Applies to both ADL
-    /// counterparties.
-    AutoDeleverage,
 
     /// Maker order encountered during matching had passed its expiry timestamp
     /// and was removed from the orderbook
