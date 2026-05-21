@@ -95,6 +95,16 @@ pub enum CancelReason {
     /// TWAP slice fired but couldn't execute — runtime error, no liquidity, etc
     TwapExecutionFailed,
 
+    /// TWAP slice executed but post-trade margin check failed; position rolled back
+    /// and TWAP cancelled. User needs more margin to continue.
+    TwapInsufficientMargin,
+
+    /// User's resting orders cancelled because their position is being
+    /// force-closed via auto-deleverage (last-resort protocol action when
+    /// backstop liquidation can't absorb the loss). Applies to both ADL
+    /// counterparties.
+    AutoDeleverage,
+
     /// Maker order encountered during matching had passed its expiry timestamp
     /// and was removed from the orderbook
     Expired,
