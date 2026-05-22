@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, OrderId, OrderType, RepayType, Side,
+    AssetId, BorrowType, ClientOrderId, MarketId, OrderId, OrderType, RepayType, Side,
     TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition,
     TwapId,
 };
@@ -120,31 +120,6 @@ pub enum CancelReason {
 #[schemars(rename = "Event")]
 #[non_exhaustive]
 pub enum Event<Address> {
-    /// Market initialized
-    InitializePerpMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    /// Market updated
-    UpdateMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    /// Market deleted
-    DeleteMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    /// Borrow lend initialized
-    InitializeBorrowLendPool {
-        asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    /// Borrow lend updated
-    UpdateBorrowLendPool {
-        asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
     /// Deposit
     Deposit {
         user_address: Address,
@@ -285,11 +260,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Whole twap order cancelled
-    CancelTwap {
-        user_address: Address,
-        twap_id: TwapId,
-        execution_timestamp: UnixTimestampMicros,
-    },
+    CancelTwap { user_address: Address, twap_id: TwapId, execution_timestamp: UnixTimestampMicros },
 
     /// Premium Index Updated
     UpdatePremiumIndex {
@@ -303,7 +274,7 @@ pub enum Event<Address> {
         error: String,
         execution_timestamp: UnixTimestampMicros,
     },
-    /// Funding Rate Updated
+    /// Funding Rate Update
     UpdateFundingRate {
         market_id: MarketId,
         funding_rate: Decimal,
@@ -329,21 +300,6 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Oracle Price Updated
-    UpdateOraclePrice {
-        asset_id: AssetId,
-        oracle_price: PositiveDecimal,
-        publish_timestamp: UnixTimestampMicros,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    /// Mark Price Updated
-    UpdateMarkPrice {
-        market_id: MarketId,
-        median_cex_price: PositiveDecimal,
-        diff_ema: Decimal,
-        publish_timestamp: UnixTimestampMicros,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    /// Price Update Failed
     UpdateOraclePriceFailed {
         asset_id: AssetId,
         error: String,
@@ -485,10 +441,6 @@ pub enum Event<Address> {
         protocol_reward: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    InitializeSpotMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
     /// Deposit
     DepositVault {
         vault_address: Address,
@@ -535,41 +487,6 @@ pub enum Event<Address> {
         amount: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    HaltPerpMarket {
-        market_id: MarketId,
-        settlement_price: PositiveDecimal,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    HaltSpotMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    UnhaltPerpMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    UnhaltSpotMarket {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    HaltBorrowLendPool {
-        asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    UnhaltBorrowLendPool {
-        asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    AdminAddTradingCredits {
-        user_address: Address,
-        amount: PositiveDecimal,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    AdminRemoveTradingCredits {
-        user_address: Address,
-        amount: PositiveDecimal,
-        execution_timestamp: UnixTimestampMicros,
-    },
     UseTradingCredits {
         user_address: Address,
         amount: PositiveDecimal,
@@ -580,16 +497,6 @@ pub enum Event<Address> {
         amount_claimed: PositiveDecimal,
         total_rewards: PositiveDecimal,
     },
-    UpdateUserFeeTier {
-        user_address: Address,
-        fee_tier: FeeTier,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    UpdateUserFeeDiscountBps {
-        user_address: Address,
-        fee_discount_bps: u16,
-        execution_timestamp: UnixTimestampMicros,
-    },
     WithdrawSpotCollateralV2 {
         user_address: Address,
         asset_id: AssetId,
@@ -597,38 +504,8 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
         fee: PositiveDecimal,
     },
-    /// Asset is deleted.
-    DeleteAsset {
-        asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
     /// Trigger Orders are pending and should be executed.
-    PendingTriggerOrders {
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    DelegateUser {
-        delegator: Address,
-        delegate: Address,
-        name: String,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    RevokeDelegation {
-        delegator: Address,
-        delegate: Address,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    AdminRevokeDelegation {
-        delegator: Address,
-        delegate: Address,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    AdminDeleteDelegateConfig {
-        delegator: Address,
-        delegate: Address,
-        name: String,
-        execution_timestamp: UnixTimestampMicros,
-    },
+    PendingTriggerOrders { market_id: MarketId, execution_timestamp: UnixTimestampMicros },
     DepositIso {
         user_address: Address,
         market_id: MarketId,
@@ -681,24 +558,6 @@ pub enum Event<Address> {
         // None for OTC fills
         remaining_size: Option<PositiveDecimal>,
     },
-    InitializeAssetInfo {
-        asset_id: AssetId,
-        name: String,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    InitializePerpMarketV1 {
-        market_id: MarketId,
-        name: String,
-        base_asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
-    InitializeSpotMarketV1 {
-        market_id: MarketId,
-        name: String,
-        base_asset_id: AssetId,
-        quote_asset_id: AssetId,
-        execution_timestamp: UnixTimestampMicros,
-    },
     /// supersedes CancelOrder; adds reason
     CancelOrderV1 {
         user_address: Address,
@@ -736,8 +595,6 @@ impl<Address> Event<Address> {
         match self {
             Self::AccrueInterestOnBorrowLend { .. } => "Exchange/AccrueInterestOnBorrowLend",
             Self::ActivateTriggerOrder { .. } => "Exchange/ActivateTriggerOrder",
-            Self::AdminAddTradingCredits { .. } => "Exchange/AdminAddTradingCredits",
-            Self::AdminRemoveTradingCredits { .. } => "Exchange/AdminRemoveTradingCredits",
             Self::ApplyFundingRate { .. } => "Exchange/ApplyFundingRate",
             Self::ApplyFundingRateFailed { .. } => "Exchange/ApplyFundingRateFailed",
             Self::AutoDeleverage { .. } => "Exchange/AutoDeleverage",
@@ -753,8 +610,6 @@ impl<Address> Event<Address> {
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
             Self::CreateTriggerOrder { .. } => "Exchange/CreateTriggerOrder",
             Self::CreateTwapOrder { .. } => "Exchange/CreateTwapOrder",
-            Self::DeleteMarket { .. } => "Exchange/DeleteMarket",
-            Self::DeleteAsset { .. } => "Exchange/DeleteAsset",
             Self::Deposit { .. } => "Exchange/Deposit",
             Self::DepositSpotCollateral { .. } => "Exchange/DepositSpotCollateral",
             Self::DepositVault { .. } => "Exchange/DepositVault",
@@ -762,12 +617,6 @@ impl<Address> Event<Address> {
             Self::FailureExecuteTriggerOrder { .. } => "Exchange/FailureExecuteTriggerOrder",
             Self::ForceCancelOrders { .. } => "Exchange/ForceCancelOrders",
             Self::ForceSettlePerpPosition { .. } => "Exchange/ForceSettlePerpPosition",
-            Self::HaltBorrowLendPool { .. } => "Exchange/HaltBorrowLendPool",
-            Self::HaltPerpMarket { .. } => "Exchange/HaltPerpMarket",
-            Self::HaltSpotMarket { .. } => "Exchange/HaltSpotMarket",
-            Self::InitializeBorrowLendPool { .. } => "Exchange/InitializeBorrowLendPool",
-            Self::InitializePerpMarket { .. } => "Exchange/InitializePerpMarket",
-            Self::InitializeSpotMarket { .. } => "Exchange/InitializeSpotMarket",
             Self::LiquidateBorrowLendLiability { .. } => "Exchange/LiquidateBorrowLendLiability",
             Self::PendingTriggerOrders { .. } => "Exchange/PendingTriggerOrders",
             Self::PlaceOrder { .. } => "Exchange/PlaceOrder",
@@ -782,22 +631,13 @@ impl<Address> Event<Address> {
             Self::Trade { .. } => "Exchange/Trade",
             Self::TradeV1 { .. } => "Exchange/TradeV1",
             Self::TryExecuteTriggerOrder { .. } => "Exchange/TryExecuteTriggerOrder",
-            Self::UnhaltBorrowLendPool { .. } => "Exchange/UnhaltBorrowLendPool",
-            Self::UnhaltPerpMarket { .. } => "Exchange/UnhaltPerpMarket",
-            Self::UnhaltSpotMarket { .. } => "Exchange/UnhaltSpotMarket",
-            Self::UpdateBorrowLendPool { .. } => "Exchange/UpdateBorrowLendPool",
             Self::UpdateFundingRate { .. } => "Exchange/UpdateFundingRate",
             Self::UpdateFundingRateFailed { .. } => "Exchange/UpdateFundingRateFailed",
-            Self::UpdateMarkPrice { .. } => "Exchange/UpdateMarkPrice",
             Self::UpdateMarkPriceFailed { .. } => "Exchange/UpdateMarkPriceFailed",
-            Self::UpdateMarket { .. } => "Exchange/UpdateMarket",
-            Self::UpdateOraclePrice { .. } => "Exchange/UpdateOraclePrice",
             Self::UpdateOraclePriceFailed { .. } => "Exchange/UpdateOraclePriceFailed",
             Self::UpdatePremiumIndex { .. } => "Exchange/UpdatePremiumIndex",
             Self::UpdatePremiumIndexFailed { .. } => "Exchange/UpdatePremiumIndexFailed",
             Self::UpdateReduceOnlyLimitOrder { .. } => "Exchange/UpdateReduceOnlyLimitOrder",
-            Self::UpdateUserFeeDiscountBps { .. } => "Exchange/UpdateUserFeeDiscountBps",
-            Self::UpdateUserFeeTier { .. } => "Exchange/UpdateUserFeeTier",
             Self::UsdcUnrealizedLossBorrowRebalance { .. } => {
                 "Exchange/UsdcUnrealizedLossBorrowRebalance"
             }
@@ -805,17 +645,10 @@ impl<Address> Event<Address> {
             Self::Withdraw { .. } => "Exchange/Withdraw",
             Self::WithdrawSpotCollateral { .. } => "Exchange/WithdrawSpotCollateral",
             Self::WithdrawSpotCollateralV2 { .. } => "Exchange/WithdrawSpotCollateralV2",
-            Self::DelegateUser { .. } => "Exchange/DelegateUser",
-            Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
-            Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
-            Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
             Self::DepositIso { .. } => "Exchange/DepositIso",
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
             Self::DelegateUserV1 { .. } => "Exchange/DelegateUserV1",
-            Self::InitializeAssetInfo { .. } => "Exchange/InitializeAssetInfo",
-            Self::InitializePerpMarketV1 { .. } => "Exchange/InitializePerpMarketV1",
-            Self::InitializeSpotMarketV1 { .. } => "Exchange/InitializeSpotMarketV1",
             Self::CancelOrderV1 { .. } => "Exchange/CancelOrderV1",
             Self::CancelTriggerOrderV1 { .. } => "Exchange/CancelTriggerOrderV1",
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
