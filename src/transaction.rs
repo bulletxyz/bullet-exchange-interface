@@ -84,6 +84,7 @@ define_enum! {
     enum UniquenessData {
         Nonce(u64) = 0,
         Generation(u64) = 1,
+        Window(u64) = 2,
     }
 }
 
