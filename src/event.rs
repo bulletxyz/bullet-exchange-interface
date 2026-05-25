@@ -47,11 +47,22 @@ pub enum FillType {
 #[serde(rename_all = "snake_case")]
 #[schemars(rename = "CancelReason")]
 pub enum CancelReason {
-    /// User invoked a cancel action.
+    // user-initiated
+    /// User invoked a cancel action directly (CancelOrders / CancelMarketOrders /
+    /// CancelAllOrders / CancelTriggerOrders / CancelTwapOrder)
     UserRequested,
+    /// User amended an order (cancel + replace)
+    Amended,
+    /// User placed orders with replace=true; existing market orders wiped
+    Replaced,
 
-    /// An Admin invoked a cancel action.
+    // admin-initiated
+    /// AdminAction::CancelOrders / AdminCancelTriggerOrders
     AdminRequested,
+    /// Admin pruned the market
+    MarketPruned,
+    /// Market was halted; resting orders cleared
+    MarketHalted,
 
     // risk-driven
     /// Account undercollateralized — covers cross-margin
@@ -95,10 +106,6 @@ pub enum CancelReason {
     /// TWAP slice fired but couldn't execute — runtime error, no liquidity, etc
     TwapExecutionFailed,
 
-    /// TWAP slice executed but post-trade margin check failed; position rolled back
-    /// and TWAP cancelled. User needs more margin to continue.
-    TwapInsufficientMargin,
-
     /// User's resting orders cancelled because their position is being
     /// force-closed via auto-deleverage (last-resort protocol action when
     /// backstop liquidation can't absorb the loss). Applies to both ADL
@@ -108,6 +115,14 @@ pub enum CancelReason {
     /// Maker order encountered during matching had passed its expiry timestamp
     /// and was removed from the orderbook
     Expired,
+
+    /// TWAP slice executed but post-trade margin check failed; position rolled back
+    /// and TWAP cancelled. User needs more margin to continue.
+    TwapInsufficientMargin,
+
+    /// Maker order matched but post-trade margin check failed; fill rolled back
+    /// and maker order cancelled. User needs more margin to continue.
+    MakerInsufficientMargin,
 }
 
 #[derive(
