@@ -655,6 +655,15 @@ pub enum Event<Address> {
         flags: u32,
         execution_timestamp: UnixTimestampMicros,
     },
+    ReplaceDelegateV1 {
+        delegator: Address,
+        old_delegate: Address,
+        new_delegate: Address,
+        name: String,
+        expires_at: Option<UnixTimestampMicros>,
+        flags: u32,
+        execution_timestamp: UnixTimestampMicros,
+    },
     // supersedes Trade; adds cumulative order progress (filled_size, filled_cot, remaining_size)
     TradeV1 {
         user_address: Address,
@@ -813,6 +822,7 @@ impl<Address> Event<Address> {
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
             Self::DelegateUserV1 { .. } => "Exchange/DelegateUserV1",
+            Self::ReplaceDelegateV1 { .. } => "Exchange/ReplaceDelegateV1",
             Self::InitializeAssetInfo { .. } => "Exchange/InitializeAssetInfo",
             Self::InitializePerpMarketV1 { .. } => "Exchange/InitializePerpMarketV1",
             Self::InitializeSpotMarketV1 { .. } => "Exchange/InitializeSpotMarketV1",

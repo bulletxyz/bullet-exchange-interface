@@ -128,7 +128,17 @@ define_enum! {
             flags: u32,
         } = 17,
 
-        // Reserved: 18-19
+        /// Atomically replace an existing delegate with a new one.
+        ReplaceDelegateV1 {
+            old_delegate: Address,
+            new_delegate: Address,
+            name: CustomString,
+            sub_account_index: Option<u8>,
+            expires_at: Option<UnixTimestampMicros>,
+            flags: u32,
+        } = 18,
+
+        // Reserved: 19
 
         // =========================================================================
         // Order Operations (20-39)
