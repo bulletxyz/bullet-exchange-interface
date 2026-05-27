@@ -40,6 +40,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdatePerpMarketArgs {
         market_id: MarketId,
         impact_margin: Option<PositiveDecimal>,
@@ -81,6 +82,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdateSpotMarketArgs {
         market_id: MarketId,
         base_min_lot_size: Option<PositiveDecimal>,
@@ -138,6 +140,8 @@ define_struct! {
     }
 }
 
+// A next version of this struct should wrap all fields in an Option to make partial update
+// possible.
 define_struct! {
     struct UpdateAssetInfoArgsV1 {
         asset_id: AssetId,
@@ -172,6 +176,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdateBorrowLendPoolArgs {
         asset_id: AssetId,
         optimal_utilization_rate: Option<PositiveDecimal>,
@@ -196,6 +201,7 @@ define_struct! {
 // =============================================================================
 
 define_struct! {
+    #[derive(Default)]
     struct UpdatePerpLiquidationConfigArgs {
         liquidation_fee: Option<PositiveDecimal>,
         liquidation_ioc_buffer: Option<PositiveDecimal>,
@@ -205,6 +211,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdateGlobalConfigArgs<Address> {
         max_orders_per_user: Option<u16>,
         max_trigger_orders_per_user: Option<u16>,
@@ -219,6 +226,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdateGlobalConfigArgsV1<Address> {
         max_orders_per_user: Option<u16>,
         max_trigger_orders_per_user: Option<u16>,
@@ -234,6 +242,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdateGlobalVaultConfigArgs {
         leader_minimum_holding_percentage: Option<u8>,
         creation_fee_usdc: Option<PositiveDecimal>,
@@ -242,6 +251,7 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
     struct UpdateRwaPriceConfigArgs {
         oracle_threshold_ratio: Option<PositiveDecimal>,
         max_bound_n: Option<u8>,
