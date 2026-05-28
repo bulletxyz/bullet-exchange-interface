@@ -3,7 +3,7 @@ use rust_decimal::Decimal;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, OrderId, OrderType, RepayType, Side,
+    AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType, RepayType, Side,
     TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition,
     TwapId,
 };
@@ -729,6 +729,13 @@ pub enum Event<Address> {
         error: String,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// Replaces previous halt and unhalt events,
+    SetMarketTradingStatus {
+        market_id: MarketId,
+        from_status: MarketTradingStatus,
+        to_status: MarketTradingStatus,
+        execution_timestamp: UnixTimestampMicros,
+    }
 }
 
 impl<Address> Event<Address> {
@@ -820,6 +827,7 @@ impl<Address> Event<Address> {
             Self::CancelTriggerOrderV1 { .. } => "Exchange/CancelTriggerOrderV1",
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::UpdateInternalPriceFailed { .. } => "Exchange/UpdateInternalPriceFailed",
+            Self::SetMarketTradingStatus { .. } => "Exchange/SetMarketTradingStatus",
         }
     }
 }

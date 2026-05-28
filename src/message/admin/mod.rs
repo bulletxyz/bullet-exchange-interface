@@ -72,7 +72,11 @@ define_enum! {
             args: UpdateRwaPriceConfigArgs,
         } = 13,
 
-        /// New endpoint to allow for a single message to update the trading status of a market.
+        /// Allows for transitions between:
+        ///  Halted -> Active / PostOnly / CancelOnly
+        ///  Active => PostOnly / CancelOnly / Halted(Spot market only)
+        ///  PostOnly => Active / CancelOnly / Halted(Spot market only)
+        ///  CancelOnly => Active / PostOnly / Halted(Spot market only)
         SetMarketTradingStatus {
             market_id: MarketId,
             status: MarketTradingStatus,
