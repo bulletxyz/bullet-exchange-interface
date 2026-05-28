@@ -3,7 +3,7 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::message::CreateVaultArgs;
-use crate::types::{AdminType, AssetId, MarketId, OrderId, TriggerOrderId};
+use crate::types::{AdminType, AssetId, MarketId, MarketTradingStatus, OrderId, TriggerOrderId};
 
 mod args;
 pub use args::*;
@@ -72,7 +72,13 @@ define_enum! {
             args: UpdateRwaPriceConfigArgs,
         } = 13,
 
-        // Reserved: 14-19
+        /// New endpoint to allow for a single message to update the trading status of a market.
+        SetMarketTradingStatus {
+            market_id: MarketId,
+            status: MarketTradingStatus,
+        } = 14,
+
+        // Reserved: 15-19
 
         // =========================================================================
         // Asset Operations (20-29)
