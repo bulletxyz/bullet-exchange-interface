@@ -655,15 +655,6 @@ pub enum Event<Address> {
         flags: u32,
         execution_timestamp: UnixTimestampMicros,
     },
-    ReplaceDelegateV1 {
-        delegator: Address,
-        old_delegate: Address,
-        new_delegate: Address,
-        name: String,
-        expires_at: Option<UnixTimestampMicros>,
-        flags: u32,
-        execution_timestamp: UnixTimestampMicros,
-    },
     // supersedes Trade; adds cumulative order progress (filled_size, filled_cot, remaining_size)
     TradeV1 {
         user_address: Address,
@@ -736,6 +727,15 @@ pub enum Event<Address> {
     UpdateInternalPriceFailed {
         market_id: MarketId,
         error: String,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    ReplaceDelegateV1 {
+        delegator: Address,
+        old_delegate: Address,
+        new_delegate: Address,
+        name: String,
+        expires_at: Option<UnixTimestampMicros>,
+        flags: u32,
         execution_timestamp: UnixTimestampMicros,
     },
 }
