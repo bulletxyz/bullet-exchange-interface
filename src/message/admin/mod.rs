@@ -77,7 +77,7 @@ define_enum! {
         ///  Active => PostOnly / CancelOnly / Halted(Spot market only)
         ///  PostOnly => Active / CancelOnly / Halted(Spot market only)
         ///  CancelOnly => Active / PostOnly / Halted(Spot market only)
-        SetMarketTradingStatus {
+        SetMarketsTradingStatus {
             args: SetMarketTradingStatusArgs,
         } = 14,
 
