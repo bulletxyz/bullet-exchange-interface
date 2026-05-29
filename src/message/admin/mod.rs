@@ -78,7 +78,7 @@ define_enum! {
         ///  PostOnly => Active / CancelOnly / Halted(Spot market only)
         ///  CancelOnly => Active / PostOnly / Halted(Spot market only)
         SetMarketsTradingStatus {
-            args: SetMarketTradingStatusArgs,
+            args: Vec<SetMarketTradingStatusArgs>,
         } = 14,
 
         // Reserved: 15-19
