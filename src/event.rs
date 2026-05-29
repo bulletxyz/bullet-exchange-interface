@@ -3,9 +3,9 @@ use rust_decimal::Decimal;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType, RepayType, Side,
-    TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition,
-    TwapId,
+    AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType,
+    RepayType, Side, TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId,
+    TriggerPriceCondition, TwapId,
 };
 
 #[derive(
@@ -742,7 +742,7 @@ pub enum Event<Address> {
         to_status: MarketTradingStatus,
         error: String,
         execution_timestamp: UnixTimestampMicros,
-    }
+    },
 }
 
 impl<Address> Event<Address> {
