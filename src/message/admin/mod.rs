@@ -3,7 +3,7 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::message::CreateVaultArgs;
-use crate::types::{AdminType, AssetId, MarketId, MarketTradingStatus, OrderId, TriggerOrderId};
+use crate::types::{AdminType, AssetId, MarketId,  OrderId, TriggerOrderId};
 
 mod args;
 pub use args::*;
