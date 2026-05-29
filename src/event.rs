@@ -736,7 +736,7 @@ pub enum Event<Address> {
         to_status: MarketTradingStatus,
         execution_timestamp: UnixTimestampMicros,
     },
-    SetMarketsTradingStatusFailed {
+    SetMarketTradingStatusFailed {
         market_id: MarketId,
         from_status: MarketTradingStatus,
         to_status: MarketTradingStatus,
@@ -835,7 +835,7 @@ impl<Address> Event<Address> {
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::UpdateInternalPriceFailed { .. } => "Exchange/UpdateInternalPriceFailed",
             Self::SetMarketTradingStatus { .. } => "Exchange/SetMarketTradingStatus",
-            Self::SetMarketsTradingStatusFailed { .. } => "Exchange/SetMarketsTradingStatusFailed",
+            Self::SetMarketTradingStatusFailed { .. } => "Exchange/SetMarketsTradingStatusFailed",
         }
     }
 }
