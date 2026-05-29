@@ -261,7 +261,6 @@ define_struct! {
 }
 
 define_struct! {
-    #[derive(Default)]
     struct SetMarketTradingStatusArgs {
         market_id: MarketId,
         status: MarketTradingStatus,
