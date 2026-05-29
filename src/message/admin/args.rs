@@ -6,7 +6,7 @@ use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::define_struct;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
-use crate::types::{AssetId, MarketId, TokenId, TradingMode};
+use crate::types::{AssetId, MarketId, MarketTradingStatus, TokenId, TradingMode};
 
 // =============================================================================
 // Market Args
@@ -257,5 +257,12 @@ define_struct! {
         max_bound_n: Option<u8>,
         funding_dampening_multiplier: Option<PositiveDecimal>,
         internal_pricing_time_constant: Option<UnixTimestampMicros>,
+    }
+}
+
+define_struct! {
+    struct SetMarketTradingStatusArgs {
+        market_id: MarketId,
+        status: MarketTradingStatus,
     }
 }

@@ -107,6 +107,7 @@ define_simple_enum!(OrderType {
     PostOnlySlide = 4, // TODO: Delete this
     PostOnlyFront = 5  // TODO: Delete this
 });
+
 define_simple_enum!(SpotCollateralTransferDirection {
     MarginToSpot = 0,
     SpotToMargin = 1
@@ -156,6 +157,12 @@ define_simple_enum!(MarketTradingStatus {
     Cleaning = 2,
     /// Once the market is cleaned, it can become active again or it can be safely deleted.
     Cleaned = 3,
+    /// Orders can only be posted into the orderbook and not executed, orders can still be cancelled.
+    /// Can go from Active/Halted/Cleaned/CancelOnly to PostOnly. Can go from PostOnly to Halted/Active/CancelOnly.
+    PostOnly = 4,
+    /// Orders can only be cancelled.
+    /// Can go from Active/Halted/Cleaned/PostOnly to CancelOnly. Can go from CancelOnly to Halted/Active/PostOnly.
+    CancelOnly = 5,
 });
 
 define_enum!(

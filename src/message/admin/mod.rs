@@ -72,7 +72,16 @@ define_enum! {
             args: UpdateRwaPriceConfigArgs,
         } = 13,
 
-        // Reserved: 14-19
+        /// Allows for transitions between:
+        ///  Halted -> Active / PostOnly / CancelOnly
+        ///  Active => PostOnly / CancelOnly / Halted(Spot market only)
+        ///  PostOnly => Active / CancelOnly / Halted(Spot market only)
+        ///  CancelOnly => Active / PostOnly / Halted(Spot market only)
+        SetMarketsTradingStatus {
+            args: Vec<SetMarketTradingStatusArgs>,
+        } = 14,
+
+        // Reserved: 15-19
 
         // =========================================================================
         // Asset Operations (20-29)
