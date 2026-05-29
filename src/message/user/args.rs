@@ -20,6 +20,10 @@ define_struct! {
     }
 }
 
+pub fn is_all_post_only(places: &[NewOrderArgs]) -> bool {
+    places.iter().all(|place| place.order_type.is_post_only_variant())
+}
+
 define_struct! {
     struct AmendOrderArgs {
         cancel: CancelOrderArgs,

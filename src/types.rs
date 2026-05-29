@@ -107,6 +107,12 @@ define_simple_enum!(OrderType {
     PostOnlySlide = 4, // TODO: Delete this
     PostOnlyFront = 5  // TODO: Delete this
 });
+
+impl OrderType {
+    pub fn is_post_only_variant(&self) -> bool {
+        matches!(self, Self::PostOnly | Self::PostOnlySlide | Self::PostOnlyFront)
+    }
+}
 define_simple_enum!(SpotCollateralTransferDirection {
     MarginToSpot = 0,
     SpotToMargin = 1
