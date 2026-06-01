@@ -36,13 +36,9 @@ define_enum! {
             settlement_price: PositiveDecimal,
         } = 4,
 
-        /// Unhalt a perp market.
+        /// Deprecated use SetMarketsTradingStatus from KeeperAction instead
         UnhaltPerpMarket { market_id: MarketId } = 5,
-
-        /// Halt a spot market.
         HaltSpotMarket { market_id: MarketId } = 6,
-
-        /// Unhalt a spot market.
         UnhaltSpotMarket { market_id: MarketId } = 7,
 
         /// Prune market data.
@@ -100,10 +96,10 @@ define_enum! {
         /// Update borrow/lend pool configuration.
         UpdateBorrowLendPool { args: UpdateBorrowLendPoolArgs } = 31,
 
-        /// Halt a borrow/lend pool.
+        /// Deprecated use HaltBorrowLendPool from KeeperAction instead
         HaltBorrowLendPool { asset_id: AssetId } = 32,
 
-        /// Unhalt a borrow/lend pool.
+        /// Deprecated use UnhaltBorrowLendPool from KeeperAction instead
         UnhaltBorrowLendPool { asset_id: AssetId } = 33,
         // Reserved: 34-39
 
