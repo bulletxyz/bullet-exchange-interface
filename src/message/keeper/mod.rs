@@ -127,6 +127,8 @@ impl<Address> KeeperAction<Address> {
     /// Returns the specific admin type required for this keeper operation.
     #[must_use]
     pub fn required_admin_type(&self) -> AdminType {
+        #[allow(clippy::match_same_arms)]
+        // Temporarily allow this before I upgrade state for a MarketStateAdmin
         match self {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
