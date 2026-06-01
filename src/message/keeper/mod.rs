@@ -93,18 +93,52 @@ define_enum! {
             amount: PositiveDecimal,
         } = 40,
         // Reserved: 41-49
+
+        // =========================================================================
+        // MarketStatusAdmin Operations (50-59) (Temporarily Pricing Admin)
+        // =========================================================================
+        /// Allows for transitions between:
+        ///  Halted -> Active / PostOnly / CancelOnly
+        ///  Active => PostOnly / CancelOnly / Halted(Spot market only)
+        ///  PostOnly => Active / CancelOnly / Halted(Spot market only)
+        ///  CancelOnly => Active / PostOnly / Halted(Spot market only)
+        SetMarketsTradingStatus {
+            args: Vec<SetMarketTradingStatusArgs>,
+        } = 50,
+
+        /// Halt a borrow/lend pool (MarketStatusAdmin).
+        HaltBorrowLendPool {
+            asset_id: AssetId,
+        } = 51,
+
+        /// Unhalt a borrow/lend pool (MarketStatusAdmin).
+        UnhaltBorrowLendPool {
+            asset_id: AssetId,
+        } = 52,
+
+        /// Halt a perp market with settlement price (MarketStatusAdmin).
+        HaltPerpMarket {
+            market_id: MarketId,
+            settlement_price: PositiveDecimal,
+        } = 53,
     }
 }
 impl<Address> KeeperAction<Address> {
     /// Returns the specific admin type required for this keeper operation.
     #[must_use]
     pub fn required_admin_type(&self) -> AdminType {
+        #[allow(clippy::match_same_arms)]
+        // Temporarily allow this before I upgrade state for a MarketStateAdmin
         match self {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
             | Self::UpdatePremiumIndexes { .. }
             | Self::UpdateOraclePricesWithPythProofs { .. }
             | Self::UpdateInternalPrices { .. } => AdminType::Pricing,
+            Self::SetMarketsTradingStatus { .. }
+            | Self::HaltBorrowLendPool { .. }
+            | Self::UnhaltBorrowLendPool { .. }
+            | Self::HaltPerpMarket { .. } => AdminType::Pricing,
             Self::UpdateFunding { .. } => AdminType::Funding,
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
