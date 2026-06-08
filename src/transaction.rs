@@ -8,6 +8,7 @@ pub const MAX_TX_SIZE: usize = 8000;
 /// Fix the Address type for this module.
 pub type ExchangeCall = crate::message::CallMessage<crate::address::Address>;
 pub type BankCall = bank::CallMessage<crate::address::Address>;
+pub type TimelockCall = timelock::CallMessage<crate::address::Address>;
 
 #[derive(
     Clone,
@@ -75,6 +76,7 @@ define_enum! {
     enum RuntimeCall {
         Bank(BankCall) = 2,
         Exchange(ExchangeCall) = 7,
+	Timelock(TimelockCall) = 9,
     }
 }
 
@@ -153,6 +155,24 @@ pub mod bank {
             #[cfg_attr(feature="schema", sov_wallet(fixed_point(from_field(1, offset = 31))))]
             amount: Amount,
             token_id: TokenId,
+        }
+    }
+}
+
+
+pub mod timelock {
+    use crate::define_enum;
+    define_enum! {
+        /// CallMessage for the Timelock module.
+        #[non_exhaustive]
+        enum CallMessage<Address> {
+	    CancelProposal {
+		proposal_id: Address,
+		address: Option<Address>,
+	    } = 0,
+	    CleanExpiredProposals {
+		proposal_keys: Vec<(Address, Address)>,
+	    } = 2,
         }
     }
 }
