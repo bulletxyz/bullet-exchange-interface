@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.7.0...v0.8.0) - 2026-06-12
+
+### Features
+
+- *(transaction)* add warp runtime call support ([#65](https://github.com/bulletxyz/bullet-exchange-interface/pull/65))
+
 ## [0.6.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.5.0...v0.6.0) - 2026-05-29
 
 ### Features
