@@ -8,6 +8,18 @@ pub const MAX_TX_SIZE: usize = 8000;
 /// Fix the Address type for this module.
 pub type ExchangeCall = crate::message::CallMessage<crate::address::Address>;
 pub type BankCall = bank::CallMessage<crate::address::Address>;
+pub type WarpCall = warp::CallMessage<crate::address::Address>;
+
+define_simple_type!(
+    /// A 32-byte Warp route or recipient, encoded as 0x-prefixed hex in JSON.
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    WarpBytes32(
+        #[serde(with = "crate::transaction::serde_hex_32")]
+        #[schemars(with = "String")]
+        #[cfg_attr(feature = "schema", sov_wallet(display = "hex"))]
+        [u8; 32]
+    ) + Copy + Debug
+);
 
 #[derive(
     Clone,
@@ -75,6 +87,7 @@ define_enum! {
     enum RuntimeCall {
         Bank(BankCall) = 2,
         Exchange(ExchangeCall) = 7,
+        Warp(WarpCall) = 14,
     }
 }
 
@@ -112,6 +125,74 @@ define_simple_type!(Amount(u128));
 impl sov_universal_wallet::ty::IntegerDisplayable for Amount {
     fn integer_type() -> sov_universal_wallet::ty::IntegerType {
         sov_universal_wallet::ty::IntegerType::u128
+    }
+}
+
+mod serde_amount_decimal_string {
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    use crate::transaction::Amount;
+
+    pub fn serialize<S>(amount: &Amount, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&amount.0.to_string())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Amount, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+        value.parse::<u128>().map(Amount).map_err(serde::de::Error::custom)
+    }
+}
+
+mod serde_hex_32 {
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(bytes: &[u8; 32], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&format!("0x{}", hex::encode(bytes)))
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<[u8; 32], D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+        let value = value.strip_prefix("0x").unwrap_or(value.as_str());
+        let mut bytes = [0; 32];
+        hex::decode_to_slice(value, &mut bytes).map_err(serde::de::Error::custom)?;
+
+        Ok(bytes)
+    }
+}
+
+pub mod warp {
+    use crate::define_enum;
+    use crate::transaction::{Amount, WarpBytes32};
+
+    define_enum! {
+        /// CallMessage for the Warp module.
+        #[non_exhaustive]
+        enum CallMessage<Address> {
+            TransferRemote {
+                warp_route: WarpBytes32,
+                destination_domain: u32,
+                recipient: WarpBytes32,
+                #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+                #[schemars(with = "String")]
+                amount: Amount,
+                relayer: Option<Address>,
+                #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+                #[schemars(with = "String")]
+                gas_payment_limit: Amount,
+            } = 4,
+        }
     }
 }
 
