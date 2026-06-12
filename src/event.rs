@@ -743,6 +743,12 @@ pub enum Event<Address> {
         error: String,
         execution_timestamp: UnixTimestampMicros,
     },
+    UpdateMarkPriceV1 {
+        market_id: MarketId,
+        mark_price: PositiveDecimal,
+        median_orderbook_price: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
