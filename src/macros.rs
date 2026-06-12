@@ -88,7 +88,7 @@ macro_rules! define_simple_enum {
 
 #[macro_export]
 macro_rules! define_enum {
-    ($(#[$enummeta:meta])* enum $type_name:ident $(<$a:ident>)?{$($(#[$meta:meta])*$name:ident $({$($arg_name:ident: $arg_type1:ty),*$(,)?})? $(($($arg_type2:ty),*))? $(= $value:literal)?),+$(,)?}) => {
+    ($(#[$enummeta:meta])* enum $type_name:ident $(<$a:ident>)?{$($(#[$meta:meta])*$name:ident $({$($(#[$field_meta:meta])* $arg_name:ident: $arg_type1:ty),*$(,)?})? $(($($arg_type2:ty),*))? $(= $value:literal)?),+$(,)?}) => {
         $(#[$enummeta])*
         #[derive(
             Clone,
@@ -113,7 +113,7 @@ macro_rules! define_enum {
         #[borsh(use_discriminant = true)]
         pub enum $type_name$(<$a>)* {
             $($(#[$meta])*
-              $name $({$($arg_name: $arg_type1),* })* $(($($arg_type2),*))* $(= $value)*),*
+              $name $({$($(#[$field_meta])* $arg_name: $arg_type1),* })* $(($($arg_type2),*))* $(= $value)*),*
         }
     }
 }
