@@ -89,7 +89,6 @@ macro_rules! define_simple_enum {
 #[macro_export]
 macro_rules! define_enum {
     ($(#[$enummeta:meta])* enum $type_name:ident $(<$a:ident>)?{$($(#[$meta:meta])*$name:ident $({$($(#[$field_meta:meta])* $arg_name:ident: $arg_type1:ty),*$(,)?})? $(($($arg_type2:ty),*))? $(= $value:literal)?),+$(,)?}) => {
-        $(#[$enummeta])*
         #[derive(
             Clone,
             Debug,
@@ -111,6 +110,7 @@ macro_rules! define_enum {
         #[repr(u8)]
         #[serde(rename_all = "snake_case")]
         #[borsh(use_discriminant = true)]
+        $(#[$enummeta])*
         pub enum $type_name$(<$a>)* {
             $($(#[$meta])*
               $name $({$($(#[$field_meta])* $arg_name: $arg_type1),* })* $(($($arg_type2),*))* $(= $value)*),*

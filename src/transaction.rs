@@ -84,6 +84,7 @@ define_struct! {
 define_enum! {
     /// The enum to distinguish the rollup modules.
     #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
     enum RuntimeCall {
         Bank(BankCall) = 2,
         Exchange(ExchangeCall) = 7,
@@ -94,6 +95,7 @@ define_enum! {
 define_enum! {
     /// A nonce to detect replays.
     #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
     enum UniquenessData {
         Nonce(u64) = 0,
         Generation(u64) = 1,
@@ -179,6 +181,7 @@ pub mod warp {
     define_enum! {
         /// CallMessage for the Warp module.
         #[non_exhaustive]
+        #[strum_discriminants(non_exhaustive)]
         enum CallMessage<Address> {
             TransferRemote {
                 warp_route: WarpBytes32,
@@ -219,6 +222,7 @@ pub mod bank {
     define_enum! {
         /// CallMessage for the Bank module.
         #[non_exhaustive]
+        #[strum_discriminants(non_exhaustive)]
         enum CallMessage<Address> {
             #[cfg_attr(feature="schema", sov_wallet(show_as = "Transfer to address {} {} with memo `{}`."))]
             TransferWithMemo {

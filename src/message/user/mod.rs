@@ -17,6 +17,7 @@ define_enum! {
     /// These operations are authorized via `context.sender()` with optional delegate resolution.
     /// Operations include account management, trading, vault deposits, and user-initiated liquidations.
     #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
     enum UserAction<Address> {
         // =========================================================================
         // Account Operations (0-19)

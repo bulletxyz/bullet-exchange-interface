@@ -16,6 +16,7 @@ define_enum! {
     /// FeeTier, Referrals). However, one can also update all admin
     /// addresses with it.
     #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
     enum KeeperAction<Address> {
         // =========================================================================
         // Pricing Admin Operations (0-9)
