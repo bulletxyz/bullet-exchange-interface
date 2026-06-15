@@ -10,6 +10,7 @@ define_enum! {
     ///
     /// These operations can only be called by the vault leader (the address that created the vault).
     #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
     enum VaultAction<Address> {
         /// Update vault configuration (leader only).
         UpdateVaultConfig {

@@ -10,6 +10,7 @@ define_enum! {
     /// Typically used for MEV opportunities (liquidations) or protocol maintenance
     /// (interest accrual, funding application).
     #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
     enum PublicAction<Address> {
         /// Try to force close cross margin perp positions for a user account under maintenance margin but above backstop liquidation margin (permissionless).
         LiquidatePerpPositions { address: Address } = 0,
