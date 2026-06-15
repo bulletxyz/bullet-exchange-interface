@@ -746,7 +746,7 @@ pub enum Event<Address> {
     UpdateMarkPriceV1 {
         market_id: MarketId,
         mark_price: PositiveDecimal,
-        median_orderbook_price: PositiveDecimal,
+        median_orderbook_price: Option<PositiveDecimal>,
         execution_timestamp: UnixTimestampMicros,
     },
 }
@@ -826,7 +826,7 @@ impl<Address> Event<Address> {
             Self::UpdateInternalPriceFailed { .. } => "Exchange/UpdateInternalPriceFailed",
             Self::UpdateMarkPrice { .. } => "Exchange/UpdateMarkPrice",
             Self::UpdateMarkPriceFailed { .. } => "Exchange/UpdateMarkPriceFailed",
-            Self::UpdateMarkPriceV1 { .. } => "Exchange/UpdateMarkPrice",
+            Self::UpdateMarkPriceV1 { .. } => "Exchange/UpdateMarkPriceV1",
             Self::UpdateMarket { .. } => "Exchange/UpdateMarket",
             Self::UpdateOraclePrice { .. } => "Exchange/UpdateOraclePrice",
             Self::UpdateOraclePriceFailed { .. } => "Exchange/UpdateOraclePriceFailed",
