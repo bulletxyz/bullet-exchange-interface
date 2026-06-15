@@ -746,7 +746,7 @@ pub enum Event<Address> {
     UpdateMarkPriceV1 {
         market_id: MarketId,
         mark_price: PositiveDecimal,
-        median_orderbook_price: PositiveDecimal,
+        median_orderbook_price: Option<PositiveDecimal>,
         execution_timestamp: UnixTimestampMicros,
     },
 }
