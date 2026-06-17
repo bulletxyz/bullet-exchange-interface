@@ -140,14 +140,21 @@ define_struct! {
     }
 }
 
-// A next version of this struct should wrap all fields in an Option to make partial update
-// possible.
 define_struct! {
     struct UpdateAssetInfoArgsV1 {
         asset_id: AssetId,
         withdraw_fee: PositiveDecimal,
         pyth_lazer_feed_id: Option<u32>,
         pyth_lazer_quote_feed_id: Option<u32>,
+    }
+}
+
+define_struct! {
+    struct UpdateAssetInfoArgsV2 {
+        asset_id: AssetId,
+        withdraw_fee: Option<PositiveDecimal>,
+        pyth_lazer_feed_id: Option<Option<u32>>,
+        pyth_lazer_quote_feed_id: Option<Option<u32>>,
     }
 }
 
