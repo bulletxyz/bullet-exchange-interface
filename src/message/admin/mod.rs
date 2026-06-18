@@ -74,19 +74,22 @@ define_enum! {
         // =========================================================================
         // Asset Operations (20-29)
         // =========================================================================
-        /// Initialize asset info.
+        /// Deprecated - use InitAssetInfoV1 instead.
         InitAssetInfo { args: InitAssetInfoArgs } = 20,
 
-        /// Update asset info.
+        /// Deprecated - use UpdateAssetInfoV2 instead.
         UpdateAssetInfo { args: UpdateAssetInfoArgs } = 21,
 
         /// Initialize asset info with Pyth Lazer feed configuration.
         InitAssetInfoV1 { args: InitAssetInfoArgsV1 } = 22,
 
-        /// Update asset info with Pyth Lazer feed configuration.
+        /// Deprecated - use UpdateAssetInfoV2 instead.
         UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 23,
 
-        // Reserved: 24-29
+        /// Fixed update asset info with Pyth Lazer feed configuration.
+        UpdateAssetInfoV2 { args: UpdateAssetInfoArgsV2 } = 24,
+
+        // Reserved: 25-29
 
         // =========================================================================
         // Borrow/Lend Operations (30-39)

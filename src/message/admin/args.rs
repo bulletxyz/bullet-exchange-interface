@@ -6,7 +6,7 @@ use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::define_struct;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
-use crate::types::{AssetId, MarketId, TokenId, TradingMode};
+use crate::types::{AssetId, MarketId, PythLazerFeeds, TokenId, TradingMode};
 
 // =============================================================================
 // Market Args
@@ -140,14 +140,20 @@ define_struct! {
     }
 }
 
-// A next version of this struct should wrap all fields in an Option to make partial update
-// possible.
 define_struct! {
     struct UpdateAssetInfoArgsV1 {
         asset_id: AssetId,
         withdraw_fee: PositiveDecimal,
         pyth_lazer_feed_id: Option<u32>,
         pyth_lazer_quote_feed_id: Option<u32>,
+    }
+}
+
+define_struct! {
+    struct UpdateAssetInfoArgsV2 {
+        asset_id: AssetId,
+        withdraw_fee: Option<PositiveDecimal>,
+        pyth_lazer_feeds: Option<PythLazerFeeds>,
     }
 }
 
