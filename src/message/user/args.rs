@@ -14,8 +14,11 @@ define_struct! {
         size: PositiveDecimal,
         side: Side,
         order_type: OrderType,
+        #[serde(default)]
         reduce_only: bool,
+        #[serde(default)]
         client_order_id: Option<ClientOrderId>,
+        #[serde(default)]
         pending_tpsl_pair: Option<PendingTpslPair>,
     }
 }
@@ -42,6 +45,8 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
+    #[serde(default)]
     struct TpslPair {
         tp: Option<Tpsl>,
         sl: Option<Tpsl>,

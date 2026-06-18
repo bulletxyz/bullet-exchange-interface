@@ -41,6 +41,7 @@ define_struct! {
 
 define_struct! {
     #[derive(Default)]
+    #[serde(default)]
     struct UpdatePerpMarketArgs {
         market_id: MarketId,
         impact_margin: Option<PositiveDecimal>,
@@ -83,6 +84,7 @@ define_struct! {
 
 define_struct! {
     #[derive(Default)]
+    #[serde(default)]
     struct UpdateSpotMarketArgs {
         market_id: MarketId,
         base_min_lot_size: Option<PositiveDecimal>,
@@ -150,6 +152,8 @@ define_struct! {
 }
 
 define_struct! {
+    #[derive(Default)]
+    #[serde(default)]
     struct UpdateAssetInfoArgsV2 {
         asset_id: AssetId,
         withdraw_fee: Option<PositiveDecimal>,
@@ -183,6 +187,7 @@ define_struct! {
 
 define_struct! {
     #[derive(Default)]
+    #[serde(default)]
     struct UpdateBorrowLendPoolArgs {
         asset_id: AssetId,
         optimal_utilization_rate: Option<PositiveDecimal>,
@@ -208,6 +213,7 @@ define_struct! {
 
 define_struct! {
     #[derive(Default)]
+    #[serde(default)]
     struct UpdatePerpLiquidationConfigArgs {
         liquidation_fee: Option<PositiveDecimal>,
         liquidation_ioc_buffer: Option<PositiveDecimal>,
@@ -232,7 +238,7 @@ define_struct! {
 }
 
 define_struct! {
-    #[derive(Default)]
+    #[serde(default)]
     struct UpdateGlobalConfigArgsV1<Address> {
         max_orders_per_user: Option<u16>,
         max_trigger_orders_per_user: Option<u16>,
@@ -246,9 +252,26 @@ define_struct! {
         pyth_lazer_trusted_signers: Option<Vec<[u8; 32]>>,
     }
 }
+impl<Address> Default for UpdateGlobalConfigArgsV1<Address> {
+    fn default() -> Self {
+        Self {
+            max_orders_per_user: None,
+            max_trigger_orders_per_user: None,
+            max_orders_per_batch_msg: None,
+            max_trigger_orders_to_execute_per_msg: None,
+            min_notional_twap_value: None,
+            min_notional_twap_value_per_order: None,
+            twap_execution_interval_seconds: None,
+            deposit_limits_per_user: None,
+            whitelisted_users_for_deposit: None,
+            pyth_lazer_trusted_signers: None,
+        }
+    }
+}
 
 define_struct! {
     #[derive(Default)]
+    #[serde(default)]
     struct UpdateGlobalVaultConfigArgs {
         leader_minimum_holding_percentage: Option<u8>,
         creation_fee_usdc: Option<PositiveDecimal>,
@@ -258,6 +281,7 @@ define_struct! {
 
 define_struct! {
     #[derive(Default)]
+    #[serde(default)]
     struct UpdateRwaPriceConfigArgs {
         oracle_threshold_ratio: Option<PositiveDecimal>,
         max_bound_n: Option<u8>,
