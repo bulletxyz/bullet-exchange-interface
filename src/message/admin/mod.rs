@@ -74,16 +74,16 @@ define_enum! {
         // =========================================================================
         // Asset Operations (20-29)
         // =========================================================================
-        /// Deprecated.
+        /// Deprecated - use InitAssetInfoV1 instead.
         InitAssetInfo { args: InitAssetInfoArgs } = 20,
 
-        /// Deprecated.
+        /// Deprecated - use UpdateAssetInfoV2 instead.
         UpdateAssetInfo { args: UpdateAssetInfoArgs } = 21,
 
         /// Initialize asset info with Pyth Lazer feed configuration.
         InitAssetInfoV1 { args: InitAssetInfoArgsV1 } = 22,
 
-        /// Deprecated.
+        /// Deprecated - use UpdateAssetInfoV2 instead.
         UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 23,
 
         /// Fixed update asset info with Pyth Lazer feed configuration.

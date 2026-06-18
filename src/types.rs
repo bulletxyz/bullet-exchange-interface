@@ -175,6 +175,7 @@ define_enum!(
 define_enum!(
     enum PythLazerFeeds {
         None,
+        Base(u32),
         Feeds { base: u32, quote: u32 },
     }
 );
