@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.0...v0.9.1) - 2026-06-18
+
+### Bug Fixes
+
+- introduce UpdateAssetInfoV2 to avoid resetting pyth feeds ([#70](https://github.com/bulletxyz/bullet-exchange-interface/pull/70))
+
 ## [0.9.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.8.0...v0.9.0) - 2026-06-15
 
 ### Features
