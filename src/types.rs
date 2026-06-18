@@ -171,3 +171,10 @@ define_enum!(
         LiquidateIsoPerpPosition(MarketId),
     }
 );
+
+define_enum!(
+    enum PythLazerFeeds {
+        None,
+        Feeds { base: u32, quote: u32 },
+    }
+);
