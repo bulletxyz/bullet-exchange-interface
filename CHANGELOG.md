@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.1...v0.9.2) - 2026-06-19
+
+### Features
+
+- add TwapsActive event ([#75](https://github.com/bulletxyz/bullet-exchange-interface/pull/75))
+
 ## [0.9.1](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.0...v0.9.1) - 2026-06-18
 
 ### Bug Fixes
