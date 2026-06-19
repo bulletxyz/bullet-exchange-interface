@@ -751,7 +751,7 @@ pub enum Event<Address> {
     },
     ActiveTwaps {
         market_id: MarketId,
-        active: u32,
+        executes_required: u32,
         execution_timestamp: UnixTimestampMicros,
     },
 }
