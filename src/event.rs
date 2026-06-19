@@ -749,6 +749,11 @@ pub enum Event<Address> {
         median_orderbook_price: Option<PositiveDecimal>,
         execution_timestamp: UnixTimestampMicros,
     },
+    ActivateTwap {
+        market_id: MarketId,
+        executes_required: u32,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -756,6 +761,7 @@ impl<Address> Event<Address> {
         match self {
             Self::AccrueInterestOnBorrowLend { .. } => "Exchange/AccrueInterestOnBorrowLend",
             Self::ActivateTriggerOrder { .. } => "Exchange/ActivateTriggerOrder",
+            Self::ActivateTwap { .. } => "Exchange/ActivateTwap",
             Self::AdminAddTradingCredits { .. } => "Exchange/AdminAddTradingCredits",
             Self::AdminDeleteDelegateConfig { .. } => "Exchange/AdminDeleteDelegateConfig",
             Self::AdminRemoveTradingCredits { .. } => "Exchange/AdminRemoveTradingCredits",
