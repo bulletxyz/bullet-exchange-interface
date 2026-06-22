@@ -291,7 +291,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
 
-    /// Premium Index Updated
+    /// deprecated - use UpdatePremiumIndexV1 instead
     UpdatePremiumIndex {
         market_id: MarketId,
         premium_index: Decimal,
@@ -754,6 +754,12 @@ pub enum Event<Address> {
         executes_required: u32,
         execution_timestamp: UnixTimestampMicros,
     },
+    UpdatePremiumIndexV1 {
+        market_id: MarketId,
+        premium_index: Decimal,
+        estimated_funding_rate: Decimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -838,6 +844,7 @@ impl<Address> Event<Address> {
             Self::UpdateOraclePriceFailed { .. } => "Exchange/UpdateOraclePriceFailed",
             Self::UpdatePremiumIndex { .. } => "Exchange/UpdatePremiumIndex",
             Self::UpdatePremiumIndexFailed { .. } => "Exchange/UpdatePremiumIndexFailed",
+            Self::UpdatePremiumIndexV1 { .. } => "Exchange/UpdatePremiumIndexV1",
             Self::UpdateReduceOnlyLimitOrder { .. } => "Exchange/UpdateReduceOnlyLimitOrder",
             Self::UpdateUserFeeDiscountBps { .. } => "Exchange/UpdateUserFeeDiscountBps",
             Self::UpdateUserFeeTier { .. } => "Exchange/UpdateUserFeeTier",
