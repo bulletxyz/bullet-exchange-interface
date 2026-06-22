@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.3](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.2...v0.9.3) - 2026-06-22
+
+### Features
+
+- add UpdatePremiumIndexV1 to report estimated_funding_rate ([#78](https://github.com/bulletxyz/bullet-exchange-interface/pull/78))
+
 ## [0.9.2](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.1...v0.9.2) - 2026-06-19
 
 ### Features
