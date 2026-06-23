@@ -112,7 +112,15 @@ define_simple_enum!(SpotCollateralTransferDirection {
     MarginToSpot = 0,
     SpotToMargin = 1
 });
-define_simple_enum!(AdminType { Protocol, Funding, Pricing, FeeTier, Credits, Referrals, MarketStatus });
+define_simple_enum!(AdminType {
+    Protocol,
+    Funding,
+    Pricing,
+    FeeTier,
+    Credits,
+    Referrals,
+    MarketStatus
+});
 
 define_simple_type!(
     #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]

@@ -2,7 +2,7 @@
 
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::define_struct;
-use crate::types::{AssetId, MarketId, MarketTradingStatus, MarginDiscount};
+use crate::types::{AssetId, MarginDiscount, MarketId, MarketTradingStatus};
 
 define_struct! {
     struct OraclePriceUpdateArgs {

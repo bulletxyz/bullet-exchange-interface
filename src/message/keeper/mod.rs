@@ -148,9 +148,9 @@ impl<Address> KeeperAction<Address> {
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
             }
-            Self::UpdateUserFeeTier { .. } | Self::UpdateUserFeeDiscountBps { .. } | Self::UpdateUserMarginDiscount { .. } => {
-                AdminType::FeeTier
-            }
+            Self::UpdateUserFeeTier { .. }
+            | Self::UpdateUserFeeDiscountBps { .. }
+            | Self::UpdateUserMarginDiscount { .. } => AdminType::FeeTier,
             Self::SetCumulativeReferralRewards { .. } => AdminType::Referrals,
         }
     }
