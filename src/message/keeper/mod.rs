@@ -3,7 +3,7 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::time::UnixTimestampMicros;
-use crate::types::{AdminType, AssetId, FeeTier, MarketId};
+use crate::types::{AdminType, AssetId, FeeTier, MarketId, MarginDiscount};
 
 mod args;
 pub use args::*;
@@ -82,7 +82,12 @@ define_enum! {
             address: Address,
             fee_discount_bps: u16,
         } = 31,
-        // Reserved: 32-39
+
+        UpdateUserMarginDiscount {
+            address: Address,
+            margin_discount: MarginDiscount,
+        } = 32,
+        // Reserved: 33-39
 
         // =========================================================================
         // Referrals Admin Operations (40-49)
@@ -143,7 +148,7 @@ impl<Address> KeeperAction<Address> {
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
             }
-            Self::UpdateUserFeeTier { .. } | Self::UpdateUserFeeDiscountBps { .. } => {
+            Self::UpdateUserFeeTier { .. } | Self::UpdateUserFeeDiscountBps { .. } | Self::UpdateUserMarginDiscount { .. } => {
                 AdminType::FeeTier
             }
             Self::SetCumulativeReferralRewards { .. } => AdminType::Referrals,
