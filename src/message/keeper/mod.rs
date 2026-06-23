@@ -3,7 +3,7 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::time::UnixTimestampMicros;
-use crate::types::{AdminType, AssetId, FeeTier, MarketId, MarginDiscount};
+use crate::types::{AdminType, AssetId, FeeTier, MarketId};
 
 mod args;
 pub use args::*;
@@ -83,9 +83,9 @@ define_enum! {
             fee_discount_bps: u16,
         } = 31,
 
+        /// Update a given list of users' margin discount (MarginDiscountAdmin).
         UpdateUserMarginDiscount {
-            address: Address,
-            margin_discount: MarginDiscount,
+            args: Vec<UpdateUserMarginDiscountArgs<Address>>,
         } = 32,
         // Reserved: 33-39
 
