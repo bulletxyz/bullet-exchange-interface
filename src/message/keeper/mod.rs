@@ -129,7 +129,6 @@ impl<Address> KeeperAction<Address> {
     #[must_use]
     pub fn required_admin_type(&self) -> AdminType {
         #[allow(clippy::match_same_arms)]
-        // Temporarily allow this before I upgrade state for a MarketStateAdmin
         match self {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
@@ -139,7 +138,7 @@ impl<Address> KeeperAction<Address> {
             Self::SetMarketsTradingStatus { .. }
             | Self::HaltBorrowLendPool { .. }
             | Self::UnhaltBorrowLendPool { .. }
-            | Self::HaltPerpMarket { .. } => AdminType::Pricing,
+            | Self::HaltPerpMarket { .. } => AdminType::MarketStatus,
             Self::UpdateFunding { .. } => AdminType::Funding,
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
