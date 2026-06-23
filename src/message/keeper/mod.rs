@@ -82,7 +82,12 @@ define_enum! {
             address: Address,
             fee_discount_bps: u16,
         } = 31,
-        // Reserved: 32-39
+
+        /// Update a given list of users' margin discount (FeeTierAdmin).
+        UpdateUserMarginDiscount {
+            args: Vec<UpdateUserMarginDiscountArgs<Address>>,
+        } = 32,
+        // Reserved: 33-39
 
         // =========================================================================
         // Referrals Admin Operations (40-49)
@@ -129,7 +134,6 @@ impl<Address> KeeperAction<Address> {
     #[must_use]
     pub fn required_admin_type(&self) -> AdminType {
         #[allow(clippy::match_same_arms)]
-        // Temporarily allow this before I upgrade state for a MarketStateAdmin
         match self {
             Self::UpdateOraclePrices { .. }
             | Self::UpdateMarkPrices { .. }
@@ -139,14 +143,14 @@ impl<Address> KeeperAction<Address> {
             Self::SetMarketsTradingStatus { .. }
             | Self::HaltBorrowLendPool { .. }
             | Self::UnhaltBorrowLendPool { .. }
-            | Self::HaltPerpMarket { .. } => AdminType::Pricing,
+            | Self::HaltPerpMarket { .. } => AdminType::MarketStatus,
             Self::UpdateFunding { .. } => AdminType::Funding,
             Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
                 AdminType::Credits
             }
-            Self::UpdateUserFeeTier { .. } | Self::UpdateUserFeeDiscountBps { .. } => {
-                AdminType::FeeTier
-            }
+            Self::UpdateUserFeeTier { .. }
+            | Self::UpdateUserFeeDiscountBps { .. }
+            | Self::UpdateUserMarginDiscount { .. } => AdminType::FeeTier,
             Self::SetCumulativeReferralRewards { .. } => AdminType::Referrals,
         }
     }

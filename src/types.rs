@@ -112,7 +112,15 @@ define_simple_enum!(SpotCollateralTransferDirection {
     MarginToSpot = 0,
     SpotToMargin = 1
 });
-define_simple_enum!(AdminType { Protocol, Funding, Pricing, FeeTier, Credits, Referrals });
+define_simple_enum!(AdminType {
+    Protocol,
+    Funding,
+    Pricing,
+    FeeTier,
+    Credits,
+    Referrals,
+    MarketStatus
+});
 
 define_simple_type!(
     #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
@@ -179,3 +187,17 @@ define_enum!(
         Feeds { base: u32, quote: u32 },
     }
 );
+
+define_simple_enum! {
+    #[derive(strum::EnumIter)]
+    MarginDiscount {
+        None,
+        LP,
+    }
+}
+#[allow(clippy::derivable_impls)]
+impl Default for MarginDiscount {
+    fn default() -> Self {
+        Self::None
+    }
+}
