@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.3...v0.10.0) - 2026-06-23
+
+### Features
+
+- margin discount and new admin type ([#80](https://github.com/bulletxyz/bullet-exchange-interface/pull/80))
+
 ## [0.9.3](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.9.2...v0.9.3) - 2026-06-22
 
 ### Features
