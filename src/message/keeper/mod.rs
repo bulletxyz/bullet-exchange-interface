@@ -83,7 +83,7 @@ define_enum! {
             fee_discount_bps: u16,
         } = 31,
 
-        /// Update a given list of users' margin discount (MarginDiscountAdmin).
+        /// Update a given list of users' margin discount (FeeTierAdmin).
         UpdateUserMarginDiscount {
             args: Vec<UpdateUserMarginDiscountArgs<Address>>,
         } = 32,
