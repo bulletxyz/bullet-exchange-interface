@@ -88,7 +88,7 @@ define_enum! {
     enum RuntimeCall {
         Bank(BankCall) = 2,
         Exchange(ExchangeCall) = 7,
-        Warp(WarpCall) = 14,
+        Warp(WarpCall) = 15,
     }
 }
 
