@@ -80,7 +80,7 @@ fn warp_transfer_remote_rejects_numeric_json_amounts() {
 fn warp_transfer_remote_borsh_bytes_match_runtime_encoding() {
     let call = transfer_remote_call();
     let expected = decode_hex(&format!(
-        "0e04{}d2040000{}40e2010000000000000000000000000000801a0600000000000000000000000000",
+        "0f04{}d2040000{}40e2010000000000000000000000000000801a0600000000000000000000000000",
         "11".repeat(32),
         "22".repeat(32),
     ));
