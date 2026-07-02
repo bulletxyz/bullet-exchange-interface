@@ -135,6 +135,7 @@ pub enum CancelReason {
 #[non_exhaustive]
 pub enum Event<Address> {
     /// Market initialized
+    #[deprecated(since = "0.1.0", note = "use `InitializePerpMarketV1`")]
     InitializePerpMarket {
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
@@ -181,10 +182,7 @@ pub enum Event<Address> {
         client_order_id: Option<ClientOrderId>,
     },
     /// Order canceled
-    #[deprecated(
-        since = "0.12.0",
-        note = "use `CancelOrderV1`"
-    )]
+    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
     CancelOrder {
         user_address: Address,
         order_id: OrderId,
@@ -254,10 +252,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Trigger order cancelled (active / inactive)
-    #[deprecated(
-        since = "0.12.0",
-        note = "use `CancelTriggerOrderV1`"
-    )]
+    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
     CancelTriggerOrder {
         user_address: Address,
         trigger_order_id: TriggerOrderId,
@@ -307,17 +302,14 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Whole twap order cancelled
-    #[deprecated(
-        since = "0.12.0",
-        note = "use `CancelTwapV1`"
-    )]
+    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
     CancelTwap {
         user_address: Address,
         twap_id: TwapId,
         execution_timestamp: UnixTimestampMicros,
     },
 
-    /// deprecated - use UpdatePremiumIndexV1 instead
+    #[deprecated(since = "0.9.3", note = "use `UpdatePremiumIndexV1`")]
     UpdatePremiumIndex {
         market_id: MarketId,
         premium_index: Decimal,
@@ -362,6 +354,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Mark Price Updated
+    #[deprecated(since = "0.9.0", note = "use `UpdateMarkPriceV1`")]
     UpdateMarkPrice {
         market_id: MarketId,
         median_cex_price: PositiveDecimal,
@@ -409,6 +402,7 @@ pub enum Event<Address> {
         fee: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    #[deprecated(since = "0.1.0", note = "use `TradeV1`")]
     Trade {
         user_address: Address,
         market_id: MarketId,
@@ -492,10 +486,7 @@ pub enum Event<Address> {
         new_size: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    #[deprecated(
-        since = "0.12.0",
-        note = "use `CancelOrderV1`"
-    )]
+    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
     BootOrder {
         user_address: Address,
         order_id: OrderId,
@@ -515,6 +506,7 @@ pub enum Event<Address> {
         protocol_reward: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    #[deprecated(since = "0.1.0", note = "use `InitializeSpotMarketV1`")]
     InitializeSpotMarket {
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
@@ -557,8 +549,7 @@ pub enum Event<Address> {
         amount: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    // deprecated - can't be removed since used in old slots and discriminators have to stay
-    // constant
+    #[deprecated(since = "0.1.0", note = "use `WithdrawSpotCollateralV2`")]
     WithdrawSpotCollateral {
         user_address: Address,
         asset_id: AssetId,
@@ -637,6 +628,7 @@ pub enum Event<Address> {
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
     },
+    #[deprecated(since = "0.1.0", note = "use `DelegateUserV1`")]
     DelegateUser {
         delegator: Address,
         delegate: Address,
@@ -732,28 +724,16 @@ pub enum Event<Address> {
     /// supersedes CancelOrder; adds reason
     CancelOrderV1 {
         user_address: Address,
-        order_id: OrderId,
+        order_id: OrderReference,
         market_id: MarketId,
         execution_timestamp: UnixTimestampMicros,
         client_order_id: Option<ClientOrderId>,
         reason: CancelReason,
     },
-    /// supersedes CancelTriggerOrder; adds reason
-    CancelTriggerOrderV1 {
-        user_address: Address,
-        trigger_order_id: TriggerOrderId,
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-        reason: CancelReason,
-    },
-    /// supersedes CancelTwap; adds reason
-    CancelTwapV1 {
-        user_address: Address,
-        twap_id: TwapId,
-        market_id: MarketId,
-        execution_timestamp: UnixTimestampMicros,
-        reason: CancelReason,
-    },
+    // can be re-used for future extensions as it was never deployed
+    Reserved0,
+    // can be re-used for future extensions as it was never deployed
+    Reserved1,
     UpdateInternalPriceFailed {
         market_id: MarketId,
         error: String,
@@ -812,9 +792,7 @@ impl<Address> Event<Address> {
             Self::CancelOrder { .. } => "Exchange/CancelOrder",
             Self::CancelOrderV1 { .. } => "Exchange/CancelOrderV1",
             Self::CancelTriggerOrder { .. } => "Exchange/CancelTriggerOrder",
-            Self::CancelTriggerOrderV1 { .. } => "Exchange/CancelTriggerOrderV1",
             Self::CancelTwap { .. } => "Exchange/CancelTwap",
-            Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::ClaimReferralRewards { .. } => "Exchange/ClaimReferralRewards",
             Self::CleanupUserMarketState { .. } => "Exchange/CleanupUserMarketState",
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
@@ -886,8 +864,16 @@ impl<Address> Event<Address> {
             Self::WithdrawIso { .. } => "Exchange/WithdrawIso",
             Self::WithdrawSpotCollateral { .. } => "Exchange/WithdrawSpotCollateral",
             Self::WithdrawSpotCollateralV2 { .. } => "Exchange/WithdrawSpotCollateralV2",
+            Self::Reserved0 | Self::Reserved1 => "reserved",
         }
     }
 }
 
 crate::define_simple_enum!(OrderSource { Admin, Liquidate, User, Trigger, Twap });
+crate::define_enum!(
+    enum OrderReference {
+        Normal(OrderId),
+        Trigger(TriggerOrderId),
+        Twap(TwapId),
+    }
+);
