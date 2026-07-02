@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use rust_decimal::Decimal;
 
 use crate::decimals::PositiveDecimal;
@@ -22,6 +24,7 @@ use crate::types::{
 )]
 #[serde(rename_all = "snake_case")]
 #[schemars(rename = "FillType")]
+#[non_exhaustive]
 pub enum FillType {
     Orderbook,
     Liquidation,
@@ -46,23 +49,17 @@ pub enum FillType {
 )]
 #[serde(rename_all = "snake_case")]
 #[schemars(rename = "CancelReason")]
+#[non_exhaustive]
 pub enum CancelReason {
     // user-initiated
-    /// User invoked a cancel action directly (CancelOrders / CancelMarketOrders /
-    /// CancelAllOrders / CancelTriggerOrders / CancelTwapOrder)
+    /// User invoked a cancel action directly
     UserRequested,
-    /// User amended an order (cancel + replace)
-    Amended,
-    /// User placed orders with replace=true; existing market orders wiped
-    Replaced,
 
     // admin-initiated
     /// AdminAction::CancelOrders / AdminCancelTriggerOrders
     AdminRequested,
     /// Admin pruned the market
     MarketPruned,
-    /// Market was halted; resting orders cleared
-    MarketHalted,
 
     // risk-driven
     /// Account undercollateralized — covers cross-margin
@@ -116,13 +113,9 @@ pub enum CancelReason {
     /// and was removed from the orderbook
     Expired,
 
-    /// TWAP slice executed but post-trade margin check failed; position rolled back
-    /// and TWAP cancelled. User needs more margin to continue.
-    TwapInsufficientMargin,
-
     /// Maker order matched but post-trade margin check failed; fill rolled back
     /// and maker order cancelled. User needs more margin to continue.
-    MakerInsufficientMargin,
+    InsufficientMargin,
 }
 
 #[derive(
@@ -188,6 +181,10 @@ pub enum Event<Address> {
         client_order_id: Option<ClientOrderId>,
     },
     /// Order canceled
+    #[deprecated(
+        since = "0.12.0",
+        note = "use `CancelOrderV1`"
+    )]
     CancelOrder {
         user_address: Address,
         order_id: OrderId,
@@ -257,6 +254,10 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Trigger order cancelled (active / inactive)
+    #[deprecated(
+        since = "0.12.0",
+        note = "use `CancelTriggerOrderV1`"
+    )]
     CancelTriggerOrder {
         user_address: Address,
         trigger_order_id: TriggerOrderId,
@@ -306,6 +307,10 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Whole twap order cancelled
+    #[deprecated(
+        since = "0.12.0",
+        note = "use `CancelTwapV1`"
+    )]
     CancelTwap {
         user_address: Address,
         twap_id: TwapId,
@@ -487,6 +492,10 @@ pub enum Event<Address> {
         new_size: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    #[deprecated(
+        since = "0.12.0",
+        note = "use `CancelOrderV1`"
+    )]
     BootOrder {
         user_address: Address,
         order_id: OrderId,
