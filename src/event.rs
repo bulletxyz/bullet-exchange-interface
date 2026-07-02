@@ -50,14 +50,13 @@ pub enum FillType {
 #[schemars(rename = "CancelReason")]
 #[non_exhaustive]
 pub enum CancelReason {
-    // user-initiated
     /// User invoked a cancel action directly
     UserRequested,
 
-    // admin-initiated
-    /// AdminAction::CancelOrders / AdminCancelTriggerOrders
+    /// An admin force-canceled the order - AdminAction::CancelOrders / AdminCancelTriggerOrders
     AdminRequested,
-    /// Admin pruned the market
+
+    /// Admin pruned the whole market
     MarketPruned,
 
     // risk-driven
@@ -94,9 +93,7 @@ pub enum CancelReason {
     OrderbookOverflow,
 
     /// TWAP slice or Trigger order fired but couldn't execute — runtime error, no liquidity, etc
-    ExecutionFailed {
-	error: String,
-    },
+    ExecutionFailed { error: String },
 
     /// User's resting orders cancelled because their position is being
     /// force-closed via auto-deleverage (last-resort protocol action when
@@ -109,7 +106,7 @@ pub enum CancelReason {
     Expired,
 
     /// Maker order matched but post-trade margin check failed; fill rolled back
-    /// and maker order cancelled. User needs more margin to continue.
+    /// and maker order cancelled.
     InsufficientMargin,
 }
 
@@ -177,7 +174,7 @@ pub enum Event<Address> {
         client_order_id: Option<ClientOrderId>,
     },
     /// Order canceled
-    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     CancelOrder {
         user_address: Address,
         order_id: OrderId,
@@ -240,6 +237,7 @@ pub enum Event<Address> {
         order_type: OrderType,
         execution_timestamp: UnixTimestampMicros,
     },
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     FailureExecuteTriggerOrder {
         user_address: Address,
         trigger_order_id: TriggerOrderId,
@@ -247,7 +245,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Trigger order cancelled (active / inactive)
-    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     CancelTriggerOrder {
         user_address: Address,
         trigger_order_id: TriggerOrderId,
@@ -255,6 +253,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Active trigger order rejected while trying to be executed
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     RejectTriggerOrder {
         user_address: Address,
         trigger_order_id: TriggerOrderId,
@@ -290,7 +289,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Active twap order rejected while trying to be executed
-    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     RejectTwapOrder {
         user_address: Address,
         twap_id: TwapId,
@@ -298,7 +297,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Whole twap order cancelled
-    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     CancelTwap {
         user_address: Address,
         twap_id: TwapId,
@@ -482,7 +481,7 @@ pub enum Event<Address> {
         new_size: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
+    #[deprecated(since = "0.12.0", note = "use `Cancel`")]
     BootOrder {
         user_address: Address,
         order_id: OrderId,
@@ -718,7 +717,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// supersedes CancelOrder; adds reason
-    CancelOrderV1 {
+    Cancel {
         user_address: Address,
         order_id: OrderReference,
         market_id: MarketId,
@@ -785,8 +784,8 @@ impl<Address> Event<Address> {
             Self::BackstopLiquidatePerpPosition { .. } => "Exchange/BackstopLiquidatePerpPosition",
             Self::BootOrder { .. } => "Exchange/BootOrder",
             Self::Borrow { .. } => "Exchange/Borrow",
+            Self::Cancel { .. } => "Exchange/Cancel",
             Self::CancelOrder { .. } => "Exchange/CancelOrder",
-            Self::CancelOrderV1 { .. } => "Exchange/CancelOrderV1",
             Self::CancelTriggerOrder { .. } => "Exchange/CancelTriggerOrder",
             Self::CancelTwap { .. } => "Exchange/CancelTwap",
             Self::ClaimReferralRewards { .. } => "Exchange/ClaimReferralRewards",
@@ -876,18 +875,18 @@ crate::define_enum!(
 
 impl From<OrderId> for OrderReference {
     fn from(v: OrderId) -> Self {
-	Self::Normal(v)
+        Self::Normal(v)
     }
 }
 
 impl From<TriggerOrderId> for OrderReference {
     fn from(v: TriggerOrderId) -> Self {
-	Self::Trigger(v)
+        Self::Trigger(v)
     }
 }
 
 impl From<TwapId> for OrderReference {
     fn from(v: TwapId) -> Self {
-	Self::Twap(v)
+        Self::Twap(v)
     }
 }
