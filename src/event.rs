@@ -41,7 +41,6 @@ pub enum FillType {
     PartialEq,
     Eq,
     Clone,
-    Copy,
     Debug,
     schemars::JsonSchema,
     strum::AsRefStr,
@@ -82,17 +81,11 @@ pub enum CancelReason {
 
     /// A trigger that would have opened/added position was
     /// auto-canceled because a fill made it stale
-    OpeningTriggerOrphaned,
+    OpeningOrphaned,
 
     /// Linked TPSL sibling canceled because its pair leg fired, was
     /// rejected, or failed during execution
     TpslSiblingCancelled,
-
-    /// Trigger fired but couldn't execute — no position to close,
-    /// post-execution margin failure, no liquidity, or runtime error.
-    /// The accompanying RejectTriggerOrder / FailureExecuteTriggerOrder
-    /// event in the same tx carries the specific cause.
-    TriggerExecutionFailed,
 
     /// TWAP slice schedule exhausted (next-slice size rounded to zero)
     TwapCompleted,
@@ -100,8 +93,10 @@ pub enum CancelReason {
     /// Order evicted to make room when orderbook hit its capacity limit
     OrderbookOverflow,
 
-    /// TWAP slice fired but couldn't execute — runtime error, no liquidity, etc
-    TwapExecutionFailed,
+    /// TWAP slice or Trigger order fired but couldn't execute — runtime error, no liquidity, etc
+    ExecutionFailed {
+	error: String,
+    },
 
     /// User's resting orders cancelled because their position is being
     /// force-closed via auto-deleverage (last-resort protocol action when
@@ -295,6 +290,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Active twap order rejected while trying to be executed
+    #[deprecated(since = "0.12.0", note = "use `CancelOrderV1`")]
     RejectTwapOrder {
         user_address: Address,
         twap_id: TwapId,
@@ -877,3 +873,21 @@ crate::define_enum!(
         Twap(TwapId),
     }
 );
+
+impl From<OrderId> for OrderReference {
+    fn from(v: OrderId) -> Self {
+	Self::Normal(v)
+    }
+}
+
+impl From<TriggerOrderId> for OrderReference {
+    fn from(v: TriggerOrderId) -> Self {
+	Self::Trigger(v)
+    }
+}
+
+impl From<TwapId> for OrderReference {
+    fn from(v: TwapId) -> Self {
+	Self::Twap(v)
+    }
+}
