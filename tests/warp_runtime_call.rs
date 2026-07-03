@@ -108,6 +108,61 @@ fn adding_warp_does_not_change_exchange_or_bank_runtime_call_encoding() {
     assert_eq!(to_vec(&bank).expect("serialize bank call"), bank_expected);
 }
 
+/// The exact `warp.register` call the admin panel submitted in production
+/// (the case that failed against the pre-`register` SDK build).
+fn register_call_json() -> serde_json::Value {
+    json!({
+        "warp": {
+            "register": {
+                "admin": { "InsecureOwner": "6VAMTMV79wXe7DkexzBNoTy3tVKUqR7Z2kAYK1dH7PND" },
+                "token_source": {
+                    "Synthetic": {
+                        "remote_token_id": "0x2a1709ab4e0fdde50d3735ab301ff6863f17d4e928309aa2696412bac5729bb5",
+                        "remote_decimals": 9,
+                        "local_decimals": 9
+                    }
+                },
+                "ism": {
+                    "MessageIdMultisig": {
+                        "validators": ["0xb44c817662881f7baf4c6e7731305104d6e557a4"],
+                        "threshold": 1
+                    }
+                },
+                "remote_routers": [
+                    [1399811150, "0x2a1709ab4e0fdde50d3735ab301ff6863f17d4e928309aa2696412bac5729bb5"]
+                ],
+                "inbound_transferrable_tokens_limit": "340282366920938463463374607431768211455",
+                "inbound_limit_replenishment_per_slot": "340282366920938463463374607431768211455",
+                "outbound_transferrable_tokens_limit": "10000000000000",
+                "outbound_limit_replenishment_per_slot": "694444444"
+            }
+        }
+    })
+}
+
+#[test]
+fn warp_register_round_trips_production_json() {
+    let json = register_call_json();
+    let call: RuntimeCall =
+        serde_json::from_value(json.clone()).expect("deserialize register call");
+    // JSON round-trips byte-for-byte (field names, PascalCase nested variants,
+    // decimal-string amounts, hex addresses).
+    assert_eq!(serde_json::to_value(&call).expect("serialize register call"), json);
+    // Borsh round-trips.
+    let bytes = to_vec(&call).expect("borsh-serialize register call");
+    assert_eq!(RuntimeCall::try_from_slice(&bytes).expect("borsh-deserialize"), call);
+    // Discriminants match the runtime: RuntimeCall::Warp = 15 (0x0f), Register = 0 (0x00).
+    assert_eq!(&bytes[0..2], &[0x0f, 0x00]);
+}
+
+#[test]
+fn warp_register_rejects_numeric_json_limits() {
+    // Rate-limit amounts must be decimal strings, like every other Amount.
+    let mut json = register_call_json();
+    json["warp"]["register"]["inbound_transferrable_tokens_limit"] = json!(1000);
+    assert!(serde_json::from_value::<RuntimeCall>(json).is_err());
+}
+
 #[cfg(feature = "schema")]
 #[test]
 fn warp_transfer_remote_is_present_in_generated_universal_wallet_schema() {
@@ -126,4 +181,25 @@ fn warp_transfer_remote_is_present_in_generated_universal_wallet_schema() {
     assert!(schema_json.contains("\"relayer\""));
     assert!(schema_json.contains("\"gas_payment_limit\""));
     assert!(schema_json.contains("\"Hex\""));
+}
+
+#[test]
+fn warp_update_allows_omitted_optional_fields() {
+    // A minimal update that supplies only `warp_route` — every optional field
+    // (admin, ism, all four rate limits) omitted should deserialize as None.
+    let json = json!({ "warp": { "update": { "warp_route": hex_32_json(0x11) } } });
+    let call: RuntimeCall =
+        serde_json::from_value(json).expect("partial update should deserialize with omitted keys");
+    assert_eq!(
+        call,
+        RuntimeCall::Warp(WarpCall::Update {
+            warp_route: warp_bytes(0x11),
+            admin: None,
+            ism: None,
+            inbound_transferrable_tokens_limit: None,
+            inbound_limit_replenishment_per_slot: None,
+            outbound_transferrable_tokens_limit: None,
+            outbound_limit_replenishment_per_slot: None,
+        })
+    );
 }
