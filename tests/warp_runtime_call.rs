@@ -182,3 +182,24 @@ fn warp_transfer_remote_is_present_in_generated_universal_wallet_schema() {
     assert!(schema_json.contains("\"gas_payment_limit\""));
     assert!(schema_json.contains("\"Hex\""));
 }
+
+#[test]
+fn warp_update_allows_omitted_optional_fields() {
+    // A minimal update that supplies only `warp_route` — every optional field
+    // (admin, ism, all four rate limits) omitted should deserialize as None.
+    let json = json!({ "warp": { "update": { "warp_route": hex_32_json(0x11) } } });
+    let call: RuntimeCall =
+        serde_json::from_value(json).expect("partial update should deserialize with omitted keys");
+    assert_eq!(
+        call,
+        RuntimeCall::Warp(WarpCall::Update {
+            warp_route: warp_bytes(0x11),
+            admin: None,
+            ism: None,
+            inbound_transferrable_tokens_limit: None,
+            inbound_limit_replenishment_per_slot: None,
+            outbound_transferrable_tokens_limit: None,
+            outbound_limit_replenishment_per_slot: None,
+        })
+    );
+}

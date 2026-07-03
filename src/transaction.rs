@@ -380,19 +380,19 @@ pub mod warp {
                 /// New ISM for this route.
                 ism: Option<Ism>,
                 /// New inbound rate-limit bucket capacity.
-                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[serde(default, with = "crate::transaction::serde_amount_decimal_string_opt")]
                 #[schemars(with = "Option<String>")]
                 inbound_transferrable_tokens_limit: Option<Amount>,
                 /// New inbound rate-limit refill per visible slot.
-                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[serde(default, with = "crate::transaction::serde_amount_decimal_string_opt")]
                 #[schemars(with = "Option<String>")]
                 inbound_limit_replenishment_per_slot: Option<Amount>,
                 /// New outbound rate-limit bucket capacity.
-                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[serde(default, with = "crate::transaction::serde_amount_decimal_string_opt")]
                 #[schemars(with = "Option<String>")]
                 outbound_transferrable_tokens_limit: Option<Amount>,
                 /// New outbound rate-limit refill per visible slot.
-                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[serde(default, with = "crate::transaction::serde_amount_decimal_string_opt")]
                 #[schemars(with = "Option<String>")]
                 outbound_limit_replenishment_per_slot: Option<Amount>,
             } = 1,
