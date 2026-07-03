@@ -21,6 +21,18 @@ define_simple_type!(
     ) + Copy + Debug
 );
 
+define_simple_type!(
+    /// A 20-byte Ethereum address (Hyperlane validator), encoded as 0x-prefixed hex in JSON.
+    /// Mirrors the runtime's `EthAddress = HexString<[u8; 20]>`.
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    WarpBytes20(
+        #[serde(with = "crate::transaction::serde_hex_20")]
+        #[schemars(with = "String")]
+        #[cfg_attr(feature = "schema", sov_wallet(display = "hex"))]
+        [u8; 20]
+    ) + Copy + Debug
+);
+
 #[derive(
     Clone,
     Debug,
@@ -174,15 +186,217 @@ mod serde_hex_32 {
     }
 }
 
+mod serde_hex_20 {
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(bytes: &[u8; 20], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&format!("0x{}", hex::encode(bytes)))
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<[u8; 20], D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+        let value = value.strip_prefix("0x").unwrap_or(value.as_str());
+        let mut bytes = [0; 20];
+        hex::decode_to_slice(value, &mut bytes).map_err(serde::de::Error::custom)?;
+
+        Ok(bytes)
+    }
+}
+
+/// Serde for `Option<Amount>` fields that must be decimal strings (or null) in
+/// JSON — the `Update` warp call uses these for optional rate-limit changes.
+mod serde_amount_decimal_string_opt {
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    use crate::transaction::Amount;
+
+    pub fn serialize<S>(amount: &Option<Amount>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match amount {
+            Some(a) => serializer.serialize_some(&a.0.to_string()),
+            None => serializer.serialize_none(),
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<Option<Amount>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        match Option::<String>::deserialize(deserializer)? {
+            Some(s) => s.parse::<u128>().map(Amount).map(Some).map_err(serde::de::Error::custom),
+            None => Ok(None),
+        }
+    }
+}
+
 pub mod warp {
     use crate::define_enum;
-    use crate::transaction::{Amount, WarpBytes32};
+    use crate::transaction::bank::TokenId;
+    use crate::transaction::{Amount, WarpBytes20, WarpBytes32};
+
+    // The nested `Admin`/`TokenKind`/`Ism` types use serde's DEFAULT (PascalCase)
+    // variant naming and positional borsh discriminants — matching the runtime's
+    // `hyperlane::warp` module. They deliberately do NOT go through `define_enum!`,
+    // which forces `#[serde(rename_all = "snake_case")]` (the runtime only applies
+    // snake_case to the top-level `CallMessage`, not to these).
+
+    /// The authority that can modify a warp route. Mirrors the runtime `Admin<S>`.
+    #[derive(
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+        borsh::BorshDeserialize,
+        borsh::BorshSerialize,
+        serde::Deserialize,
+        serde::Serialize,
+        schemars::JsonSchema,
+    )]
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    pub enum Admin<Address> {
+        /// No admin — the route is immutable.
+        None,
+        /// Allow the specified address to modify the route.
+        InsecureOwner(Address),
+    }
+
+    /// The source of the token backing a warp route. Mirrors the runtime `TokenKind`.
+    #[derive(
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+        borsh::BorshDeserialize,
+        borsh::BorshSerialize,
+        serde::Deserialize,
+        serde::Serialize,
+        schemars::JsonSchema,
+    )]
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    pub enum TokenKind {
+        /// Natively issued on a remote chain; represented locally as a synthetic token.
+        Synthetic {
+            /// The ID of the remote token.
+            remote_token_id: WarpBytes32,
+            /// The number of decimal places of the remote token.
+            remote_decimals: u8,
+            /// The number of decimal places for the local (synthetic) token.
+            local_decimals: Option<u8>,
+        },
+        /// Natively issued on the local chain.
+        Collateral {
+            /// The ID of the token on the local chain.
+            token: TokenId,
+        },
+        /// The native token of the local chain.
+        Native,
+    }
+
+    /// The interchain security module for a warp route. Mirrors the runtime `Ism`.
+    #[derive(
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+        borsh::BorshDeserialize,
+        borsh::BorshSerialize,
+        serde::Deserialize,
+        serde::Serialize,
+        schemars::JsonSchema,
+    )]
+    #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
+    pub enum Ism {
+        /// Performs no validation — accepts any message.
+        AlwaysTrust,
+        /// Accepts all messages from a trusted relayer.
+        TrustedRelayer {
+            /// The address of the trusted relayer.
+            relayer: WarpBytes32,
+        },
+        /// Accepts messages signed by `threshold` or more of the given `validators`.
+        MessageIdMultisig {
+            /// The validator addresses (20-byte Ethereum addresses).
+            validators: Vec<WarpBytes20>,
+            /// The number of signatures required to accept a message.
+            threshold: u32,
+        },
+    }
 
     define_enum! {
         /// CallMessage for the Warp module.
         #[non_exhaustive]
         #[strum_discriminants(non_exhaustive)]
         enum CallMessage<Address> {
+            /// Register a route with the given token source and ISM.
+            Register {
+                /// The authority that can modify the route, if any.
+                admin: Admin<Address>,
+                /// The token source for the route.
+                token_source: TokenKind,
+                /// The ISM for this route.
+                ism: Ism,
+                /// Remote routers to enroll on route registration: `(domain, router)`.
+                remote_routers: Vec<(u32, WarpBytes32)>,
+                /// Inbound rate-limit bucket capacity.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+                #[schemars(with = "String")]
+                inbound_transferrable_tokens_limit: Amount,
+                /// Inbound rate-limit refill per visible slot.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+                #[schemars(with = "String")]
+                inbound_limit_replenishment_per_slot: Amount,
+                /// Outbound rate-limit bucket capacity.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+                #[schemars(with = "String")]
+                outbound_transferrable_tokens_limit: Amount,
+                /// Outbound rate-limit refill per visible slot.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+                #[schemars(with = "String")]
+                outbound_limit_replenishment_per_slot: Amount,
+            } = 0,
+            /// Update an existing route's admin, ISM, or rate limits.
+            Update {
+                /// The ID of the warp route to update.
+                warp_route: WarpBytes32,
+                /// New authority that can modify the route.
+                admin: Option<Admin<Address>>,
+                /// New ISM for this route.
+                ism: Option<Ism>,
+                /// New inbound rate-limit bucket capacity.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[schemars(with = "Option<String>")]
+                inbound_transferrable_tokens_limit: Option<Amount>,
+                /// New inbound rate-limit refill per visible slot.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[schemars(with = "Option<String>")]
+                inbound_limit_replenishment_per_slot: Option<Amount>,
+                /// New outbound rate-limit bucket capacity.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[schemars(with = "Option<String>")]
+                outbound_transferrable_tokens_limit: Option<Amount>,
+                /// New outbound rate-limit refill per visible slot.
+                #[serde(with = "crate::transaction::serde_amount_decimal_string_opt")]
+                #[schemars(with = "Option<String>")]
+                outbound_limit_replenishment_per_slot: Option<Amount>,
+            } = 1,
+            /// Transfer a token from the local chain to a remote chain.
             TransferRemote {
                 warp_route: WarpBytes32,
                 destination_domain: u32,
