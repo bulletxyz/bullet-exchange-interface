@@ -1,0 +1,23 @@
+src/transaction.rs
+  s_d7f08c9b35685b::t_ffef3c358ec80f 383,387,391,395
+tests/warp_runtime_call.rs
+  s_d7f08c9b35685b::t_82685a0fa7e978 187-204
+  s_d7f08c9b35685b::t_4c3670228c5ca0 185-186
+  s_d7f08c9b35685b::t_101dfeb4287169 205
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ec0816125b41e19ff6f60cfc1fb50b2cc1d17307",
+  "prompts": {},
+  "sessions": {
+    "s_d7f08c9b35685b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a8fa125e-5236-487c-85f7-4ec419ea6be0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Tristan <34117851+0xtristan@users.noreply.github.com>"
+    }
+  }
+}
