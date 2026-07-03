@@ -1,0 +1,24 @@
+src/transaction.rs
+  s_d7f08c9b35685b::t_0c033b11c90696 242-243,245-340,347-399
+  s_d7f08c9b35685b::t_03abacde2070cf 24-35
+  s_d7f08c9b35685b::t_9876602f93969e 244
+  s_d7f08c9b35685b::t_51df00521dbd42 189-239
+tests/warp_runtime_call.rs
+  s_d7f08c9b35685b::t_8a06f259b513a2 111-165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0fa91f50fa93f1b615fff2512b7caa426d878ce2",
+  "prompts": {},
+  "sessions": {
+    "s_d7f08c9b35685b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a8fa125e-5236-487c-85f7-4ec419ea6be0",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Tristan <34117851+0xtristan@users.noreply.github.com>"
+    }
+  }
+}
