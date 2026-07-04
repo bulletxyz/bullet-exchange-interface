@@ -1,0 +1,19 @@
+src/message/user/mod.rs
+  s_990504c6c78059::t_b5232f3778d66f 132-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "868da344dcf7c0e64d2ed4d1093124ffe5fa36d7",
+  "prompts": {},
+  "sessions": {
+    "s_990504c6c78059": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f1d77a-f818-4e62-bf47-35f668795f43",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Tristan <34117851+0xtristan@users.noreply.github.com>"
+    }
+  }
+}
