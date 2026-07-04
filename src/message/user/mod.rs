@@ -129,7 +129,19 @@ define_enum! {
             flags: u32,
         } = 17,
 
-        // Reserved: 18-19
+        /// Transfer USDC from cross margin into an isolated market's margin (intra-account, delegate-allowed).
+        TransferCrossToIso {
+            market_id: MarketId,
+            amount: PositiveDecimal,
+            sub_account_index: Option<u8>,
+        } = 18,
+
+        /// Transfer USDC from an isolated market's margin back to cross margin (intra-account, delegate-allowed).
+        TransferIsoToCross {
+            market_id: MarketId,
+            amount: PositiveDecimal,
+            sub_account_index: Option<u8>,
+        } = 19,
 
         // =========================================================================
         // Order Operations (20-39)
