@@ -35,8 +35,8 @@ impl<'de> serde::Deserialize<'de> for Address {
 impl std::fmt::Display for Address {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut res = String::default();
-        // keep at least 32-chars
-        bullet_bs58::encode32_append(&self.0, 32, &mut res);
+        // keep the full string to be compatible with upstream
+        bullet_bs58::encode32_append(&self.0, 44, &mut res);
         write!(f, "{res}")
     }
 }
