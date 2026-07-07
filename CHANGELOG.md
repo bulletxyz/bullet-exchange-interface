@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.11.1...v0.11.2) - 2026-07-07
+
+### Bug Fixes
+
+- address again by using a newer upstream version ([#89](https://github.com/bulletxyz/bullet-exchange-interface/pull/89))
+- display of Address should not drop leading zeros ([#87](https://github.com/bulletxyz/bullet-exchange-interface/pull/87))
+
 ## [0.11.1](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.11.0...v0.11.1) - 2026-07-03
 
 ### Features
