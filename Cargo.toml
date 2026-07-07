@@ -23,7 +23,7 @@ rust_decimal = { version = "1.41", features = ["maths", "borsh"] }
 schemars = { version = "1.2", features = ["rust_decimal1"] }
 hex = { version = "0.4", features = ["serde"] }
 
-sov-universal-wallet = { version="0.4", features=["serde", "macros"], optional = true }
+sov-universal-wallet = { version="0.4.1", features=["serde", "macros"], optional = true }
 bullet-bs58 = "0.2"
 
 [dev-dependencies]
