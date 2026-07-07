@@ -132,7 +132,7 @@ checksum = "8d2a80b82b28f5bc8456439016bcc77602b3d227dff1bf9a85a35e274521bbe6"
 
 [[package]]
 name = "bullet-exchange-interface"
-version = "0.11.2"
+version = "0.12.0"
 dependencies = [
  "borsh",
  "bullet-bs58",
