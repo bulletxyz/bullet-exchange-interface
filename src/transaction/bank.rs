@@ -39,6 +39,8 @@ define_struct! {
                              override_eq = config_gas_token_id().0,
                              override_decimals = config_gas_token_decimals()))))
         ]
+        #[serde(with = "crate::transaction::serde_amount_decimal_string")]
+        #[schemars(with = "String")]
         amount: Amount,
         token_id: TokenId,
     }
