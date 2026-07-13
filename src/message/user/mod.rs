@@ -5,7 +5,7 @@ use crate::define_enum;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, MarketId, OrderIdKind, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
+    AssetId, InternalTransferDirection, MarketId, OrderIdKind, SpotCollateralTransferDirection, TradingMode, TriggerOrderId,
     TwapId,
 };
 mod args;
@@ -46,7 +46,7 @@ define_enum! {
             amount: PositiveDecimal,
         } = 3,
 
-        /// Transfer assets between perp margin and spot collateral.
+        /// Deprecated - use InternalTransfer instead.
         TransferSpotCollateral {
             asset_id: AssetId,
             amount: PositiveDecimal,
@@ -64,7 +64,7 @@ define_enum! {
         /// Create a new sub-account.
         CreateSubAccount { index: u8 } = 6,
 
-        /// Transfer assets between main account and sub-account.
+        /// Deprecated - use InternalTransfer instead.
         TransferToSubAccount {
             asset_id: AssetId,
             amount: PositiveDecimal,
@@ -129,7 +129,14 @@ define_enum! {
             flags: u32,
         } = 17,
 
-        // Reserved: 18-19
+        InternalTransfer {
+            direction: InternalTransferDirection,
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+            sub_account_index: Option<u8>,
+        } = 18,
+
+        // Reserved: 19-20
 
         // =========================================================================
         // Order Operations (20-39)

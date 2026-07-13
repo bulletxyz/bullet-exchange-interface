@@ -201,3 +201,12 @@ impl Default for MarginDiscount {
         Self::None
     }
 }
+
+define_simple_enum!(InternalTransferDirection {
+    MainToSub = 0,
+    SubToMain = 1,
+    MarginToSpot = 2,
+    SpotToMargin = 3,
+    CrossToIso = 4,
+    IsoToCross = 5,
+});
