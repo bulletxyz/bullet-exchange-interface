@@ -162,7 +162,10 @@ mod serde_amount_decimal_string {
         D: Deserializer<'de>,
     {
         let value = String::deserialize(deserializer)?;
-        value.parse::<u128>().map(Amount).map_err(serde::de::Error::custom)
+        value
+            .parse::<u128>()
+            .map(Amount)
+            .map_err(serde::de::Error::custom)
     }
 }
 
@@ -234,7 +237,11 @@ mod serde_amount_decimal_string_opt {
         D: Deserializer<'de>,
     {
         match Option::<String>::deserialize(deserializer)? {
-            Some(s) => s.parse::<u128>().map(Amount).map(Some).map_err(serde::de::Error::custom),
+            Some(s) => s
+                .parse::<u128>()
+                .map(Amount)
+                .map(Some)
+                .map_err(serde::de::Error::custom),
             None => Ok(None),
         }
     }

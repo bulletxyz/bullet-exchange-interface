@@ -45,7 +45,10 @@ fn asset_info_v1_admin_action_borsh_bytes_are_stable() {
         "162a0003000000534f4c0109000000746f6b656e5f534f4c090000000000000000010000000000000001112700000112270000",
     );
 
-    assert_eq!(to_vec(&init_fixture).expect("serialize fixture"), init_expected);
+    assert_eq!(
+        to_vec(&init_fixture).expect("serialize fixture"),
+        init_expected
+    );
     assert_eq!(
         AdminAction::<Address>::try_from_slice(&init_expected).expect("deserialize fixture"),
         init_fixture
@@ -54,7 +57,10 @@ fn asset_info_v1_admin_action_borsh_bytes_are_stable() {
     let update_fixture = update_asset_info_v1_action();
     let update_expected = decode_hex("172a000000000000000000020000000000000001112700000112270000");
 
-    assert_eq!(to_vec(&update_fixture).expect("serialize fixture"), update_expected);
+    assert_eq!(
+        to_vec(&update_fixture).expect("serialize fixture"),
+        update_expected
+    );
     assert_eq!(
         AdminAction::<Address>::try_from_slice(&update_expected).expect("deserialize fixture"),
         update_fixture

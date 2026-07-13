@@ -38,7 +38,10 @@ pub mod pyth_proof_serialization {
 
     pub fn update_oracle_prices_with_pyth_proofs_call() -> CallMessage<Address> {
         CallMessage::Keeper(KeeperAction::UpdateOraclePricesWithPythProofs {
-            prices: vec![oracle_price_update_without_quote(), oracle_price_update_with_quote()],
+            prices: vec![
+                oracle_price_update_without_quote(),
+                oracle_price_update_with_quote(),
+            ],
             publish_timestamp: PUBLISH_TIMESTAMP,
         })
     }
@@ -79,10 +82,14 @@ pub mod admin_asset_serialization {
     }
 
     pub fn init_asset_info_v1_action() -> AdminAction<Address> {
-        AdminAction::InitAssetInfoV1 { args: init_asset_info_v1() }
+        AdminAction::InitAssetInfoV1 {
+            args: init_asset_info_v1(),
+        }
     }
 
     pub fn update_asset_info_v1_action() -> AdminAction<Address> {
-        AdminAction::UpdateAssetInfoV1 { args: update_asset_info_v1() }
+        AdminAction::UpdateAssetInfoV1 {
+            args: update_asset_info_v1(),
+        }
     }
 }

@@ -10,11 +10,13 @@ pub const ONE_HOUR: UnixTimestampMicros = UnixTimestampMicros(MICROSECONDS_PER_H
 impl UnixTimestampMicros {
     pub const ZERO: Self = Self(0);
     pub fn from_secs(secs: i64) -> Result<Self, ArithmeticError> {
-        let micros = secs.checked_mul(1_000_000).ok_or(ArithmeticError::IntegerFailed {
-            operation: ArithmeticOperation::Multiplication,
-            left: secs as i128,
-            right: 1_000_000,
-        })?;
+        let micros = secs
+            .checked_mul(1_000_000)
+            .ok_or(ArithmeticError::IntegerFailed {
+                operation: ArithmeticOperation::Multiplication,
+                left: secs as i128,
+                right: 1_000_000,
+            })?;
         Ok(Self(micros))
     }
 
@@ -28,18 +30,24 @@ impl UnixTimestampMicros {
     }
 
     pub fn from_millis(millis: i64) -> Result<Self, ArithmeticError> {
-        millis.checked_mul(1000).map(Self).ok_or(ArithmeticError::IntegerFailed {
-            operation: ArithmeticOperation::Multiplication,
-            left: millis as i128,
-            right: 1000,
-        })
+        millis
+            .checked_mul(1000)
+            .map(Self)
+            .ok_or(ArithmeticError::IntegerFailed {
+                operation: ArithmeticOperation::Multiplication,
+                left: millis as i128,
+                right: 1000,
+            })
     }
     pub fn from_nanos(nanos: u128) -> Result<Self, ArithmeticError> {
-        (nanos / 1000).try_into().map(Self).map_err(|_| ArithmeticError::IntegerFailed {
-            operation: ArithmeticOperation::Division,
-            left: nanos as i128,
-            right: 1000,
-        })
+        (nanos / 1000)
+            .try_into()
+            .map(Self)
+            .map_err(|_| ArithmeticError::IntegerFailed {
+                operation: ArithmeticOperation::Division,
+                left: nanos as i128,
+                right: 1000,
+            })
     }
 
     pub fn as_secs(&self) -> i64 {
@@ -58,11 +66,14 @@ impl UnixTimestampMicros {
         self.checked_add(Self::from_secs(other)?)
     }
     pub fn checked_add(&self, other: UnixTimestampMicros) -> Result<Self, ArithmeticError> {
-        self.0.checked_add(other.0).map(Self).ok_or(ArithmeticError::IntegerFailed {
-            operation: ArithmeticOperation::Addition,
-            left: self.0 as i128,
-            right: other.0 as i128,
-        })
+        self.0
+            .checked_add(other.0)
+            .map(Self)
+            .ok_or(ArithmeticError::IntegerFailed {
+                operation: ArithmeticOperation::Addition,
+                left: self.0 as i128,
+                right: other.0 as i128,
+            })
     }
 
     /// Returns the microseconds elapsed. Or zero on errors.
@@ -72,8 +83,25 @@ impl UnixTimestampMicros {
 
     /// Returns the seconds elapsed. Or zero on errors.
     pub fn elapsed_secs(self, other: UnixTimestampMicros) -> u64 {
-        let delta = self.as_secs().checked_sub(other.as_secs()).unwrap_or(0).max(0);
+        let delta = self
+            .as_secs()
+            .checked_sub(other.as_secs())
+            .unwrap_or(0)
+            .max(0);
         // Safe to cast to u64 as it will be 0 or larger
         delta as u64
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::UnixTimestampMicros;
+
+    #[test]
+    fn elapsed_secs_matches_whole_second_boundaries() {
+        let later = UnixTimestampMicros::from_micros(1_100_000);
+        let earlier = UnixTimestampMicros::from_micros(900_000);
+
+        assert_eq!(1, later.elapsed_secs(earlier));
     }
 }

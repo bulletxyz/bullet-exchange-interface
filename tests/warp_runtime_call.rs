@@ -51,7 +51,10 @@ fn warp_transfer_remote_serializes_to_expected_json() {
         }
     });
 
-    assert_eq!(serde_json::to_value(&call).expect("serialize runtime call"), expected);
+    assert_eq!(
+        serde_json::to_value(&call).expect("serialize runtime call"),
+        expected
+    );
     assert_eq!(
         serde_json::from_value::<RuntimeCall>(expected).expect("deserialize runtime call"),
         call
@@ -86,18 +89,28 @@ fn warp_transfer_remote_borsh_bytes_match_runtime_encoding() {
     ));
 
     assert_eq!(to_vec(&call).expect("serialize runtime call"), expected);
-    assert_eq!(RuntimeCall::try_from_slice(&expected).expect("deserialize runtime call"), call);
+    assert_eq!(
+        RuntimeCall::try_from_slice(&expected).expect("deserialize runtime call"),
+        call
+    );
 }
 
 #[test]
 fn adding_warp_does_not_change_exchange_or_bank_runtime_call_encoding() {
-    let exchange =
-        RuntimeCall::Exchange(CallMessage::User(UserAction::CreateSubAccount { index: 42 }));
-    assert_eq!(to_vec(&exchange).expect("serialize exchange call"), decode_hex("0700062a"));
+    let exchange = RuntimeCall::Exchange(CallMessage::User(UserAction::CreateSubAccount {
+        index: 42,
+    }));
+    assert_eq!(
+        to_vec(&exchange).expect("serialize exchange call"),
+        decode_hex("0700062a")
+    );
 
     let bank = RuntimeCall::Bank(BankCall::TransferWithMemo {
         to: Address(bytes(0x01)),
-        coins: Coins { amount: Amount(99), token_id: TokenId(bytes(0x02)) },
+        coins: Coins {
+            amount: Amount(99),
+            token_id: TokenId(bytes(0x02)),
+        },
         memo: CustomString::from("memo"),
     });
     let bank_expected = decode_hex(&format!(
@@ -147,10 +160,16 @@ fn warp_register_round_trips_production_json() {
         serde_json::from_value(json.clone()).expect("deserialize register call");
     // JSON round-trips byte-for-byte (field names, PascalCase nested variants,
     // decimal-string amounts, hex addresses).
-    assert_eq!(serde_json::to_value(&call).expect("serialize register call"), json);
+    assert_eq!(
+        serde_json::to_value(&call).expect("serialize register call"),
+        json
+    );
     // Borsh round-trips.
     let bytes = to_vec(&call).expect("borsh-serialize register call");
-    assert_eq!(RuntimeCall::try_from_slice(&bytes).expect("borsh-deserialize"), call);
+    assert_eq!(
+        RuntimeCall::try_from_slice(&bytes).expect("borsh-deserialize"),
+        call
+    );
     // Discriminants match the runtime: RuntimeCall::Warp = 15 (0x0f), Register = 0 (0x00).
     assert_eq!(&bytes[0..2], &[0x0f, 0x00]);
 }

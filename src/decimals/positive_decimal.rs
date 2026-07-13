@@ -122,13 +122,14 @@ impl TryDecimalOps for PositiveDecimal {
     fn try_add(self, v: impl Into<Decimal>) -> Result<Self, ArithmeticError> {
         let v = v.into();
 
-        self.as_dec().checked_add(v).and_then(Self::new).ok_or_else(|| {
-            ArithmeticError::DecimalFailed {
+        self.as_dec()
+            .checked_add(v)
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
                 operation: ArithmeticOperation::Addition,
                 left: self.as_dec(),
                 right: v,
-            }
-        })
+            })
     }
 
     #[inline]
@@ -138,16 +139,20 @@ impl TryDecimalOps for PositiveDecimal {
         // be able to find errors in tests
         #[cfg(test)]
         if self.as_dec().lt(&v) {
-            panic!("Unintended subtraction for PositiveDecimal: {} - {}", self, v);
+            panic!(
+                "Unintended subtraction for PositiveDecimal: {} - {}",
+                self, v
+            );
         }
 
-        self.as_dec().checked_sub(v).and_then(Self::new).ok_or_else(|| {
-            ArithmeticError::DecimalFailed {
+        self.as_dec()
+            .checked_sub(v)
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
                 operation: ArithmeticOperation::Subtraction,
                 left: self.as_dec(),
                 right: v,
-            }
-        })
+            })
     }
 
     #[inline]
@@ -160,13 +165,14 @@ impl TryDecimalOps for PositiveDecimal {
                 right: v,
             });
         }
-        self.as_dec().checked_mul(v).and_then(Self::new).ok_or_else(|| {
-            ArithmeticError::DecimalFailed {
+        self.as_dec()
+            .checked_mul(v)
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
                 operation: ArithmeticOperation::Multiplication,
                 left: self.as_dec(),
                 right: v,
-            }
-        })
+            })
     }
 
     #[inline]
@@ -179,24 +185,26 @@ impl TryDecimalOps for PositiveDecimal {
                 right: v,
             });
         }
-        self.as_dec().checked_div(v).and_then(Self::new).ok_or_else(|| {
-            ArithmeticError::DecimalFailed {
+        self.as_dec()
+            .checked_div(v)
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
                 operation: ArithmeticOperation::Division,
                 left: self.as_dec(),
                 right: v,
-            }
-        })
+            })
     }
 
     #[inline]
     fn try_exp(self) -> Result<Self, ArithmeticError> {
-        self.as_dec().checked_exp().and_then(Self::new).ok_or_else(|| {
-            ArithmeticError::DecimalFailed {
+        self.as_dec()
+            .checked_exp()
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
                 operation: ArithmeticOperation::Exponentiation,
                 left: self.as_dec(),
                 right: Decimal::ZERO,
-            }
-        })
+            })
     }
 }
 
@@ -216,7 +224,11 @@ impl PositiveDecimal {
 
     #[inline]
     pub fn new(value: Decimal) -> Option<Self> {
-        if value.is_sign_positive() { Some(PositiveDecimal(value)) } else { None }
+        if value.is_sign_positive() {
+            Some(PositiveDecimal(value))
+        } else {
+            None
+        }
     }
 
     #[inline]
@@ -241,13 +253,14 @@ impl PositiveDecimal {
 
     #[inline]
     pub fn try_pow_i64(&self, v: i64) -> Result<PositiveDecimal, ArithmeticError> {
-        self.as_dec().checked_powi(v).and_then(Self::new).ok_or_else(|| {
-            ArithmeticError::DecimalFailed {
+        self.as_dec()
+            .checked_powi(v)
+            .and_then(Self::new)
+            .ok_or_else(|| ArithmeticError::DecimalFailed {
                 operation: ArithmeticOperation::Exponentiation,
                 left: self.as_dec(),
                 right: Decimal::from(v),
-            }
-        })
+            })
     }
 
     #[inline]

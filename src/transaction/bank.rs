@@ -5,7 +5,10 @@ use crate::{define_enum, define_simple_type, define_struct};
 define_simple_type!(
     #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
     TokenId(
-        #[cfg_attr(feature = "schema", sov_wallet(display(bech32m(prefix = "token_id_prefix()"))))]
+        #[cfg_attr(
+            feature = "schema",
+            sov_wallet(display(bech32m(prefix = "token_id_prefix()")))
+        )]
         [u8; 32]
     ) + Debug
 );

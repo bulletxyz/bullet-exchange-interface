@@ -6,6 +6,8 @@
 
 Type definitions and message formats for the Bullet exchange protocol. Provides the canonical Rust representation of orders, events, transactions, and other on-the-wire structures shared between the exchange and its clients.
 
+This crate is maintained from the Bullet monorepo and synchronized to the public GitHub repository for publishing.
+
 ## Install
 
 ```sh

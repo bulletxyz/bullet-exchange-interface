@@ -860,4 +860,10 @@ impl<Address> Event<Address> {
     }
 }
 
-crate::define_simple_enum!(OrderSource { Admin, Liquidate, User, Trigger, Twap });
+crate::define_simple_enum!(OrderSource {
+    Admin,
+    Liquidate,
+    User,
+    Trigger,
+    Twap
+});
