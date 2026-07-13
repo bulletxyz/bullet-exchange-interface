@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.1](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.12.0...v0.12.1) - 2026-07-13
+
+### Features
+
+- add bank/Mint call-message ([#93](https://github.com/bulletxyz/bullet-exchange-interface/pull/93))
+
 ## [0.12.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.11.2...v0.12.0) - 2026-07-07
 
 ### Bug Fixes
