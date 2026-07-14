@@ -292,6 +292,7 @@ pub enum Event<Address> {
     },
 
     /// deprecated - use UpdatePremiumIndexV1 instead
+    #[deprecated(since = "0.12.0", note = "use UpdatePremiumIndexV1 instead")]
     UpdatePremiumIndex {
         market_id: MarketId,
         premium_index: Decimal,
