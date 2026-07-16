@@ -7,17 +7,22 @@ use crate::{define_enum, define_simple_enum, define_simple_type};
 
 pub const RESERVED_ORDER_ID: OrderId = OrderId(0); // 0 is reserved for OTC (liquidation) orders
 pub const RESERVED_TRADE_ID: TradeId = TradeId(0); // 0 is reserved for force settlement of positions
-pub const SPOT_MARKET_ID_OFFSET: u16 = 10_000;
+pub const SPOT_MARKET_ID_OFFSET: MarketId = MarketId(10_000);
 // pub const RWA_PERP_MARKET_ID_OFFSET: u16 = 20_000;
-pub const RWA_PERP_COMMODITIES_MARKET_ID_OFFSET: u16 = 20_000;
-pub const RWA_PERP_US_STOCK_MARKET_ID_OFFSET: u16 = 21_000;
-pub const RWA_PERP_KR_STOCK_MARKET_ID_OFFSET: u16 = 22_000;
-pub const RWA_PERP_JP_STOCK_MARKET_ID_OFFSET: u16 = 23_000;
-pub const RWA_PERP_HK_STOCK_MARKET_ID_OFFSET: u16 = 24_000;
-pub const RWA_PERP_US_EQUITY_INDICES_MARKET_ID_OFFSET: u16 = 25_000;
-pub const RWA_PERP_JP_EQUITY_INDICES_MARKET_ID_OFFSET: u16 = 26_000;
-pub const RWA_PERP_HK_EQUITY_INDICES_MARKET_ID_OFFSET: u16 = 27_000;
-pub const RWA_PERP_PRE_IPO_MARKET_ID_OFFSET: u16 = 28_000;
+pub const RWA_PERP_COMMODITIES_MARKET_ID_OFFSET: MarketId = MarketId(20_000);
+pub const RWA_PERP_US_STOCK_MARKET_ID_OFFSET: MarketId = MarketId(21_000);
+pub const RWA_PERP_KR_STOCK_MARKET_ID_OFFSET: MarketId = MarketId(22_000);
+pub const RWA_PERP_JP_STOCK_MARKET_ID_OFFSET: MarketId = MarketId(23_000);
+pub const RWA_PERP_HK_STOCK_MARKET_ID_OFFSET: MarketId = MarketId(24_000);
+pub const RWA_PERP_US_EQUITY_INDICES_MARKET_ID_OFFSET: MarketId = MarketId(25_000);
+pub const RWA_PERP_JP_EQUITY_INDICES_MARKET_ID_OFFSET: MarketId = MarketId(26_000);
+pub const RWA_PERP_HK_EQUITY_INDICES_MARKET_ID_OFFSET: MarketId = MarketId(27_000);
+pub const RWA_PERP_PRE_IPO_MARKET_ID_OFFSET: MarketId = MarketId(28_000);
+pub const SPCX_MARKET_ID: MarketId = MarketId(20003);
+pub const MU_MARKET_ID: MarketId = MarketId(20004);
+pub const SNDK_MARKET_ID: MarketId = MarketId(20005);
+pub const TSLA_MARKET_ID: MarketId = MarketId(20006);
+pub const SKHYNIX_MARKET_ID: MarketId = MarketId(20007);
 
 define_simple_type!(OrderId(u64));
 impl OrderId {
@@ -62,7 +67,16 @@ define_simple_type!(AssetId(u16));
 define_simple_type!(MarketId(u16));
 impl MarketId {
     pub fn kind(&self) -> MarketKind {
-        match self.0 {
+        // Already created edge cases previously, so hard code certain values.
+        if matches!(
+            *self,
+            SPCX_MARKET_ID | MU_MARKET_ID | SNDK_MARKET_ID | TSLA_MARKET_ID | SKHYNIX_MARKET_ID
+        ) {
+            return MarketKind::RwaPerpUsStock;
+        } else if *self == SKHYNIX_MARKET_ID {
+            return MarketKind::RwaPerpKrStock;
+        }
+        match *self {
             id if id < SPOT_MARKET_ID_OFFSET => MarketKind::Perp,
             id if id < RWA_PERP_COMMODITIES_MARKET_ID_OFFSET => MarketKind::Spot,
             id if id < RWA_PERP_US_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpCommodities,
@@ -70,8 +84,12 @@ impl MarketId {
             id if id < RWA_PERP_JP_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpKrStock,
             id if id < RWA_PERP_HK_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpJpStock,
             id if id < RWA_PERP_US_EQUITY_INDICES_MARKET_ID_OFFSET => MarketKind::RwaPerpHkStock,
-            id if id < RWA_PERP_JP_EQUITY_INDICES_MARKET_ID_OFFSET => MarketKind::RwaPerpUsEquityIndices,
-            id if id < RWA_PERP_HK_EQUITY_INDICES_MARKET_ID_OFFSET => MarketKind::RwaPerpJpEquityIndices,
+            id if id < RWA_PERP_JP_EQUITY_INDICES_MARKET_ID_OFFSET => {
+                MarketKind::RwaPerpUsEquityIndices
+            }
+            id if id < RWA_PERP_HK_EQUITY_INDICES_MARKET_ID_OFFSET => {
+                MarketKind::RwaPerpJpEquityIndices
+            }
             _ => MarketKind::RwaPerpPreIpo,
         }
     }
