@@ -8,7 +8,16 @@ use crate::{define_enum, define_simple_enum, define_simple_type};
 pub const RESERVED_ORDER_ID: OrderId = OrderId(0); // 0 is reserved for OTC (liquidation) orders
 pub const RESERVED_TRADE_ID: TradeId = TradeId(0); // 0 is reserved for force settlement of positions
 pub const SPOT_MARKET_ID_OFFSET: u16 = 10_000;
-pub const RWA_PERP_MARKET_ID_OFFSET: u16 = 20_000;
+// pub const RWA_PERP_MARKET_ID_OFFSET: u16 = 20_000;
+pub const RWA_PERP_COMMODITIES_MARKET_ID_OFFSET: u16 = 20_000;
+pub const RWA_PERP_US_STOCK_MARKET_ID_OFFSET: u16 = 21_000;
+pub const RWA_PERP_KR_STOCK_MARKET_ID_OFFSET: u16 = 22_000;
+pub const RWA_PERP_JP_STOCK_MARKET_ID_OFFSET: u16 = 23_000;
+pub const RWA_PERP_HK_STOCK_MARKET_ID_OFFSET: u16 = 24_000;
+pub const RWA_PERP_US_EQUITY_INDICES_MARKET_ID_OFFSET: u16 = 25_000;
+pub const RWA_PERP_JP_EQUITY_INDICES_MARKET_ID_OFFSET: u16 = 26_000;
+pub const RWA_PERP_HK_EQUITY_INDICES_MARKET_ID_OFFSET: u16 = 27_000;
+pub const RWA_PERP_PRE_IPO_MARKET_ID_OFFSET: u16 = 28_000;
 
 define_simple_type!(OrderId(u64));
 impl OrderId {
@@ -55,13 +64,20 @@ impl MarketId {
     pub fn kind(&self) -> MarketKind {
         match self.0 {
             id if id < SPOT_MARKET_ID_OFFSET => MarketKind::Perp,
-            id if id < RWA_PERP_MARKET_ID_OFFSET => MarketKind::Spot,
-            _ => MarketKind::RwaPerp,
+            id if id < RWA_PERP_COMMODITIES_MARKET_ID_OFFSET => MarketKind::Spot,
+            id if id < RWA_PERP_US_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpCommodities,
+            id if id < RWA_PERP_KR_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpUsStock,
+            id if id < RWA_PERP_JP_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpKrStock,
+            id if id < RWA_PERP_HK_STOCK_MARKET_ID_OFFSET => MarketKind::RwaPerpJpStock,
+            id if id < RWA_PERP_US_EQUITY_INDICES_MARKET_ID_OFFSET => MarketKind::RwaPerpHkStock,
+            id if id < RWA_PERP_JP_EQUITY_INDICES_MARKET_ID_OFFSET => MarketKind::RwaPerpUsEquityIndices,
+            id if id < RWA_PERP_HK_EQUITY_INDICES_MARKET_ID_OFFSET => MarketKind::RwaPerpJpEquityIndices,
+            _ => MarketKind::RwaPerpPreIpo,
         }
     }
 }
 
-define_simple_enum!(MarketKind{ Perp = 0, Spot = 1, RwaPerp = 2 });
+define_simple_enum!(MarketKind{ Perp = 0, Spot = 1, RwaPerpCommodities = 2, RwaPerpUsStock = 3, RwaPerpKrStock = 4, RwaPerpJpStock = 5, RwaPerpHkStock = 6, RwaPerpUsEquityIndices = 7, RwaPerpJpEquityIndices = 8, RwaPerpHkEquityIndices = 9, RwaPerpPreIpo = 10 });
 
 define_simple_enum!(Side{ Bid = 0, Ask = 1});
 impl Side {
