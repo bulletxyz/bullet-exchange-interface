@@ -10,8 +10,9 @@ This crate is maintained from the Bullet monorepo and synchronized to the public
 
 ## Install
 
-```sh
-cargo add bullet-exchange-interface
+```toml
+[dependencies]
+bullet-exchange-interface = "*"
 ```
 
 ## License

@@ -169,6 +169,45 @@ mod serde_amount_decimal_string {
     }
 }
 
+/// Serde for the Bank `TokenId` (`[u8; 32]`): the rollup encodes a token id as a
+/// Bech32m `token_…` string (matching `sov_bank::TokenId` / `impl_hash32_type!`),
+/// not a byte array. Emitting the raw bytes fails deserialization with
+/// "invalid type: sequence, expected a string".
+mod serde_token_id_bech32m {
+    use bech32::primitives::decode::CheckedHrpstring;
+    use bech32::{Bech32m, Hrp};
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    const HRP: &str = "token_";
+
+    pub fn serialize<S>(bytes: &[u8; 32], serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let hrp = Hrp::parse(HRP).map_err(serde::ser::Error::custom)?;
+        let s = bech32::encode::<Bech32m>(hrp, bytes).map_err(serde::ser::Error::custom)?;
+        serializer.serialize_str(&s)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<[u8; 32], D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+        let checked = CheckedHrpstring::new::<Bech32m>(&value).map_err(serde::de::Error::custom)?;
+        if checked.hrp().as_str() != HRP {
+            return Err(serde::de::Error::custom(format!(
+                "token id hrp must be `{HRP}`, got `{}`",
+                checked.hrp().as_str()
+            )));
+        }
+        let bytes: Vec<u8> = checked.byte_iter().collect();
+        bytes.try_into().map_err(|v: Vec<u8>| {
+            serde::de::Error::custom(format!("token id must be 32 bytes, got {}", v.len()))
+        })
+    }
+}
+
 mod serde_hex_32 {
     use serde::{Deserialize, Deserializer, Serializer};
 

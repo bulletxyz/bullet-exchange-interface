@@ -9,6 +9,8 @@ define_simple_type!(
             feature = "schema",
             sov_wallet(display(bech32m(prefix = "token_id_prefix()")))
         )]
+        #[serde(with = "crate::transaction::serde_token_id_bech32m")]
+        #[schemars(with = "String")]
         [u8; 32]
     ) + Debug
 );
