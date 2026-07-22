@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.12.1...v0.13.0) - 2026-07-22
+
+### Bug Fixes
+
+- fix encoding of token_id
+
 ## [0.12.1](https://github.com/bulletxyz/bullet-exchange-interface/compare/v0.12.0...v0.12.1) - 2026-07-13
 
 ### Features
