@@ -96,6 +96,7 @@ fn warp_transfer_remote_borsh_bytes_match_runtime_encoding() {
 }
 
 #[test]
+#[allow(deprecated)] // pins the borsh encoding of the deprecated variant
 fn adding_warp_does_not_change_exchange_or_bank_runtime_call_encoding() {
     let exchange = RuntimeCall::Exchange(CallMessage::User(UserAction::CreateSubAccount {
         index: 42,

@@ -1,5 +1,12 @@
 //! User operations.
 
+// Several variants below are `#[deprecated]` in favour of `Transfer`. The
+// derived `borsh`/`serde`/`strum` impls read those variants' fields, which would
+// otherwise raise in-crate deprecation warnings at the definition site. Lint
+// levels are per-crate, so this only silences the noise here — downstream crates
+// that construct the deprecated variants still get the deprecation warning.
+#![allow(deprecated)]
+
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::string::CustomString;
@@ -23,30 +30,35 @@ define_enum! {
         // Account Operations (0-19)
         // =========================================================================
         /// Deposit assets to perp margin account.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         Deposit {
             asset_id: AssetId,
             amount: PositiveDecimal,
         } = 0,
 
         /// Withdraw assets from perp margin account.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         Withdraw {
             asset_id: AssetId,
             amount: PositiveDecimal,
         } = 1,
 
         /// Deposit assets to spot collateral.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         DepositSpotCollateral {
             asset_id: AssetId,
             amount: PositiveDecimal,
         } = 2,
 
         /// Withdraw assets from spot collateral.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         WithdrawSpotCollateral {
             asset_id: AssetId,
             amount: PositiveDecimal,
         } = 3,
 
         /// Transfer assets between perp margin and spot collateral.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         TransferSpotCollateral {
             asset_id: AssetId,
             amount: PositiveDecimal,
@@ -62,9 +74,11 @@ define_enum! {
         } = 5,
 
         /// Create a new sub-account.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         CreateSubAccount { index: u8 } = 6,
 
         /// Transfer assets between main account and sub-account.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         TransferToSubAccount {
             asset_id: AssetId,
             amount: PositiveDecimal,
@@ -89,12 +103,14 @@ define_enum! {
         ClaimReferralRewards { asset_id: AssetId } = 11,
 
         /// Deposit USDC into an isolated market / isolated margin position.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         DepositIso {
             market_id: MarketId,
             amount: PositiveDecimal,
         } = 12,
 
         /// Withdraw USDC from an isolated market / isolated margin position.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         WithdrawIso {
             market_id: MarketId,
             amount: PositiveDecimal,
@@ -129,7 +145,23 @@ define_enum! {
             flags: u32,
         } = 17,
 
-        // Reserved: 18-19
+        /// Transfer an asset between two account/balance locations.
+        ///
+        /// Supersedes the deposit/withdraw/transfer variants above: `from` is
+        /// always on the sender's account, while `to` combined with `to_address`
+        /// identifies the destination (`to_address: None` = the sender's own
+        /// account, `Some(addr)` = another account). `memo` carries a free-form
+        /// end-to-end reference.
+        Transfer {
+            from: TransferEndpoint,
+            to: TransferEndpoint,
+            to_address: Option<Address>,
+            asset_id: AssetId,
+            amount: PositiveDecimal,
+            memo: CustomString,
+        } = 18,
+
+        // Reserved: 19
 
         // =========================================================================
         // Order Operations (20-39)

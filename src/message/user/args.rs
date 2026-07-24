@@ -4,9 +4,18 @@ use crate::decimals::PositiveDecimal;
 use crate::define_struct;
 use crate::string::CustomString;
 use crate::types::{
-    AssetId, ClientOrderId, MarketId, OrderId, OrderType, Side, TriggerDirection,
+    AssetId, BalanceBucket, ClientOrderId, MarketId, OrderId, OrderType, Side, TriggerDirection,
     TriggerPriceCondition,
 };
+
+define_struct! {
+    /// A transfer location within an account: an optional sub-account and a
+    /// balance bucket. `sub_account_index: None` targets the master account.
+    struct TransferEndpoint {
+        sub_account_index: Option<u8>,
+        balance: BalanceBucket,
+    }
+}
 
 define_struct! {
     struct NewOrderArgs {

@@ -7,8 +7,6 @@ use crate::{define_enum, define_simple_enum, define_simple_type};
 
 pub const RESERVED_ORDER_ID: OrderId = OrderId(0); // 0 is reserved for OTC (liquidation) orders
 pub const RESERVED_TRADE_ID: TradeId = TradeId(0); // 0 is reserved for force settlement of positions
-pub const SPOT_MARKET_ID_OFFSET: u16 = 10_000;
-pub const RWA_PERP_MARKET_ID_OFFSET: u16 = 20_000;
 
 define_simple_type!(OrderId(u64));
 impl OrderId {
@@ -52,16 +50,76 @@ define_enum! {
 define_simple_type!(AssetId(u16));
 define_simple_type!(MarketId(u16));
 impl MarketId {
+    // Already created edge cases previously, so hard code certain values.
     pub fn kind(&self) -> MarketKind {
+        use MarketKind::*;
         match self.0 {
-            id if id < SPOT_MARKET_ID_OFFSET => MarketKind::Perp,
-            id if id < RWA_PERP_MARKET_ID_OFFSET => MarketKind::Spot,
-            _ => MarketKind::RwaPerp,
+            0..10_000 => CryptoPerp,
+            10_000..20_000 => Spot,
+            20_000..20_003 => RwaPerpCommodities,
+            20_003..20_007 => RwaPerpUsEquity, // SPCX, MU, SNDK, TSLA,
+            20_007 => RwaPerpKrEquity,         // SKHYNIX
+            20_008..21_000 => RwaPerpCommodities,
+            21_000..22_000 => RwaPerpUsEquity,
+            22_000..23_000 => RwaPerpKrEquity,
+            23_000..24_000 => RwaPerpJpEquity,
+            24_000..25_000 => RwaPerpHkEquity,
+            25_000..26_000 => RwaPerpUsEquityIndices,
+            26_000..27_000 => RwaPerpJpEquityIndices,
+            27_000..28_000 => RwaPerpHkEquityIndices,
+            28_000.. => RwaPerpPreIpo,
         }
     }
 }
 
-define_simple_enum!(MarketKind{ Perp = 0, Spot = 1, RwaPerp = 2 });
+define_simple_enum!(MarketKind{ CryptoPerp = 0, Spot = 1, RwaPerpCommodities = 2, RwaPerpUsEquity = 3, RwaPerpKrEquity = 4, RwaPerpJpEquity = 5, RwaPerpHkEquity = 6, RwaPerpUsEquityIndices = 7, RwaPerpJpEquityIndices = 8, RwaPerpHkEquityIndices = 9, RwaPerpPreIpo = 10 });
+
+impl MarketKind {
+    /// True for every real-world-asset perp kind (commodities, equities across
+    /// regions, equity indices, pre-IPO).
+    ///
+    /// The match is exhaustive on purpose: adding a new `MarketKind` variant
+    /// fails to compile here until it is explicitly classified as RWA or not,
+    /// so the "is this an RWA perp?" question stays correct in one place.
+    pub fn is_rwa_perp(&self) -> bool {
+        match self {
+            MarketKind::CryptoPerp | MarketKind::Spot => false,
+            MarketKind::RwaPerpCommodities
+            | MarketKind::RwaPerpUsEquity
+            | MarketKind::RwaPerpKrEquity
+            | MarketKind::RwaPerpJpEquity
+            | MarketKind::RwaPerpHkEquity
+            | MarketKind::RwaPerpUsEquityIndices
+            | MarketKind::RwaPerpJpEquityIndices
+            | MarketKind::RwaPerpHkEquityIndices
+            | MarketKind::RwaPerpPreIpo => true,
+        }
+    }
+
+    pub fn is_any_perp(&self) -> bool {
+        match self {
+            MarketKind::CryptoPerp
+            | MarketKind::RwaPerpCommodities
+            | MarketKind::RwaPerpUsEquity
+            | MarketKind::RwaPerpKrEquity
+            | MarketKind::RwaPerpJpEquity
+            | MarketKind::RwaPerpHkEquity
+            | MarketKind::RwaPerpUsEquityIndices
+            | MarketKind::RwaPerpJpEquityIndices
+            | MarketKind::RwaPerpHkEquityIndices
+            | MarketKind::RwaPerpPreIpo => true,
+            MarketKind::Spot => false,
+        }
+    }
+
+    pub fn is_crypto_perp(&self) -> bool {
+        matches!(self, MarketKind::CryptoPerp)
+    }
+
+    pub fn is_spot(&self) -> bool {
+        matches!(self, MarketKind::Spot)
+    }
+}
 
 define_simple_enum!(Side{ Bid = 0, Ask = 1});
 impl Side {
@@ -135,6 +193,26 @@ impl std::str::FromStr for TokenId {
 }
 
 define_simple_enum!(TradingMode{ Iso = 0, Cross = 1 });
+
+define_enum! {
+    /// A balance bucket within an account.
+    ///
+    /// Extensible: new buckets may be added with new discriminants without
+    /// breaking existing on-chain encodings.
+    #[derive(Copy)]
+    #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
+    enum BalanceBucket {
+        /// On-chain bank/wallet balance (outside the exchange).
+        Bank = 0,
+        /// Cross-margin balance.
+        Cross = 1,
+        /// Spot collateral balance.
+        Spot = 2,
+        /// Isolated-margin balance for a specific market.
+        Iso(MarketId) = 3,
+    }
+}
 
 define_simple_enum!(BorrowType {
     /// Internal borrows from trading operations (PnL, margin, etc.)

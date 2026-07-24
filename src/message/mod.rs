@@ -94,6 +94,7 @@ impl<Address> From<AdminAction<Address>> for CallMessage<Address> {
 }
 
 #[test]
+#[allow(deprecated)] // pins the wire `msg_type` of the deprecated variant
 fn test_msg_type() {
     assert_eq!(
         "User/CreateSubAccount",

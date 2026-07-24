@@ -3,9 +3,9 @@ use rust_decimal::Decimal;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, BorrowType, ClientOrderId, FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType,
-    RepayType, Side, TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId,
-    TriggerPriceCondition, TwapId,
+    AssetId, BalanceBucket, BorrowType, ClientOrderId, FeeTier, MarketId, MarketTradingStatus,
+    OrderId, OrderType, RepayType, Side, TakeFromInsuranceFundReason, TradeId, TriggerDirection,
+    TriggerOrderId, TriggerPriceCondition, TwapId,
 };
 
 #[derive(
@@ -760,6 +760,20 @@ pub enum Event<Address> {
         estimated_funding_rate: Decimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// A `UserAction::Transfer` moved an asset between two account/balance
+    /// locations. `fee` is non-zero only for cross-account transfers; `memo`
+    /// carries the end-to-end reference.
+    Transfer {
+        from_address: Address,
+        to_address: Address,
+        from_balance: BalanceBucket,
+        to_balance: BalanceBucket,
+        asset_id: AssetId,
+        amount: PositiveDecimal,
+        fee: PositiveDecimal,
+        memo: String,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -828,6 +842,7 @@ impl<Address> Event<Address> {
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
             Self::Trade { .. } => "Exchange/Trade",
             Self::TradeV1 { .. } => "Exchange/TradeV1",
+            Self::Transfer { .. } => "Exchange/Transfer",
             Self::TryExecuteTriggerOrder { .. } => "Exchange/TryExecuteTriggerOrder",
             Self::UnhaltBorrowLendPool { .. } => "Exchange/UnhaltBorrowLendPool",
             Self::UnhaltPerpMarket { .. } => "Exchange/UnhaltPerpMarket",
