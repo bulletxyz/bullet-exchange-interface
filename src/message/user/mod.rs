@@ -67,6 +67,7 @@ define_enum! {
         } = 4,
 
         /// Borrow assets from spot pool.
+        #[deprecated(note = "use `UserAction::Transfer` instead")]
         BorrowSpot {
             asset_id: AssetId,
             amount: PositiveDecimal,
@@ -161,7 +162,27 @@ define_enum! {
             memo: CustomString,
         } = 18,
 
-        // Reserved: 19
+        /// Set an account's self-trade group.
+        ///
+        /// Accounts sharing a `group` are treated as a single entity by the
+        /// self-trade check, so they cannot trade against each other. A master
+        /// and its subs, and a vault and its leader, are bound to each other
+        /// independently of `group` and cannot be separated by it.
+        ///
+        /// `address` names the account to configure:
+        /// - `None` — the sender's own account, with `sub_account_index` applied
+        ///   as elsewhere.
+        /// - `Some(addr)` — that account, and `sub_account_index` is **ignored**.
+        ///   Allowed for the sender's own account, a sub-account whose recorded
+        ///   master is the sender, a vault the sender leads, or any account if the
+        ///   sender is the Protocol admin.
+        ///
+        /// Delegates may not set a group.
+        SetAccountGroup {
+            address: Option<Address>,
+            group: Address,
+            sub_account_index: Option<u8>,
+        } = 19,
 
         // =========================================================================
         // Order Operations (20-39)

@@ -51,6 +51,9 @@ define_simple_type!(AssetId(u16));
 define_simple_type!(MarketId(u16));
 impl MarketId {
     // Already created edge cases previously, so hard code certain values.
+    // Arms stay in ascending range order so the table can be read against the
+    // market ID allocations; merging equal-bodied arms would break that.
+    #[allow(clippy::match_same_arms)]
     pub fn kind(&self) -> MarketKind {
         use MarketKind::*;
         match self.0 {

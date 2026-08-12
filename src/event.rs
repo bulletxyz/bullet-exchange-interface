@@ -774,6 +774,16 @@ pub enum Event<Address> {
         memo: String,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// An account's self-trade group changed. Accounts sharing a group are treated
+    /// as a single entity by the self-trade check. `set_by` is the signer: the
+    /// account's owner, its master, a vault leader, or the Protocol admin.
+    SetAccountGroup {
+        user_address: Address,
+        set_by: Address,
+        from_group: Address,
+        to_group: Address,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -835,6 +845,7 @@ impl<Address> Event<Address> {
             Self::RejectTwapOrder { .. } => "Exchange/RejectTwapOrder",
             Self::RepayBorrow { .. } => "Exchange/RepayBorrow",
             Self::RevokeDelegation { .. } => "Exchange/RevokeDelegation",
+            Self::SetAccountGroup { .. } => "Exchange/SetAccountGroup",
             Self::SetMarketTradingStatus { .. } => "Exchange/SetMarketTradingStatus",
             Self::SetMarketTradingStatusFailed { .. } => "Exchange/SetMarketsTradingStatusFailed",
             Self::SuccessfulExecuteTriggerOrder { .. } => "Exchange/SuccessfulExecuteTriggerOrder",
