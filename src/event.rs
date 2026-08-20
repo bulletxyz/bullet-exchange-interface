@@ -784,6 +784,15 @@ pub enum Event<Address> {
         to_group: Address,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// An on-chain ISO liquidation trigger fired but the orderbook was too thin to fully close the
+    /// position; `remaining_size` (absolute) is owed a backstop liquidation, handled by the
+    /// off-chain keeper / backstop path.
+    IsoLiquidationBackstopOwed {
+        user_address: Address,
+        market_id: MarketId,
+        remaining_size: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -835,6 +844,7 @@ impl<Address> Event<Address> {
             Self::InitializePerpMarketV1 { .. } => "Exchange/InitializePerpMarketV1",
             Self::InitializeSpotMarket { .. } => "Exchange/InitializeSpotMarket",
             Self::InitializeSpotMarketV1 { .. } => "Exchange/InitializeSpotMarketV1",
+            Self::IsoLiquidationBackstopOwed { .. } => "Exchange/IsoLiquidationBackstopOwed",
             Self::LiquidateBorrowLendLiability { .. } => "Exchange/LiquidateBorrowLendLiability",
             Self::PendingTriggerOrders { .. } => "Exchange/PendingTriggerOrders",
             Self::PlaceOrder { .. } => "Exchange/PlaceOrder",

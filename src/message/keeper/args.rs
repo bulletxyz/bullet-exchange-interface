@@ -2,7 +2,9 @@
 
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
 use crate::define_struct;
-use crate::types::{AssetId, MarginDiscount, MarketId, MarketTradingStatus};
+use crate::types::{
+    AssetId, MarginDiscount, MarketId, MarketTradingStatus, TradingCreditsUpdateType,
+};
 
 define_struct! {
     struct OraclePriceUpdateArgs {
@@ -38,5 +40,13 @@ define_struct! {
     struct UpdateUserMarginDiscountArgs<Address> {
         user: Address,
         margin_discount: MarginDiscount,
+    }
+}
+
+define_struct! {
+    struct TradingCreditsArgs<Address> {
+        user_address: Address,
+        amount: PositiveDecimal,
+        update_type: TradingCreditsUpdateType,
     }
 }

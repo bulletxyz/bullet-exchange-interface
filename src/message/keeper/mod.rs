@@ -58,18 +58,23 @@ define_enum! {
         // =========================================================================
         // Credits Admin Operations (20-29)
         // =========================================================================
-        /// Add trading credits to a user (CreditsAdmin).
+        /// Deprecated - use UpdateTradingCredits instead
         AddTradingCredits {
             user_address: Address,
             amount: PositiveDecimal,
         } = 20,
 
-        /// Remove trading credits from a user (CreditsAdmin).
+        /// Deprecated - use UpdateTradingCredits instead
         RemoveTradingCredits {
             user_address: Address,
             amount: PositiveDecimal,
         } = 21,
-        // Reserved: 22-29
+
+        /// Add or remove trading credits for a list of users (CreditsAdmin)
+        UpdateTradingCredits {
+            args: Vec<TradingCreditsArgs<Address>>,
+        } = 22,
+        // Reserved: 23-29
 
         // =========================================================================
         // FeeTier Admin Operations (30-39)
@@ -145,9 +150,9 @@ impl<Address> KeeperAction<Address> {
             | Self::UnhaltBorrowLendPool { .. }
             | Self::HaltPerpMarket { .. } => AdminType::MarketStatus,
             Self::UpdateFunding { .. } => AdminType::Funding,
-            Self::AddTradingCredits { .. } | Self::RemoveTradingCredits { .. } => {
-                AdminType::Credits
-            }
+            Self::AddTradingCredits { .. }
+            | Self::RemoveTradingCredits { .. }
+            | Self::UpdateTradingCredits { .. } => AdminType::Credits,
             Self::UpdateUserFeeTier { .. }
             | Self::UpdateUserFeeDiscountBps { .. }
             | Self::UpdateUserMarginDiscount { .. } => AdminType::FeeTier,

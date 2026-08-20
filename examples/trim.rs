@@ -1,4 +1,4 @@
-use bullet_exchange_interface::schema::{Schema, SchemaFile, trim};
+use bullet_exchange_interface::schema::{Schema, SchemaFile, trim_matching_variants};
 use bullet_exchange_interface::transaction::Transaction;
 
 fn main() {
@@ -17,8 +17,7 @@ fn main() {
     let our_schema = Schema::of_single_type::<Transaction>().unwrap();
     let remote: SchemaFile = serde_json::from_str(include_str!("schema.json")).unwrap();
 
-    let left = trim(&our_schema, &filter_variants);
-    let right = trim(&remote.schema, &filter_variants);
+    let (left, right) = trim_matching_variants(&our_schema, &remote.schema, &filter_variants);
 
     let left = serde_json::to_string_pretty(&left).unwrap();
     let right = serde_json::to_string_pretty(&right).unwrap();

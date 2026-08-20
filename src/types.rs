@@ -70,12 +70,13 @@ impl MarketId {
             25_000..26_000 => RwaPerpUsEquityIndices,
             26_000..27_000 => RwaPerpJpEquityIndices,
             27_000..28_000 => RwaPerpHkEquityIndices,
-            28_000.. => RwaPerpPreIpo,
+            28_000..29_000 => RwaPerpPreIpo,
+            29_000.. => RwaPerpCnEquity,
         }
     }
 }
 
-define_simple_enum!(MarketKind{ CryptoPerp = 0, Spot = 1, RwaPerpCommodities = 2, RwaPerpUsEquity = 3, RwaPerpKrEquity = 4, RwaPerpJpEquity = 5, RwaPerpHkEquity = 6, RwaPerpUsEquityIndices = 7, RwaPerpJpEquityIndices = 8, RwaPerpHkEquityIndices = 9, RwaPerpPreIpo = 10 });
+define_simple_enum!(MarketKind{ CryptoPerp = 0, Spot = 1, RwaPerpCommodities = 2, RwaPerpUsEquity = 3, RwaPerpKrEquity = 4, RwaPerpJpEquity = 5, RwaPerpHkEquity = 6, RwaPerpUsEquityIndices = 7, RwaPerpJpEquityIndices = 8, RwaPerpHkEquityIndices = 9, RwaPerpPreIpo = 10, RwaPerpCnEquity = 11 });
 
 impl MarketKind {
     /// True for every real-world-asset perp kind (commodities, equities across
@@ -95,7 +96,8 @@ impl MarketKind {
             | MarketKind::RwaPerpUsEquityIndices
             | MarketKind::RwaPerpJpEquityIndices
             | MarketKind::RwaPerpHkEquityIndices
-            | MarketKind::RwaPerpPreIpo => true,
+            | MarketKind::RwaPerpPreIpo
+            | MarketKind::RwaPerpCnEquity => true,
         }
     }
 
@@ -110,7 +112,8 @@ impl MarketKind {
             | MarketKind::RwaPerpUsEquityIndices
             | MarketKind::RwaPerpJpEquityIndices
             | MarketKind::RwaPerpHkEquityIndices
-            | MarketKind::RwaPerpPreIpo => true,
+            | MarketKind::RwaPerpPreIpo
+            | MarketKind::RwaPerpCnEquity => true,
             MarketKind::Spot => false,
         }
     }
@@ -166,7 +169,12 @@ define_simple_enum!(OrderType {
     FillOrKill = 2,
     ImmediateOrCancel = 3,
     PostOnlySlide = 4, // TODO: Delete this
-    PostOnlyFront = 5  // TODO: Delete this
+    PostOnlyFront = 5, // TODO: Delete this
+    // System-only marker for the auto-managed ISO liquidation trigger. Users cannot place an order
+    // or trigger with this type (rejected by order-placement and `validate_trigger_order_type`); it
+    // is set exclusively by the reconcile path and never fed to the matching engine (the liquidation
+    // executes via `process_perp_liquidation_order` using an internal IOC order).
+    Liquidation = 6
 });
 
 define_simple_enum!(SpotCollateralTransferDirection {
@@ -196,6 +204,13 @@ impl std::str::FromStr for TokenId {
 }
 
 define_simple_enum!(TradingMode{ Iso = 0, Cross = 1 });
+
+define_simple_enum!(TradingCreditsUpdateType {
+    /// Credit the user, funded from the USDC PNL pool.
+    Add = 0,
+    /// Debit the user, capped at their current credit balance.
+    Remove = 1
+});
 
 define_enum! {
     /// A balance bucket within an account.
