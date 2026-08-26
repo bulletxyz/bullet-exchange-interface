@@ -575,6 +575,7 @@ pub enum Event<Address> {
         amount: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// deprecated - use ClaimReferralRewardsV1 instead
     ClaimReferralRewards {
         address: Address,
         amount_claimed: PositiveDecimal,
@@ -793,6 +794,67 @@ pub enum Event<Address> {
         remaining_size: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    CreateSubAccount {
+        sub_account_address: Address,
+        master_account_address: Address,
+        sub_account_index: u8,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// supersedes ClaimReferralRewards; adds execution_timestamp
+    ClaimReferralRewardsV1 {
+        address: Address,
+        amount_claimed: PositiveDecimal,
+        total_rewards: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A `UserAction::DegenTrade` open filled: `Side::Bid` is a long,
+    /// `Side::Ask` a short; `transferred` is the USDC moved from cross into
+    /// the isolated balance before the fill.
+    OpenDegenPosition {
+        user_address: Address,
+        market_id: MarketId,
+        size: PositiveDecimal,
+        side: Side,
+        transferred: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A `UserAction::DegenTrade` close executed. `remaining_size` is the
+    /// signed position size still open after the IOC (zero for a full close);
+    /// `paid_back` is the USDC returned to the cross balance (zero unless the
+    /// position ended flat).
+    CloseDegenPosition {
+        user_address: Address,
+        market_id: MarketId,
+        closed_size: PositiveDecimal,
+        remaining_size: Decimal,
+        paid_back: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Supersedes `CreateTwapOrder`; adds the creation timestamp needed for
+    /// deterministic history ordering and deduplication.
+    CreateTwapOrderV1 {
+        user_address: Address,
+        twap_id: TwapId,
+        market_id: MarketId,
+        total_size: PositiveDecimal,
+        total_duration_seconds: u64,
+        side: Side,
+        reduce_only: bool,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Supersedes `SuccessfulExecuteTwapOrder`; adds the slice order ID used
+    /// to link the execution to its corresponding trade rows.
+    SuccessfulExecuteTwapOrderV1 {
+        user_address: Address,
+        twap_id: TwapId,
+        market_id: MarketId,
+        order_id: OrderId,
+        order_price: PositiveDecimal,
+        executed_size: PositiveDecimal,
+        side: Side,
+        order_type: OrderType,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -819,10 +881,14 @@ impl<Address> Event<Address> {
             Self::CancelTwap { .. } => "Exchange/CancelTwap",
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::ClaimReferralRewards { .. } => "Exchange/ClaimReferralRewards",
+            Self::ClaimReferralRewardsV1 { .. } => "Exchange/ClaimReferralRewardsV1",
             Self::CleanupUserMarketState { .. } => "Exchange/CleanupUserMarketState",
+            Self::CloseDegenPosition { .. } => "Exchange/CloseDegenPosition",
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
+            Self::CreateSubAccount { .. } => "Exchange/CreateSubAccount",
             Self::CreateTriggerOrder { .. } => "Exchange/CreateTriggerOrder",
             Self::CreateTwapOrder { .. } => "Exchange/CreateTwapOrder",
+            Self::CreateTwapOrderV1 { .. } => "Exchange/CreateTwapOrderV1",
             Self::DelegateUser { .. } => "Exchange/DelegateUser",
             Self::DelegateUserV1 { .. } => "Exchange/DelegateUserV1",
             Self::DeleteAsset { .. } => "Exchange/DeleteAsset",
@@ -846,6 +912,7 @@ impl<Address> Event<Address> {
             Self::InitializeSpotMarketV1 { .. } => "Exchange/InitializeSpotMarketV1",
             Self::IsoLiquidationBackstopOwed { .. } => "Exchange/IsoLiquidationBackstopOwed",
             Self::LiquidateBorrowLendLiability { .. } => "Exchange/LiquidateBorrowLendLiability",
+            Self::OpenDegenPosition { .. } => "Exchange/OpenDegenPosition",
             Self::PendingTriggerOrders { .. } => "Exchange/PendingTriggerOrders",
             Self::PlaceOrder { .. } => "Exchange/PlaceOrder",
             Self::ProcessWithdrawVault { .. } => "Exchange/ProcessWithdrawVault",
@@ -860,6 +927,7 @@ impl<Address> Event<Address> {
             Self::SetMarketTradingStatusFailed { .. } => "Exchange/SetMarketsTradingStatusFailed",
             Self::SuccessfulExecuteTriggerOrder { .. } => "Exchange/SuccessfulExecuteTriggerOrder",
             Self::SuccessfulExecuteTwapOrder { .. } => "Exchange/SuccessfulExecuteTwapOrder",
+            Self::SuccessfulExecuteTwapOrderV1 { .. } => "Exchange/SuccessfulExecuteTwapOrderV1",
             Self::TakeFromInsuranceFund { .. } => "Exchange/TakeFromInsuranceFund",
             Self::Trade { .. } => "Exchange/Trade",
             Self::TradeV1 { .. } => "Exchange/TradeV1",
@@ -903,3 +971,68 @@ crate::define_simple_enum!(OrderSource {
     Trigger,
     Twap
 });
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::Event;
+    use crate::decimals::PositiveDecimal;
+    use crate::time::UnixTimestampMicros;
+    use crate::types::{MarketId, OrderId, OrderType, Side, TwapId};
+
+    #[test]
+    fn create_twap_order_v1_serializes_execution_timestamp() {
+        let event = Event::CreateTwapOrderV1 {
+            user_address: "user",
+            twap_id: TwapId(1),
+            market_id: MarketId(2),
+            total_size: PositiveDecimal::ONE,
+            total_duration_seconds: 60,
+            side: Side::Bid,
+            reduce_only: false,
+            execution_timestamp: UnixTimestampMicros::from_micros(123),
+        };
+
+        let serialized = serde_json::to_value(&event).expect("TWAP create event should serialize");
+
+        assert_eq!(event.event_key(), "Exchange/CreateTwapOrderV1");
+        assert_eq!(
+            serialized["create_twap_order_v1"]["execution_timestamp"],
+            123
+        );
+    }
+
+    #[test]
+    fn successful_execute_twap_order_v1_exposes_slice_order_id() {
+        let event = Event::SuccessfulExecuteTwapOrderV1 {
+            user_address: "user",
+            twap_id: TwapId(1),
+            market_id: MarketId(2),
+            order_id: OrderId(3),
+            order_price: PositiveDecimal::ONE,
+            executed_size: PositiveDecimal::ONE,
+            side: Side::Bid,
+            order_type: OrderType::FillOrKill,
+            execution_timestamp: UnixTimestampMicros::from_micros(123),
+        };
+
+        assert_eq!(event.event_key(), "Exchange/SuccessfulExecuteTwapOrderV1");
+        assert_eq!(
+            serde_json::to_value(event).expect("TWAP execute V1 event should serialize"),
+            json!({
+                "successful_execute_twap_order_v1": {
+                    "user_address": "user",
+                    "twap_id": 1,
+                    "market_id": 2,
+                    "order_id": 3,
+                    "order_price": "1",
+                    "executed_size": "1",
+                    "side": "bid",
+                    "order_type": "fill_or_kill",
+                    "execution_timestamp": 123
+                }
+            })
+        );
+    }
+}

@@ -1,12 +1,12 @@
 //! Argument types for user operations.
 
 use crate::decimals::PositiveDecimal;
-use crate::define_struct;
 use crate::string::CustomString;
 use crate::types::{
     AssetId, BalanceBucket, ClientOrderId, MarketId, OrderId, OrderType, Side, TriggerDirection,
     TriggerPriceCondition,
 };
+use crate::{define_enum, define_struct};
 
 define_struct! {
     /// A transfer location within an account: an optional sub-account and a
@@ -84,6 +84,30 @@ define_struct! {
         total_size: PositiveDecimal,
         reduce_only: bool,
         total_duration_seconds: u64,
+    }
+}
+
+define_enum! {
+    /// The operation of a [`super::UserAction::DegenTrade`] message.
+    #[non_exhaustive]
+    #[strum_discriminants(non_exhaustive)]
+    enum DegenAction {
+        /// Open an isolated position at top-of-book, all-or-nothing (FOK).
+        ///
+        /// `Side::Bid` opens a long, `Side::Ask` a short. `size` must be
+        /// non-zero and aligned to the market's lot size. `amount_to_transfer`
+        /// is moved from the cross balance into the market's isolated balance
+        /// before the fill and is capped at 10 USDC.
+        Open {
+            size: PositiveDecimal,
+            side: Side,
+            amount_to_transfer: PositiveDecimal,
+        } = 0,
+        /// Close the position at top-of-book (IOC).
+        ///
+        /// Fills as much as the book allows; once the position is fully flat the
+        /// entire remaining isolated balance is paid back to the cross balance.
+        Close = 1,
     }
 }
 

@@ -118,6 +118,8 @@ define_enum! {
         } = 13,
 
         /// Set the trading mode of a perp ledger to cross or iso.
+        ///
+        /// A delegate may set it on the delegator's ledger.
         SetPerpLedgerTradingMode {
             market_id: MarketId,
             trading_mode: TradingMode,
@@ -177,7 +179,10 @@ define_enum! {
         ///   master is the sender, a vault the sender leads, or any account if the
         ///   sender is the Protocol admin.
         ///
-        /// Delegates may not set a group.
+        /// A delegate may set a group, acting with its delegator's authority: on
+        /// the delegator's own account and on the delegator's sub-accounts. A
+        /// delegate of a vault may set that vault's group; a delegate of the
+        /// *leader* may not, since vault configuration is leader-only.
         SetAccountGroup {
             address: Option<Address>,
             group: Address,
@@ -263,7 +268,19 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 30,
 
-        // Reserved: 31-39
+        /// High-risk "degen" trading: an exclusive isolated position at up to
+        /// 1000x leverage, funded with at most 10 USDC, executed top-of-book.
+        ///
+        /// See [`DegenAction`] for the open/close semantics. The user's perp
+        /// ledger for the market must be empty on open; it is switched to
+        /// [`TradingMode::Degen`] automatically.
+        DegenTrade {
+            market_id: MarketId,
+            action: DegenAction,
+            sub_account_index: Option<u8>,
+        } = 31,
+
+        // Reserved: 32-39
 
 
         // =========================================================================

@@ -203,7 +203,11 @@ impl std::str::FromStr for TokenId {
     }
 }
 
-define_simple_enum!(TradingMode{ Iso = 0, Cross = 1 });
+// `Degen` is a per-user perp-ledger mode only: isolated margin with the fixed
+// degen (1000x) leverage table. Markets themselves are never `Degen`, and users
+// cannot select it via `SetPerpLedgerTradingMode` — only the `DegenTrade` open
+// path sets it.
+define_simple_enum!(TradingMode{ Iso = 0, Cross = 1, Degen = 2 });
 
 define_simple_enum!(TradingCreditsUpdateType {
     /// Credit the user, funded from the USDC PNL pool.
