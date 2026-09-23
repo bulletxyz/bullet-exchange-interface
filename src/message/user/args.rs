@@ -18,6 +18,21 @@ define_struct! {
 }
 
 define_struct! {
+    /// A perp position within an account: an optional sub-account and the market
+    /// whose ledger holds the position. `sub_account_index: None` targets the
+    /// master account.
+    ///
+    /// The counterpart to [`TransferEndpoint`] for operations that move value
+    /// between *positions* rather than between balance buckets. There is no
+    /// bucket to name because unrealized PnL is not a balance — it lives in the
+    /// position's cost basis.
+    struct PerpPositionEndpoint {
+        sub_account_index: Option<u8>,
+        market_id: MarketId,
+    }
+}
+
+define_struct! {
     struct NewOrderArgs {
         price: PositiveDecimal,
         size: PositiveDecimal,

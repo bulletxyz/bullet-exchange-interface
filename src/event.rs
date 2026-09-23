@@ -1,5 +1,6 @@
 use rust_decimal::Decimal;
 
+use crate::account_state::AccountStateV1;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
@@ -800,7 +801,7 @@ pub enum Event<Address> {
         sub_account_index: u8,
         execution_timestamp: UnixTimestampMicros,
     },
-    /// supersedes ClaimReferralRewards; adds execution_timestamp
+    /// deprecated - use ClaimReferralRewardsV2 instead
     ClaimReferralRewardsV1 {
         address: Address,
         amount_claimed: PositiveDecimal,
@@ -855,11 +856,56 @@ pub enum Event<Address> {
         order_type: OrderType,
         execution_timestamp: UnixTimestampMicros,
     },
+
+    /// An over-bankrupt account was broken down into the central SDL entities. Deliberately not
+    /// a fill: nothing was realized, no price was agreed and there is no counterparty.
+    SocialDeleverage {
+        user_address: Address,
+        /// Unweighted cross equity at takeover. The net hole
+        equity: Decimal,
+        /// Markets whose positions moved to the per-market entity.
+        absorbed_markets: Vec<MarketId>,
+        /// Claims that changed hands, as (asset, signed amount): positive is a deposit seized
+        /// into the asset entity, negative a debt taken on by the liability entity. One entry per
+        /// side that moved, never a net of the two, so the list totals what was actually seized
+        /// whatever shape the balance was in. An asset can appear more than once - an iso silo's
+        /// collateral and a borrow-lend balance are separate seizures.
+        seized_assets: Vec<(AssetId, Decimal)>,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Supersedes `ClaimReferralRewardsV1`; adds the asset the rewards were
+    /// claimed in.
+    ClaimReferralRewardsV2 {
+        address: Address,
+        asset_id: AssetId,
+        amount_claimed: PositiveDecimal,
+        total_rewards: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A `UserAction::TransferUnrealizedPnl` moved `amount` of unrealized PnL
+    /// from one perp position to another by shifting cost basis.
+    ///
+    /// The pair's total unrealized PnL is unchanged, and neither position's
+    /// `size` or `realized_pnl` moved — so this event is the only record that
+    /// the two positions' cost bases no longer follow from their fills alone.
+    /// Anything reconstructing PnL from fill history has to consume it.
+    UnrealizedPnlTransferred {
+        from_address: Address,
+        from_market_id: MarketId,
+        to_address: Address,
+        to_market_id: MarketId,
+        amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Authoritative raw account image. The transaction envelope supplies
+    /// ordering and source identity.
+    AccountStateV1(AccountStateV1<Address>),
 }
 
 impl<Address> Event<Address> {
     pub fn event_key(&self) -> &'static str {
         match self {
+            Self::AccountStateV1(_) => "Exchange/AccountStateV1",
             Self::AccrueInterestOnBorrowLend { .. } => "Exchange/AccrueInterestOnBorrowLend",
             Self::ActivateTriggerOrder { .. } => "Exchange/ActivateTriggerOrder",
             Self::ActivateTwap { .. } => "Exchange/ActivateTwap",
@@ -873,6 +919,7 @@ impl<Address> Event<Address> {
             Self::BackstopLiquidatePerp { .. } => "Exchange/BackstopLiquidatePerp",
             Self::BackstopLiquidatePerpPosition { .. } => "Exchange/BackstopLiquidatePerpPosition",
             Self::BootOrder { .. } => "Exchange/BootOrder",
+            Self::SocialDeleverage { .. } => "Exchange/SocialDeleverage",
             Self::Borrow { .. } => "Exchange/Borrow",
             Self::CancelOrder { .. } => "Exchange/CancelOrder",
             Self::CancelOrderV1 { .. } => "Exchange/CancelOrderV1",
@@ -882,6 +929,7 @@ impl<Address> Event<Address> {
             Self::CancelTwapV1 { .. } => "Exchange/CancelTwapV1",
             Self::ClaimReferralRewards { .. } => "Exchange/ClaimReferralRewards",
             Self::ClaimReferralRewardsV1 { .. } => "Exchange/ClaimReferralRewardsV1",
+            Self::ClaimReferralRewardsV2 { .. } => "Exchange/ClaimReferralRewardsV2",
             Self::CleanupUserMarketState { .. } => "Exchange/CleanupUserMarketState",
             Self::CloseDegenPosition { .. } => "Exchange/CloseDegenPosition",
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
@@ -934,6 +982,7 @@ impl<Address> Event<Address> {
             Self::Transfer { .. } => "Exchange/Transfer",
             Self::TryExecuteTriggerOrder { .. } => "Exchange/TryExecuteTriggerOrder",
             Self::UnhaltBorrowLendPool { .. } => "Exchange/UnhaltBorrowLendPool",
+            Self::UnrealizedPnlTransferred { .. } => "Exchange/UnrealizedPnlTransferred",
             Self::UnhaltPerpMarket { .. } => "Exchange/UnhaltPerpMarket",
             Self::UnhaltSpotMarket { .. } => "Exchange/UnhaltSpotMarket",
             Self::UpdateBorrowLendPool { .. } => "Exchange/UpdateBorrowLendPool",

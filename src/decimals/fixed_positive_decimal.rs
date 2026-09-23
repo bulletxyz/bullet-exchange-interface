@@ -53,19 +53,18 @@ impl FixedPositiveDecimal {
                 .round_dp_with_strategy(FIXED_DECIMALS, rust_decimal::RoundingStrategy::ToZero),
         };
 
-        // SAFETY: Rounding down a PositiveDecimal (non-negative) with RoundingMode::Down
-        // always produces a valid FixedPositiveDecimal. The only way FixedPositiveDecimal::new
-        // can fail is if PositiveDecimal::new returns None, which only happens for negative
-        // values. Since we're rounding down a non-negative value, the result is always
-        // non-negative.
+        // SAFETY: Rounding a PositiveDecimal (non-negative) always produces a valid
+        // FixedPositiveDecimal, in either RoundingMode. The only way
+        // FixedPositiveDecimal::new can fail is if PositiveDecimal::new returns None, which
+        // only happens for negative values. Both the floor (RoundingMode::Down) and the
+        // ceiling (RoundingMode::Up) of a non-negative value are themselves non-negative.
         #[allow(
             clippy::expect_used,
-            reason = "Rounding down a PositiveDecimal is infallible - result is always non-negative"
+            reason = "Rounding a PositiveDecimal is infallible - result is always non-negative"
         )]
         Self(
-            PositiveDecimal::new(rounded).expect(
-                "rounding down a PositiveDecimal always produces valid FixedPositiveDecimal",
-            ),
+            PositiveDecimal::new(rounded)
+                .expect("rounding a PositiveDecimal always produces valid FixedPositiveDecimal"),
         )
     }
 

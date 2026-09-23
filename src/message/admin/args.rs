@@ -65,6 +65,33 @@ define_struct! {
 }
 
 define_struct! {
+    /// Same as [`UpdatePerpMarketArgs`] but applies one set of values to every market in
+    /// `market_ids`.
+    #[derive(Default)]
+    struct UpdatePerpMarketArgsV1 {
+        market_ids: Vec<MarketId>,
+        impact_margin: Option<PositiveDecimal>,
+        interest_rate: Option<SurrogateDecimal>,
+        leverage_table_args: Option<SurrogateLeverageTableArgs>,
+        maker_fees_tenth_bps: Option<Vec<i16>>,
+        max_funding_rate_clamp: Option<SurrogateDecimal>,
+        max_interest_rate_clamp: Option<SurrogateDecimal>,
+        max_oi_notional: Option<PositiveDecimal>,
+        max_order_to_mark_price_deviation_ratio: Option<PositiveDecimal>,
+        max_order_to_trigger_price_deviation_ratio: Option<PositiveDecimal>,
+        max_orders_per_side: Option<u16>,
+        max_orders_per_user: Option<u16>,
+        max_trigger_orders_per_user: Option<u16>,
+        max_trigger_to_comparison_price_deviation_ratio: Option<PositiveDecimal>,
+        min_funding_rate_clamp: Option<SurrogateDecimal>,
+        min_interest_rate_clamp: Option<SurrogateDecimal>,
+        min_lot_size: Option<PositiveDecimal>,
+        min_tick_size: Option<PositiveDecimal>,
+        taker_fees_tenth_bps: Option<Vec<i16>>,
+    }
+}
+
+define_struct! {
     struct InitSpotMarketArgs {
         market_id: MarketId,
         base_asset_id: AssetId,
@@ -85,6 +112,23 @@ define_struct! {
     #[derive(Default)]
     struct UpdateSpotMarketArgs {
         market_id: MarketId,
+        base_min_lot_size: Option<PositiveDecimal>,
+        quote_min_lot_size: Option<PositiveDecimal>,
+        max_orders_per_side: Option<u16>,
+        max_orders_per_user: Option<u16>,
+        max_trigger_orders_per_user: Option<u16>,
+        taker_fees_tenth_bps: Option<Vec<i16>>,
+        maker_fees_tenth_bps: Option<Vec<i16>>,
+        max_order_to_trigger_price_deviation_ratio: Option<PositiveDecimal>,
+    }
+}
+
+define_struct! {
+    /// Same as [`UpdateSpotMarketArgs`] but applies one set of values to every market in
+    /// `market_ids`.
+    #[derive(Default)]
+    struct UpdateSpotMarketArgsV1 {
+        market_ids: Vec<MarketId>,
         base_min_lot_size: Option<PositiveDecimal>,
         quote_min_lot_size: Option<PositiveDecimal>,
         max_orders_per_side: Option<u16>,
@@ -152,6 +196,17 @@ define_struct! {
 define_struct! {
     struct UpdateAssetInfoArgsV2 {
         asset_id: AssetId,
+        withdraw_fee: Option<PositiveDecimal>,
+        pyth_lazer_feeds: Option<PythLazerFeeds>,
+    }
+}
+
+define_struct! {
+    /// Same as [`UpdateAssetInfoArgsV2`] but applies one set of values to every asset in
+    /// `asset_ids`.
+    #[derive(Default)]
+    struct UpdateAssetInfoArgsV3 {
+        asset_ids: Vec<AssetId>,
         withdraw_fee: Option<PositiveDecimal>,
         pyth_lazer_feeds: Option<PythLazerFeeds>,
     }

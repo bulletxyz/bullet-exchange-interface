@@ -48,6 +48,7 @@ define_enum! {
     }
 }
 define_simple_type!(AssetId(u16));
+
 define_simple_type!(MarketId(u16));
 impl MarketId {
     // Already created edge cases previously, so hard code certain values.
@@ -288,11 +289,17 @@ define_enum!(
     }
 );
 
+// To reduce the need for a state change I have chosen to add more variants for different combinations
+// As opposed to a new field in the user account to track asset weight discounts too
+// TODO: Can change this in the future if needed.
 define_simple_enum! {
     #[derive(strum::EnumIter)]
     MarginDiscount {
         None,
         LP,
+        SuperLP,
+        AssetWeightLP,
+        AssetWeightSuperLP,
     }
 }
 #[allow(clippy::derivable_impls)]

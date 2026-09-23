@@ -12,7 +12,7 @@ define_enum! {
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum VaultAction<Address> {
-        /// Update vault configuration (leader only).
+        /// Deprecated - use UpdateVaultConfigV1 instead.
         UpdateVaultConfig {
             vault_address: Address,
             args: UpdateVaultConfigArgs,
@@ -54,6 +54,26 @@ define_enum! {
             expires_at: Option<UnixTimestampMicros>,
             flags: u32,
         } = 6,
-        // Reserved: 7-255
+
+        /// Update vault configuration including the withdrawal fee (leader only).
+        UpdateVaultConfigV1 {
+            vault_address: Address,
+            args: UpdateVaultConfigArgsV1,
+        } = 7,
+
+        /// Set, replace or clear the vault's per-user deposit policy (leader only).
+        ///
+        /// `policy: None` clears it, restoring unrestricted deposits. A supplied policy replaces
+        /// the previous one outright, strategic caps included, so dropping an address from
+        /// `strategic_caps` is how its override is removed. Cumulative per-user deposit totals
+        /// live on the depositor's own record and survive every one of these, so clearing and
+        /// re-setting a policy never hands anyone a fresh allowance.
+        ///
+        /// The vault-wide `deposit_limit` is unaffected and stays managed by `UpdateVaultConfigV1`.
+        SetDepositPolicy {
+            vault_address: Address,
+            policy: Option<VaultDepositPolicyArgs<Address>>,
+        } = 8,
+        // Reserved: 9-255
     }
 }

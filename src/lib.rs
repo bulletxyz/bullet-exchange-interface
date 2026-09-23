@@ -2,6 +2,7 @@
 
 #![allow(clippy::large_enum_variant)]
 
+pub mod account_state;
 pub mod address;
 pub mod decimals;
 pub mod error;

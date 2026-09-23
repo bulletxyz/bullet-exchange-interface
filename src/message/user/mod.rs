@@ -362,6 +362,32 @@ define_enum! {
             position: BackstopLiquidatePerpPositionArgs,
             sub_account_index: Option<u8>,
         } = 62,
-        // Reserved: 63-255
+        // Reserved: 63-69
+
+        // =========================================================================
+        // Position Operations (70-79)
+        // =========================================================================
+        /// Move unrealized PnL from a position holding a profit to one holding a
+        /// loss, by shifting cost basis between them.
+        ///
+        /// No fill and no pool: `size` is untouched on both sides, so neither
+        /// account's exposure changes, and the pair's total unrealized PnL is
+        /// conserved exactly. `amount` is clamped to the smaller of the source's
+        /// profit and the destination's loss, so neither position's PnL crosses
+        /// zero and value only ever flows from the healthier side to the weaker
+        /// one.
+        ///
+        /// `to_address` follows `Transfer`'s convention, not `SetAccountGroup`'s:
+        /// `None` is the sender's own account, `Some(addr)` is that account, and
+        /// `to.sub_account_index` is applied **either way**. So a destination of
+        /// `(Some(alice), Some(3))` is alice's sub-account 3, which is how a
+        /// transfer reaches another owner's sub-account at all.
+        TransferUnrealizedPnl {
+            from: PerpPositionEndpoint,
+            to: PerpPositionEndpoint,
+            to_address: Option<Address>,
+            amount: PositiveDecimal,
+        } = 70,
+        // Reserved: 71-255
     }
 }

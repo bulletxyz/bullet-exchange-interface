@@ -22,13 +22,13 @@ define_enum! {
         /// Initialize a new perp market.
         InitPerpMarket { args: InitPerpMarketArgs } = 0,
 
-        /// Update perp market configuration.
+        /// Deprecated - use UpdatePerpMarketV1 instead.
         UpdatePerpMarket { args: UpdatePerpMarketArgs } = 1,
 
         /// Initialize a new spot market.
         InitSpotMarket { args: InitSpotMarketArgs } = 2,
 
-        /// Update spot market configuration.
+        /// Deprecated - use UpdateSpotMarketV1 instead.
         UpdateSpotMarket { args: UpdateSpotMarketArgs } = 3,
 
         /// Halt a perp market with settlement price.
@@ -63,13 +63,25 @@ define_enum! {
         /// Delete an asset.
         DeleteAsset { asset_id: AssetId } = 12,
 
-        /// Update rwa pricing configuration.
+        /// Deprecated - use UpdateRwaPriceConfigV1 instead.
         UpdateRwaPriceConfig {
             market_id: MarketId,
             args: UpdateRwaPriceConfigArgs,
         } = 13,
 
-        // Reserved: 14-19
+        /// Update perp market configuration for one or more markets with the same values.
+        UpdatePerpMarketV1 { args: UpdatePerpMarketArgsV1 } = 14,
+
+        /// Update spot market configuration for one or more markets with the same values.
+        UpdateSpotMarketV1 { args: UpdateSpotMarketArgsV1 } = 15,
+
+        /// Update rwa pricing configuration for one or more markets with the same values.
+        UpdateRwaPriceConfigV1 {
+            market_ids: Vec<MarketId>,
+            args: UpdateRwaPriceConfigArgs,
+        } = 16,
+
+        // Reserved: 17-19
 
         // =========================================================================
         // Asset Operations (20-29)
@@ -77,19 +89,22 @@ define_enum! {
         /// Deprecated - use InitAssetInfoV1 instead.
         InitAssetInfo { args: InitAssetInfoArgs } = 20,
 
-        /// Deprecated - use UpdateAssetInfoV2 instead.
+        /// Deprecated - use UpdateAssetInfoV3 instead.
         UpdateAssetInfo { args: UpdateAssetInfoArgs } = 21,
 
         /// Initialize asset info with Pyth Lazer feed configuration.
         InitAssetInfoV1 { args: InitAssetInfoArgsV1 } = 22,
 
-        /// Deprecated - use UpdateAssetInfoV2 instead.
+        /// Deprecated - use UpdateAssetInfoV3 instead.
         UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 23,
 
-        /// Fixed update asset info with Pyth Lazer feed configuration.
+        /// Deprecated - use UpdateAssetInfoV3 instead.
         UpdateAssetInfoV2 { args: UpdateAssetInfoArgsV2 } = 24,
 
-        // Reserved: 25-29
+        /// Update asset info for one or more assets with the same values.
+        UpdateAssetInfoV3 { args: UpdateAssetInfoArgsV3 } = 25,
+
+        // Reserved: 26-29
 
         // =========================================================================
         // Borrow/Lend Operations (30-39)
@@ -193,6 +208,8 @@ define_enum! {
         /// `AccountVariant::ProtocolVault` so future protocol-specific behavior
         /// (e.g. governance-only withdrawals, fee exemptions) can branch on it.
         InitProtocolVault { args: CreateVaultArgs<Address> } = 66,
-        // Reserved: 67-69
+
+        // Reserved: 67-69. 67 was SocialDeleverage, which is now automatic - the liquidation
+        // handlers run it themselves when they meet an over-bankrupt account.
     }
 }
