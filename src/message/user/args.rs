@@ -134,6 +134,15 @@ define_struct! {
 }
 
 define_struct! {
+    struct BackstopLiquidatePerpPositionArgsV1 {
+        market_id: MarketId,
+        size: PositiveDecimal,
+        liquidator_side: Side,
+        takeover_price: PositiveDecimal,
+    }
+}
+
+define_struct! {
     struct CreateVaultArgs<Address> {
         name: CustomString,
         description: CustomString,

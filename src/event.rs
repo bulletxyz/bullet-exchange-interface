@@ -370,6 +370,8 @@ pub enum Event<Address> {
         repay_type: RepayType,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// Idle USDC netted against the account's USDC liability. The name predates the removal
+    /// of the synthetic unrealized-loss borrow and is kept for wire compatibility.
     UsdcUnrealizedLossBorrowRebalance {
         user_address: Address,
         cached_unrealized_loss: PositiveDecimal,

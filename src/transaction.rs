@@ -85,6 +85,9 @@ pub struct Version0 {
     pub runtime_call: RuntimeCall,
     pub uniqueness: UniquenessData,
     pub details: TxDetails,
+    /// The account to execute as. `None` executes as the signer's default address.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub address_override: Option<crate::address::Address>,
 }
 
 define_struct! {
@@ -93,7 +96,97 @@ define_struct! {
         runtime_call: RuntimeCall,
         uniqueness: UniquenessData,
         details: TxDetails,
+        /// The account to execute as. `None` executes as the signer's default address.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        address_override: Option<crate::address::Address>,
     }
+}
+
+impl UnsignedTransaction {
+    /// The payload a single signer signs for `chain_hash`.
+    pub fn signing_payload(&self, chain_hash: &[u8; 32]) -> TransactionSigningPayload {
+        TransactionSigningPayload::V0(TransactionSigningPayloadV0 {
+            runtime_call: self.runtime_call.clone(),
+            uniqueness: self.uniqueness.clone(),
+            details: self.details.clone(),
+            address_override: self.address_override,
+            chain_hash: *chain_hash,
+        })
+    }
+
+    /// The bytes a single signer signs for `chain_hash`: the Borsh encoding of
+    /// [`TransactionSigningPayload::V0`]. `details.chain_hash_fragment` must be
+    /// [`chain_hash_fragment`] of the same hash or the rollup rejects the transaction.
+    pub fn signing_bytes(&self, chain_hash: &[u8; 32]) -> Vec<u8> {
+        borsh::to_vec(&self.signing_payload(chain_hash))
+            .expect("serializing a signing payload to a Vec cannot fail")
+    }
+
+    /// Wraps this transaction and a signature over [`Self::signing_bytes`] into the wire format.
+    pub fn into_signed(self, pub_key: [u8; 32], signature: [u8; 64]) -> Transaction {
+        Transaction::V0(Version0 {
+            signature,
+            pub_key,
+            runtime_call: self.runtime_call,
+            uniqueness: self.uniqueness,
+            details: self.details,
+            address_override: self.address_override,
+        })
+    }
+}
+
+/// The data a signer commits to. The Borsh encoding of this enum is what gets signed, so the
+/// version discriminant (`0` for V0) is the first signed byte and the chain hash is the last 32.
+#[derive(Clone, Debug, Eq, PartialEq, borsh::BorshDeserialize, borsh::BorshSerialize)]
+#[borsh(use_discriminant = true)]
+#[non_exhaustive]
+#[repr(u8)]
+pub enum TransactionSigningPayload {
+    V0(TransactionSigningPayloadV0) = 0,
+}
+
+impl TransactionSigningPayload {
+    /// Parses the bytes produced by [`UnsignedTransaction::signing_bytes`].
+    pub fn from_signing_bytes(bytes: &[u8]) -> std::io::Result<Self> {
+        borsh::from_slice(bytes)
+    }
+}
+
+/// The single-signer signing payload: the unsigned transaction plus the chain hash.
+#[derive(Clone, Debug, Eq, PartialEq, borsh::BorshDeserialize, borsh::BorshSerialize)]
+pub struct TransactionSigningPayloadV0 {
+    pub runtime_call: RuntimeCall,
+    pub uniqueness: UniquenessData,
+    pub details: TxDetails,
+    pub address_override: Option<crate::address::Address>,
+    pub chain_hash: [u8; 32],
+}
+
+impl TransactionSigningPayloadV0 {
+    /// Recovers the unsigned transaction this payload was built from.
+    pub fn into_unsigned_transaction(self) -> UnsignedTransaction {
+        UnsignedTransaction {
+            runtime_call: self.runtime_call,
+            uniqueness: self.uniqueness,
+            details: self.details,
+            address_override: self.address_override,
+        }
+    }
+}
+
+/// The 64-bit fragment of a chain hash that transaction details commit to: the first eight
+/// bytes, little-endian, so Borsh writes them back unchanged.
+pub const fn chain_hash_fragment(chain_hash: &[u8; 32]) -> u64 {
+    u64::from_le_bytes([
+        chain_hash[0],
+        chain_hash[1],
+        chain_hash[2],
+        chain_hash[3],
+        chain_hash[4],
+        chain_hash[5],
+        chain_hash[6],
+        chain_hash[7],
+    ])
 }
 
 define_enum! {
@@ -126,8 +219,12 @@ define_struct! {
         max_fee: Amount,
         /// Optionally limit the number of gas to be used.
         gas_limit: Option<Gas>,
-        /// The chain-id from the schema.
-        chain_id: u64,
+        /// [`chain_hash_fragment`] of the chain hash the signer committed to. The rollup
+        /// serializes it as a decimal string in JSON.
+        #[serde(with = "serde_u64_decimal_string")]
+        #[schemars(with = "String")]
+        #[cfg_attr(feature = "schema", sov_wallet(hidden))]
+        chain_hash_fragment: u64,
     }
 }
 
@@ -142,6 +239,34 @@ define_simple_type!(Amount(u128));
 impl sov_universal_wallet::ty::IntegerDisplayable for Amount {
     fn integer_type() -> sov_universal_wallet::ty::IntegerType {
         sov_universal_wallet::ty::IntegerType::u128
+    }
+}
+
+/// Serde for [`TxDetails::chain_hash_fragment`]: the rollup reads it as a decimal string in JSON.
+mod serde_u64_decimal_string {
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(value: &u64, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        if serializer.is_human_readable() {
+            serializer.collect_str(value)
+        } else {
+            serializer.serialize_u64(*value)
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<u64, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            let value = String::deserialize(deserializer)?;
+            value.parse::<u64>().map_err(serde::de::Error::custom)
+        } else {
+            u64::deserialize(deserializer)
+        }
     }
 }
 
@@ -283,5 +408,82 @@ mod serde_amount_decimal_string_opt {
                 .map_err(serde::de::Error::custom),
             None => Ok(None),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn unsigned(chain_hash: &[u8; 32]) -> UnsignedTransaction {
+        UnsignedTransaction {
+            runtime_call: RuntimeCall::Bank(BankCall::Mint {
+                coins: bank::Coins {
+                    amount: Amount(5),
+                    token_id: bank::config_gas_token_id(),
+                },
+                mint_to_address: crate::address::Address([3u8; 32]),
+            }),
+            uniqueness: UniquenessData::Window(7),
+            details: TxDetails {
+                max_priority_fee_bips: PriorityFeeBips(1),
+                max_fee: Amount(2),
+                gas_limit: None,
+                chain_hash_fragment: chain_hash_fragment(chain_hash),
+            },
+            address_override: None,
+        }
+    }
+
+    #[test]
+    fn chain_hash_fragment_is_first_eight_bytes_little_endian() {
+        let mut chain_hash = [0xaa; 32];
+        chain_hash[..8].copy_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]);
+        assert_eq!(chain_hash_fragment(&chain_hash), 0x0807_0605_0403_0201);
+        assert_eq!(
+            borsh::to_vec(&chain_hash_fragment(&chain_hash)).unwrap(),
+            chain_hash[..8]
+        );
+    }
+
+    #[test]
+    fn signing_bytes_are_versioned_unsigned_transaction_plus_chain_hash() {
+        let chain_hash = [0x11; 32];
+        let tx = unsigned(&chain_hash);
+        let bytes = tx.signing_bytes(&chain_hash);
+        let mut expected = vec![0u8];
+        expected.extend(borsh::to_vec(&tx).unwrap());
+        expected.extend_from_slice(&chain_hash);
+        assert_eq!(bytes, expected);
+        let TransactionSigningPayload::V0(payload) =
+            TransactionSigningPayload::from_signing_bytes(&bytes).unwrap();
+        assert_eq!(payload.chain_hash, chain_hash);
+        assert_eq!(payload.into_unsigned_transaction(), tx);
+    }
+
+    #[test]
+    fn wire_format_is_v0_header_plus_unsigned_transaction() {
+        let chain_hash = [0x22; 32];
+        let tx = unsigned(&chain_hash);
+        let signed = tx.clone().into_signed([9u8; 32], [8u8; 64]);
+        let mut expected = vec![0u8];
+        expected.extend_from_slice(&[8u8; 64]);
+        expected.extend_from_slice(&[9u8; 32]);
+        expected.extend(borsh::to_vec(&tx).unwrap());
+        assert_eq!(borsh::to_vec(&signed).unwrap(), expected);
+    }
+
+    #[test]
+    fn json_encodes_fragment_as_decimal_string_and_omits_absent_override() {
+        let chain_hash = [0x33; 32];
+        let tx = unsigned(&chain_hash);
+        let json = serde_json::to_value(&tx).unwrap();
+        assert_eq!(
+            json["details"]["chain_hash_fragment"],
+            chain_hash_fragment(&chain_hash).to_string()
+        );
+        assert!(json.get("address_override").is_none());
+        let roundtrip: UnsignedTransaction = serde_json::from_value(json).unwrap();
+        assert_eq!(roundtrip, tx);
     }
 }

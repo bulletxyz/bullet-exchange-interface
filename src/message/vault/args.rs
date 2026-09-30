@@ -38,9 +38,11 @@ define_struct! {
     /// complete list of overrides after the call: omitting an address that had one removes it,
     /// and an empty list leaves every depositor on the default cap.
     ///
-    /// Caps are cumulative deposited notional, not a current balance. Withdrawing does not free
-    /// allowance, and these totals live on the depositor's own record, so they outlive any change
-    /// to the policy.
+    /// Caps are on net deposited notional, not a current balance: deposits add to a user's total
+    /// and each paid-out withdrawal subtracts the pre-fee value of the shares burned, floored at
+    /// zero, so withdrawing frees allowance to deposit again; withdrawing everything resets the
+    /// total to zero. These totals live on the depositor's
+    /// own record, so they outlive any change to the policy.
     struct VaultDepositPolicyArgs<Address> {
         /// Cumulative deposit cap (notional) applied to any depositor without an override.
         default_user_deposit_cap: PositiveDecimal,

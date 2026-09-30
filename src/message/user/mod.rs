@@ -342,6 +342,9 @@ define_enum! {
         // User-Initiated Liquidation Operations (60-69)
         // =========================================================================
         /// Backstop liquidation for perp positions (user provides capital).
+        #[deprecated(
+            note = "use `UserAction::BackstopLiquidatePerpPositionsV1` with explicit priced positions; V0 `None` has no direct equivalent"
+        )]
         BackstopLiquidatePerpPositions {
             address: Address,
             positions: Option<Vec<BackstopLiquidatePerpPositionArgs>>,
@@ -357,12 +360,22 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 61,
 
+        #[deprecated(
+            note = "use `UserAction::BackstopLiquidatePerpPositionsV1` with one explicitly priced position"
+        )]
         BackstopLiquidateIsoPerpPosition {
             address: Address,
             position: BackstopLiquidatePerpPositionArgs,
             sub_account_index: Option<u8>,
         } = 62,
-        // Reserved: 63-69
+
+        /// Backstop liquidation carrying an explicit takeover price for each perp position.
+        BackstopLiquidatePerpPositionsV1 {
+            address: Address,
+            positions: Vec<BackstopLiquidatePerpPositionArgsV1>,
+            sub_account_index: Option<u8>,
+        } = 63,
+        // Reserved: 64-69
 
         // =========================================================================
         // Position Operations (70-79)

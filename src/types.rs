@@ -240,7 +240,8 @@ define_enum! {
 define_simple_enum!(BorrowType {
     /// Internal borrows from trading operations (PnL, margin, etc.)
     Internal = 0,
-    /// Unrealized loss borrow (synthetic)
+    /// Synthetic borrow against an unrealized loss. No longer taken; kept so stored events
+    /// still decode.
     UnrealizedLoss = 1,
     /// User-initiated borrows with actual fund withdrawal
     External = 2,
@@ -249,7 +250,8 @@ define_simple_enum!(BorrowType {
 define_simple_enum!(RepayType {
     /// Borrow repayment from PnL processing
     PnlProcessing,
-    /// Borrow repayment from unrealized loss borrow rebalancing
+    /// Repayment of a synthetic unrealized-loss borrow. No longer emitted; kept so stored
+    /// events still decode.
     Rebalance,
     /// Borrow repayment from balance updates in the form of a deposit
     BalanceUpdate,
