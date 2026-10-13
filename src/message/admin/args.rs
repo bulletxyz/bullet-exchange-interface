@@ -3,14 +3,10 @@
 use std::collections::BTreeMap;
 
 use crate::decimals::{PositiveDecimal, SurrogateDecimal};
-use crate::define_struct;
 use crate::string::CustomString;
 use crate::time::UnixTimestampMicros;
 use crate::types::{AssetId, MarketId, PythLazerFeeds, TokenId, TradingMode};
-
-// =============================================================================
-// Market Args
-// =============================================================================
+use crate::{define_enum, define_struct};
 
 define_struct! {
     struct InitPerpMarketArgs {
@@ -91,6 +87,63 @@ define_struct! {
     }
 }
 
+define_enum! {
+    /// One global-config field to set. `UpdateGlobalConfigV2` takes a list of these, so a new
+    /// field is a variant appended here rather than a new args struct.
+    enum GlobalConfigUpdate<Address> {
+        MaxOrdersPerUser(u16) = 0,
+        MaxTriggerOrdersPerUser(u16) = 1,
+        MaxOrdersPerBatchMsg(u16) = 2,
+        MaxTriggerOrdersToExecutePerMsg(u16) = 3,
+        MinNotionalTwapValue(PositiveDecimal) = 4,
+        MinNotionalTwapValuePerOrder(PositiveDecimal) = 5,
+        TwapExecutionIntervalSeconds(u64) = 6,
+        /// A zero limit removes the asset's limit.
+        DepositLimitsPerUser(Vec<(AssetId, PositiveDecimal)>) = 7,
+        WhitelistedUsersForDeposit(Vec<Address>) = 8,
+        PythLazerTrustedSigners(Vec<[u8; 32]>) = 9,
+        /// Treasury's share of every funding payment, below 1: payers pay `1 + r` times the
+        /// payment, payees receive `1 - r` times it.
+        FundingFeeRatio(PositiveDecimal) = 10,
+    }
+}
+
+impl<Address> UpdateGlobalConfigArgsV1<Address> {
+    pub fn into_updates(self) -> Vec<GlobalConfigUpdate<Address>> {
+        use GlobalConfigUpdate as U;
+        let mut updates = vec![];
+        updates.extend(self.max_orders_per_user.map(U::MaxOrdersPerUser));
+        updates.extend(
+            self.max_trigger_orders_per_user
+                .map(U::MaxTriggerOrdersPerUser),
+        );
+        updates.extend(self.max_orders_per_batch_msg.map(U::MaxOrdersPerBatchMsg));
+        updates.extend(
+            self.max_trigger_orders_to_execute_per_msg
+                .map(U::MaxTriggerOrdersToExecutePerMsg),
+        );
+        updates.extend(self.min_notional_twap_value.map(U::MinNotionalTwapValue));
+        updates.extend(
+            self.min_notional_twap_value_per_order
+                .map(U::MinNotionalTwapValuePerOrder),
+        );
+        updates.extend(
+            self.twap_execution_interval_seconds
+                .map(U::TwapExecutionIntervalSeconds),
+        );
+        updates.extend(self.deposit_limits_per_user.map(U::DepositLimitsPerUser));
+        updates.extend(
+            self.whitelisted_users_for_deposit
+                .map(U::WhitelistedUsersForDeposit),
+        );
+        updates.extend(
+            self.pyth_lazer_trusted_signers
+                .map(U::PythLazerTrustedSigners),
+        );
+        updates
+    }
+}
+
 define_struct! {
     struct InitSpotMarketArgs {
         market_id: MarketId,
@@ -151,9 +204,6 @@ define_struct! {
         table: BTreeMap<CustomString, u16>,
     }
 }
-// =============================================================================
-// Asset Args
-// =============================================================================
 
 define_struct! {
     struct InitAssetInfoArgs {
@@ -212,10 +262,6 @@ define_struct! {
     }
 }
 
-// =============================================================================
-// Borrow/Lend Pool Args
-// =============================================================================
-
 define_struct! {
     struct InitBorrowLendPoolArgs {
         asset_id: AssetId,
@@ -256,10 +302,6 @@ define_struct! {
         interest_fee_tenth_bps: Option<u16>,
     }
 }
-
-// =============================================================================
-// Config Args
-// =============================================================================
 
 define_struct! {
     #[derive(Default)]

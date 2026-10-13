@@ -16,9 +16,7 @@ define_enum! {
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum AdminAction<Address> {
-        // =========================================================================
         // Market Operations (0-19)
-        // =========================================================================
         /// Initialize a new perp market.
         InitPerpMarket { args: InitPerpMarketArgs } = 0,
 
@@ -83,9 +81,7 @@ define_enum! {
 
         // Reserved: 17-19
 
-        // =========================================================================
         // Asset Operations (20-29)
-        // =========================================================================
         /// Deprecated - use InitAssetInfoV1 instead.
         InitAssetInfo { args: InitAssetInfoArgs } = 20,
 
@@ -106,9 +102,7 @@ define_enum! {
 
         // Reserved: 26-29
 
-        // =========================================================================
         // Borrow/Lend Operations (30-39)
-        // =========================================================================
         /// Initialize a borrow/lend pool.
         InitBorrowLendPool { args: InitBorrowLendPoolArgs } = 30,
 
@@ -122,9 +116,7 @@ define_enum! {
         UnhaltBorrowLendPool { asset_id: AssetId } = 33,
         // Reserved: 34-39
 
-        // =========================================================================
         // Configuration Operations (40-49)
-        // =========================================================================
         /// Update global configuration - deprecated.
         UpdateGlobalConfig {
             args: UpdateGlobalConfigArgs<Address>,
@@ -149,11 +141,14 @@ define_enum! {
             args: UpdateGlobalConfigArgsV1<Address>,
         } = 44,
 
-        // Reserved: 45-49
+        /// Set global configuration fields; see [`GlobalConfigUpdate`].
+        UpdateGlobalConfigV2 {
+            updates: Vec<GlobalConfigUpdate<Address>>,
+        } = 45,
 
-        // =========================================================================
+        // Reserved: 46-49
+
         // Treasury Operations (50-59)
-        // =========================================================================
         /// Withdraw from protocol treasury.
         WithdrawFromTreasury {
             asset_id: AssetId,
@@ -162,9 +157,7 @@ define_enum! {
         } = 50,
         // Reserved: 51-59
 
-        // =========================================================================
         // Force/Emergency Operations (60-69)
-        // =========================================================================
         /// Force cancel user orders.
         CancelOrders {
             cancels: Vec<(MarketId, OrderId, Address)>,
@@ -209,7 +202,6 @@ define_enum! {
         /// (e.g. governance-only withdrawals, fee exemptions) can branch on it.
         InitProtocolVault { args: CreateVaultArgs<Address> } = 66,
 
-        // Reserved: 67-69. 67 was SocialDeleverage, which is now automatic - the liquidation
-        // handlers run it themselves when they meet an over-bankrupt account.
+        // Reserved: 67-69. 67 was SocialDeleverage (liquidation handlers now run it).
     }
 }

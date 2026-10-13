@@ -2,11 +2,8 @@ use crate::define_enum;
 use crate::transaction::bank::TokenId;
 use crate::transaction::{Amount, WarpBytes20, WarpBytes32};
 
-// The nested `Admin`/`TokenKind`/`Ism` types use serde's DEFAULT (PascalCase)
-// variant naming and positional borsh discriminants — matching the runtime's
-// `hyperlane::warp` module. They deliberately do NOT go through `define_enum!`,
-// which forces `#[serde(rename_all = "snake_case")]` (the runtime only applies
-// snake_case to the top-level `CallMessage`, not to these).
+// Nested `Admin`/`TokenKind`/`Ism` use serde's default PascalCase and positional borsh
+// discriminants like the runtime's `hyperlane::warp`, so they bypass `define_enum!` (snake_case).
 
 /// The authority that can modify a warp route. Mirrors the runtime `Admin<S>`.
 #[derive(

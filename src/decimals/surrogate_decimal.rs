@@ -11,7 +11,6 @@ use crate::error::ConfigError;
     BorshDeserialize, BorshSerialize, Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
 #[cfg_attr(feature = "schema", derive(sov_universal_wallet::UniversalWallet))]
-#[allow(dead_code)]
 pub struct SurrogateDecimal {
     flags: u32,
     hi: u32,

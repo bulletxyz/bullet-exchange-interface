@@ -3,9 +3,7 @@
 pub mod pyth_proof_serialization {
     //! Deterministic Pyth proof serialization fixtures.
     //!
-    //! These byte arrays are not signed Pyth payloads. They are stable interface
-    //! serialization inputs for Borsh layout tests; downstream protocol tests own
-    //! cryptographic signature acceptance.
+    //! Not signed Pyth payloads: stable Borsh layout inputs only.
 
     use crate::address::Address;
     use crate::message::{CallMessage, KeeperAction, OraclePriceUpdateWithPythProofArgs};

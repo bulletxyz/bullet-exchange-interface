@@ -93,6 +93,18 @@ impl From<PositiveDecimal> for Decimal {
 impl BorshDeserialize for PositiveDecimal {
     fn deserialize_reader<R: Read>(reader: &mut R) -> std::io::Result<Self> {
         let decimal = Decimal::deserialize_reader(reader)?;
+        // rust_decimal's Display panics above its buffer's scale, so never format such a value;
+        // reject scales above `Decimal::MAX_SCALE` so a malformed wire value can't be rescaled.
+        if decimal.scale() > Decimal::MAX_SCALE {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                format!(
+                    "PositiveDecimal scale {} exceeds maximum {}",
+                    decimal.scale(),
+                    Decimal::MAX_SCALE
+                ),
+            ));
+        }
         Self::new(decimal).ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidData,
@@ -269,19 +281,14 @@ impl PositiveDecimal {
         self.try_mul(scaling_factor)
     }
 
-    /// Performs a saturating subtraction for PositiveDecimal, this is for intentional saturating
-    /// subtractions hence no warnings We don't return a result because we know the saturating
-    /// subtraction result will always be non-negative
+    /// Intentionally saturating subtraction; the result is always non-negative.
     #[inline]
     pub fn saturating_sub(self, v: impl Into<Decimal>) -> Self {
         let v = v.into();
         if self.as_dec().lt(&v) {
             Self::ZERO
         } else {
-            // Safe because:
-            // 1. We checked self >= v above
-            // 2. Decimal subtraction can only fail on overflow
-            // 3. When subtracting a smaller number from a larger number, overflow is impossible
+            // Can't overflow: self >= v.
             Self(self.as_dec().sub(v))
         }
     }

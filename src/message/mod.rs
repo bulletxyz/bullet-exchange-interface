@@ -1,13 +1,8 @@
 //! Exchange call message types - nested enum with role-based categorization.
 //!
-//! # Adding New Operations
-//!
-//! 1. Determine the role/category: Who is authorized to call this operation?
-//!    - User? Vault leader? Specific admin? Anyone?
-//! 2. Add the variant to the appropriate *Action enum
-//! 3. Choose a NEVER used explicit discriminant: `NewOperation { ... } = N,`
-//! 4. Add handler function and update dispatch
-//! 5. NEVER change existing discriminants, reorder variants/fields, change types
+//! Adding an operation: pick the `*Action` enum by who may call it, give the variant a never-used
+//! explicit discriminant, and add its handler and dispatch. NEVER change existing discriminants,
+//! reorder variants/fields or change types.
 
 use crate::define_enum;
 

@@ -212,7 +212,6 @@ mod tests {
     use super::*;
 
     mod left {
-        #[allow(dead_code)]
         #[derive(
             borsh::BorshDeserialize, borsh::BorshSerialize, sov_universal_wallet::UniversalWallet,
         )]
@@ -225,7 +224,6 @@ mod tests {
     }
 
     mod compatible {
-        #[allow(dead_code)]
         #[derive(
             borsh::BorshDeserialize, borsh::BorshSerialize, sov_universal_wallet::UniversalWallet,
         )]
@@ -238,7 +236,6 @@ mod tests {
     }
 
     mod collision {
-        #[allow(dead_code)]
         #[derive(
             borsh::BorshDeserialize, borsh::BorshSerialize, sov_universal_wallet::UniversalWallet,
         )]
@@ -251,7 +248,6 @@ mod tests {
     }
 
     mod disjoint {
-        #[allow(dead_code)]
         #[derive(
             borsh::BorshDeserialize, borsh::BorshSerialize, sov_universal_wallet::UniversalWallet,
         )]

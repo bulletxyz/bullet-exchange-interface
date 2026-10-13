@@ -18,9 +18,7 @@ define_enum! {
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum KeeperAction<Address> {
-        // =========================================================================
         // Pricing Admin Operations (0-9)
-        // =========================================================================
         /// Update oracle prices (PricingAdmin).
         UpdateOraclePrices {
             prices: Vec<OraclePriceUpdateArgs>,
@@ -48,16 +46,12 @@ define_enum! {
         } = 4,
         // Reserved: 5-9
 
-        // =========================================================================
         // Funding Admin Operations (10-19)
-        // =========================================================================
         /// Update funding rates for markets (FundingAdmin).
         UpdateFunding { market_ids: Vec<MarketId> } = 10,
         // Reserved: 11-19
 
-        // =========================================================================
         // Credits Admin Operations (20-29)
-        // =========================================================================
         /// Deprecated - use UpdateTradingCredits instead
         AddTradingCredits {
             user_address: Address,
@@ -76,9 +70,7 @@ define_enum! {
         } = 22,
         // Reserved: 23-29
 
-        // =========================================================================
         // FeeTier Admin Operations (30-39)
-        // =========================================================================
         /// Update user's fee tier (FeeTierAdmin).
         UpdateUserFeeTier { address: Address, fee_tier: FeeTier } = 30,
 
@@ -94,9 +86,7 @@ define_enum! {
         } = 32,
         // Reserved: 33-39
 
-        // =========================================================================
         // Referrals Admin Operations (40-49)
-        // =========================================================================
         /// Set a user's cumulative referral rewards to an absolute amount (ReferralsAdmin).
         SetCumulativeReferralRewards {
             address: Address,
@@ -105,9 +95,7 @@ define_enum! {
         } = 40,
         // Reserved: 41-49
 
-        // =========================================================================
         // MarketStatusAdmin Operations (50-59) (Temporarily Pricing Admin)
-        // =========================================================================
         /// Allows for transitions between:
         ///  Halted -> Active / PostOnly / CancelOnly
         ///  Active => PostOnly / CancelOnly / Halted(Spot market only)

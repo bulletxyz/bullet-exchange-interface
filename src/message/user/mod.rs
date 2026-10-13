@@ -1,10 +1,7 @@
 //! User operations.
 
-// Several variants below are `#[deprecated]` in favour of `Transfer`. The
-// derived `borsh`/`serde`/`strum` impls read those variants' fields, which would
-// otherwise raise in-crate deprecation warnings at the definition site. Lint
-// levels are per-crate, so this only silences the noise here — downstream crates
-// that construct the deprecated variants still get the deprecation warning.
+// Derived impls read the `#[deprecated]` variants' fields; allowing here doesn't affect
+// downstream crates, which still get the warning.
 #![allow(deprecated)]
 
 use crate::decimals::PositiveDecimal;
@@ -26,9 +23,7 @@ define_enum! {
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum UserAction<Address> {
-        // =========================================================================
         // Account Operations (0-19)
-        // =========================================================================
         /// Deposit assets to perp margin account.
         #[deprecated(note = "use `UserAction::Transfer` instead")]
         Deposit {
@@ -154,7 +149,8 @@ define_enum! {
         /// always on the sender's account, while `to` combined with `to_address`
         /// identifies the destination (`to_address: None` = the sender's own
         /// account, `Some(addr)` = another account). `memo` carries a free-form
-        /// end-to-end reference.
+        /// end-to-end reference. USDC to the SDL entity's address (`to: Bank`) is
+        /// a donation to its cash: no fee, minimum 1 USDC.
         Transfer {
             from: TransferEndpoint,
             to: TransferEndpoint,
@@ -189,9 +185,7 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 19,
 
-        // =========================================================================
         // Order Operations (20-39)
-        // =========================================================================
         /// Place new orders on a market.
         PlaceOrders {
             market_id: MarketId,
@@ -283,9 +277,7 @@ define_enum! {
         // Reserved: 32-39
 
 
-        // =========================================================================
         // Pool Operations (40-49)
-        // =========================================================================
         /// Deposit USDC to the PnL pool.
         DepositToPnlPool { usdc_amount: PositiveDecimal } = 40,
 
@@ -308,9 +300,7 @@ define_enum! {
         DepositToIsoInsuranceFund { market_id: MarketId, amount: PositiveDecimal } = 45,
         // Reserved: 46-49
 
-        // =========================================================================
         // Vault User Operations (50-59)
-        // =========================================================================
         /// Create a new vault (caller becomes the vault leader).
         CreateVault { args: CreateVaultArgs<Address> } = 50,
 
@@ -327,7 +317,8 @@ define_enum! {
             shares: PositiveDecimal,
         } = 52,
 
-        /// Cancel a queued withdrawal.
+        /// Cancel the sender's oldest queued withdrawal from a vault. Superseded by
+        /// `CancelQueuedWithdrawalV1`, which cancels a named withdrawal or all of them.
         CancelQueuedWithdrawal { vault_address: Address } = 53,
 
         /// Force withdraw from a vault (bypasses queue).
@@ -336,11 +327,16 @@ define_enum! {
             shares: PositiveDecimal,
         } = 54,
 
-        // Reserved: 55-59
+        /// Cancel the sender's queued withdrawals from a vault: the one queued at
+        /// `withdrawal_timestamp`, or every one of them when it is `None`.
+        CancelQueuedWithdrawalV1 {
+            vault_address: Address,
+            withdrawal_timestamp: Option<UnixTimestampMicros>,
+        } = 55,
 
-        // =========================================================================
+        // Reserved: 56-59
+
         // User-Initiated Liquidation Operations (60-69)
-        // =========================================================================
         /// Backstop liquidation for perp positions (user provides capital).
         #[deprecated(
             note = "use `UserAction::BackstopLiquidatePerpPositionsV1` with explicit priced positions; V0 `None` has no direct equivalent"
@@ -377,9 +373,7 @@ define_enum! {
         } = 63,
         // Reserved: 64-69
 
-        // =========================================================================
         // Position Operations (70-79)
-        // =========================================================================
         /// Move unrealized PnL from a position holding a profit to one holding a
         /// loss, by shifting cost basis between them.
         ///

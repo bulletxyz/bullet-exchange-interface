@@ -165,7 +165,6 @@ fn warp_register_round_trips_production_json() {
         serde_json::to_value(&call).expect("serialize register call"),
         json
     );
-    // Borsh round-trips.
     let bytes = to_vec(&call).expect("borsh-serialize register call");
     assert_eq!(
         RuntimeCall::try_from_slice(&bytes).expect("borsh-deserialize"),

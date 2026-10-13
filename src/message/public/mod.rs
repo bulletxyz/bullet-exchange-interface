@@ -6,9 +6,7 @@ use crate::types::MarketId;
 define_enum! {
     /// Permissionless operations anyone can call.
     ///
-    /// These operations have no authorization checks - anyone can trigger them.
-    /// Typically used for MEV opportunities (liquidations) or protocol maintenance
-    /// (interest accrual, funding application).
+    /// No authorization checks (liquidations, interest accrual, funding).
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum PublicAction<Address> {

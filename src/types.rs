@@ -51,9 +51,8 @@ define_simple_type!(AssetId(u16));
 
 define_simple_type!(MarketId(u16));
 impl MarketId {
-    // Already created edge cases previously, so hard code certain values.
-    // Arms stay in ascending range order so the table can be read against the
-    // market ID allocations; merging equal-bodied arms would break that.
+    // Hard-coded legacy edge cases. Arms stay in ascending range order to match the market ID
+    // allocations, so don't merge equal-bodied arms.
     #[allow(clippy::match_same_arms)]
     pub fn kind(&self) -> MarketKind {
         use MarketKind::*;
@@ -83,9 +82,7 @@ impl MarketKind {
     /// True for every real-world-asset perp kind (commodities, equities across
     /// regions, equity indices, pre-IPO).
     ///
-    /// The match is exhaustive on purpose: adding a new `MarketKind` variant
-    /// fails to compile here until it is explicitly classified as RWA or not,
-    /// so the "is this an RWA perp?" question stays correct in one place.
+    /// Exhaustive on purpose: a new `MarketKind` won't compile until classified here.
     pub fn is_rwa_perp(&self) -> bool {
         match self {
             MarketKind::CryptoPerp | MarketKind::Spot => false,
@@ -171,10 +168,8 @@ define_simple_enum!(OrderType {
     ImmediateOrCancel = 3,
     PostOnlySlide = 4, // TODO: Delete this
     PostOnlyFront = 5, // TODO: Delete this
-    // System-only marker for the auto-managed ISO liquidation trigger. Users cannot place an order
-    // or trigger with this type (rejected by order-placement and `validate_trigger_order_type`); it
-    // is set exclusively by the reconcile path and never fed to the matching engine (the liquidation
-    // executes via `process_perp_liquidation_order` using an internal IOC order).
+    // System-only ISO liquidation trigger, set by the reconcile path. Rejected for users and
+    // never sent to the matching engine (executes via an internal IOC order).
     Liquidation = 6
 });
 
@@ -204,10 +199,8 @@ impl std::str::FromStr for TokenId {
     }
 }
 
-// `Degen` is a per-user perp-ledger mode only: isolated margin with the fixed
-// degen (1000x) leverage table. Markets themselves are never `Degen`, and users
-// cannot select it via `SetPerpLedgerTradingMode` — only the `DegenTrade` open
-// path sets it.
+// `Degen` is a per-user perp-ledger mode (isolated, fixed 1000x table), set only by
+// `DegenTrade` opens. Never a market mode, and not selectable via `SetPerpLedgerTradingMode`.
 define_simple_enum!(TradingMode{ Iso = 0, Cross = 1, Degen = 2 });
 
 define_simple_enum!(TradingCreditsUpdateType {
@@ -291,9 +284,7 @@ define_enum!(
     }
 );
 
-// To reduce the need for a state change I have chosen to add more variants for different combinations
-// As opposed to a new field in the user account to track asset weight discounts too
-// TODO: Can change this in the future if needed.
+// Discount combinations are variants rather than a new account field, to avoid a state change.
 define_simple_enum! {
     #[derive(strum::EnumIter)]
     MarginDiscount {

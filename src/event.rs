@@ -105,6 +105,9 @@ pub enum CancelReason {
     OrderbookOverflow,
 }
 
+/// Emitted events are persisted borsh-encoded in the ledger DB, so a variant's fields and position
+/// are frozen once released: never change or reorder one, append a `V<n>` successor at the end and
+/// emit that instead.
 #[derive(
     borsh::BorshDeserialize,
     borsh::BorshSerialize,
@@ -887,10 +890,9 @@ pub enum Event<Address> {
     /// A `UserAction::TransferUnrealizedPnl` moved `amount` of unrealized PnL
     /// from one perp position to another by shifting cost basis.
     ///
-    /// The pair's total unrealized PnL is unchanged, and neither position's
-    /// `size` or `realized_pnl` moved — so this event is the only record that
-    /// the two positions' cost bases no longer follow from their fills alone.
-    /// Anything reconstructing PnL from fill history has to consume it.
+    ///
+    /// Size and realized PnL don't change, so this event is the only record that cost bases no
+    /// longer follow from fills; PnL reconstruction from fills must consume it.
     UnrealizedPnlTransferred {
         from_address: Address,
         from_market_id: MarketId,
@@ -902,6 +904,24 @@ pub enum Event<Address> {
     /// Authoritative raw account image. The transaction envelope supplies
     /// ordering and source identity.
     AccountStateV1(AccountStateV1<Address>),
+    /// A queued withdrawal was cancelled and its shares returned to the user's holding.
+    /// `withdrawal_timestamp` is the time it was queued, which names it within the user's queue.
+    CancelQueuedWithdrawVault {
+        vault_address: Address,
+        user_address: Address,
+        withdrawal_timestamp: UnixTimestampMicros,
+        shares: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Funding applied with its fee: `funding_applied` is the gross payment (positive = received)
+    /// and `fee` the treasury's cut, so the balance moves by `funding_applied - fee`.
+    ApplyFundingRateV1 {
+        user_address: Address,
+        market_id: MarketId,
+        funding_applied: Decimal,
+        fee: Decimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -916,6 +936,7 @@ impl<Address> Event<Address> {
             Self::AdminRemoveTradingCredits { .. } => "Exchange/AdminRemoveTradingCredits",
             Self::AdminRevokeDelegation { .. } => "Exchange/AdminRevokeDelegation",
             Self::ApplyFundingRate { .. } => "Exchange/ApplyFundingRate",
+            Self::ApplyFundingRateV1 { .. } => "Exchange/ApplyFundingRateV1",
             Self::ApplyFundingRateFailed { .. } => "Exchange/ApplyFundingRateFailed",
             Self::AutoDeleverage { .. } => "Exchange/AutoDeleverage",
             Self::BackstopLiquidatePerp { .. } => "Exchange/BackstopLiquidatePerp",
@@ -925,6 +946,7 @@ impl<Address> Event<Address> {
             Self::Borrow { .. } => "Exchange/Borrow",
             Self::CancelOrder { .. } => "Exchange/CancelOrder",
             Self::CancelOrderV1 { .. } => "Exchange/CancelOrderV1",
+            Self::CancelQueuedWithdrawVault { .. } => "Exchange/CancelQueuedWithdrawVault",
             Self::CancelTriggerOrder { .. } => "Exchange/CancelTriggerOrder",
             Self::CancelTriggerOrderV1 { .. } => "Exchange/CancelTriggerOrderV1",
             Self::CancelTwap { .. } => "Exchange/CancelTwap",

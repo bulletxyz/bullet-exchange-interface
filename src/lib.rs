@@ -10,6 +10,7 @@ pub mod event;
 #[cfg(feature = "fixtures")]
 pub mod fixtures;
 mod macros;
+pub mod memo;
 pub mod message;
 #[cfg(feature = "schema")]
 pub mod schema;
