@@ -184,7 +184,9 @@ define_simple_enum!(AdminType {
     FeeTier,
     Credits,
     Referrals,
-    MarketStatus
+    MarketStatus,
+    /// Holds the fees the exchange collects, and pays them on to the SDL or the treasury.
+    Fees
 });
 
 define_simple_type!(

@@ -102,7 +102,7 @@ define_enum! {
         DepositLimitsPerUser(Vec<(AssetId, PositiveDecimal)>) = 7,
         WhitelistedUsersForDeposit(Vec<Address>) = 8,
         PythLazerTrustedSigners(Vec<[u8; 32]>) = 9,
-        /// Treasury's share of every funding payment, below 1: payers pay `1 + r` times the
+        /// Protocol's share of every funding payment, below 1: payers pay `1 + r` times the
         /// payment, payees receive `1 - r` times it.
         FundingFeeRatio(PositiveDecimal) = 10,
     }

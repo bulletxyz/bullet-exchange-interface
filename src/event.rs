@@ -914,7 +914,7 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Funding applied with its fee: `funding_applied` is the gross payment (positive = received)
-    /// and `fee` the treasury's cut, so the balance moves by `funding_applied - fee`.
+    /// and `fee` the protocol's cut, so the balance moves by `funding_applied - fee`.
     ApplyFundingRateV1 {
         user_address: Address,
         market_id: MarketId,
