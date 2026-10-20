@@ -111,8 +111,9 @@ define_enum! {
         ///
         /// `Side::Bid` opens a long, `Side::Ask` a short. `size` must be
         /// non-zero and aligned to the market's lot size. `amount_to_transfer`
-        /// is moved from the cross balance into the market's isolated balance
-        /// before the fill and is capped at 10 USDC.
+        /// is moved into the market's isolated balance before the fill, from the
+        /// cross trading credits first (cross-margin markets only) and then the
+        /// cross balance, and is capped at 10 USDC.
         Open {
             size: PositiveDecimal,
             side: Side,

@@ -922,6 +922,15 @@ pub enum Event<Address> {
         fee: Decimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// Trading credits moved between an account's cross balance and one of its iso balances. Both
+    /// are claims on the PnL pool, so no tokens move and no `Transfer` is emitted for them.
+    TransferTradingCredits {
+        user_address: Address,
+        from_balance: BalanceBucket,
+        to_balance: BalanceBucket,
+        amount: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -1004,6 +1013,7 @@ impl<Address> Event<Address> {
             Self::Trade { .. } => "Exchange/Trade",
             Self::TradeV1 { .. } => "Exchange/TradeV1",
             Self::Transfer { .. } => "Exchange/Transfer",
+            Self::TransferTradingCredits { .. } => "Exchange/TransferTradingCredits",
             Self::TryExecuteTriggerOrder { .. } => "Exchange/TryExecuteTriggerOrder",
             Self::UnhaltBorrowLendPool { .. } => "Exchange/UnhaltBorrowLendPool",
             Self::UnrealizedPnlTransferred { .. } => "Exchange/UnrealizedPnlTransferred",
