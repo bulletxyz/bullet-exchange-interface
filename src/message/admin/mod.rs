@@ -20,24 +20,28 @@ define_enum! {
         /// Initialize a new perp market.
         InitPerpMarket { args: InitPerpMarketArgs } = 0,
 
-        /// Deprecated - use UpdatePerpMarketV1 instead.
+        /// Deprecated - use `UpdatePerpMarketV1` instead.
         UpdatePerpMarket { args: UpdatePerpMarketArgs } = 1,
 
         /// Initialize a new spot market.
         InitSpotMarket { args: InitSpotMarketArgs } = 2,
 
-        /// Deprecated - use UpdateSpotMarketV1 instead.
+        /// Deprecated - use `UpdateSpotMarketV1` instead.
         UpdateSpotMarket { args: UpdateSpotMarketArgs } = 3,
 
-        /// Halt a perp market with settlement price.
+        /// Deprecated - use `KeeperAction::HaltPerpMarket` instead.
         HaltPerpMarket {
             market_id: MarketId,
             settlement_price: PositiveDecimal,
         } = 4,
 
-        /// Deprecated use SetMarketsTradingStatus from KeeperAction instead
+        /// Deprecated - use `KeeperAction::SetMarketsTradingStatus` instead.
         UnhaltPerpMarket { market_id: MarketId } = 5,
+
+        /// Deprecated - use `KeeperAction::SetMarketsTradingStatus` instead.
         HaltSpotMarket { market_id: MarketId } = 6,
+
+        /// Deprecated - use `KeeperAction::SetMarketsTradingStatus` instead.
         UnhaltSpotMarket { market_id: MarketId } = 7,
 
         /// Prune market data.
@@ -52,7 +56,7 @@ define_enum! {
             users: Vec<Address>,
         } = 10,
 
-        /// Update perp market leverage table.
+        /// Deprecated - use `UpdatePerpMarketV1` instead.
         UpdatePerpLeverageTable {
             market_id: MarketId,
             args: SurrogateLeverageTableArgs,
@@ -61,7 +65,7 @@ define_enum! {
         /// Delete an asset.
         DeleteAsset { asset_id: AssetId } = 12,
 
-        /// Deprecated - use UpdateRwaPriceConfigV1 instead.
+        /// Deprecated - use `UpdateRwaPriceConfigV1` instead.
         UpdateRwaPriceConfig {
             market_id: MarketId,
             args: UpdateRwaPriceConfigArgs,
@@ -82,19 +86,19 @@ define_enum! {
         // Reserved: 17-19
 
         // Asset Operations (20-29)
-        /// Deprecated - use InitAssetInfoV1 instead.
+        /// Deprecated - use `InitAssetInfoV1` instead.
         InitAssetInfo { args: InitAssetInfoArgs } = 20,
 
-        /// Deprecated - use UpdateAssetInfoV3 instead.
+        /// Deprecated - use `UpdateAssetInfoV3` instead.
         UpdateAssetInfo { args: UpdateAssetInfoArgs } = 21,
 
         /// Initialize asset info with Pyth Lazer feed configuration.
         InitAssetInfoV1 { args: InitAssetInfoArgsV1 } = 22,
 
-        /// Deprecated - use UpdateAssetInfoV3 instead.
+        /// Deprecated - use `UpdateAssetInfoV3` instead.
         UpdateAssetInfoV1 { args: UpdateAssetInfoArgsV1 } = 23,
 
-        /// Deprecated - use UpdateAssetInfoV3 instead.
+        /// Deprecated - use `UpdateAssetInfoV3` instead.
         UpdateAssetInfoV2 { args: UpdateAssetInfoArgsV2 } = 24,
 
         /// Update asset info for one or more assets with the same values.
@@ -109,15 +113,15 @@ define_enum! {
         /// Update borrow/lend pool configuration.
         UpdateBorrowLendPool { args: UpdateBorrowLendPoolArgs } = 31,
 
-        /// Deprecated use HaltBorrowLendPool from KeeperAction instead
+        /// Deprecated - use `KeeperAction::HaltBorrowLendPool` instead.
         HaltBorrowLendPool { asset_id: AssetId } = 32,
 
-        /// Deprecated use UnhaltBorrowLendPool from KeeperAction instead
+        /// Deprecated - use `KeeperAction::UnhaltBorrowLendPool` instead.
         UnhaltBorrowLendPool { asset_id: AssetId } = 33,
         // Reserved: 34-39
 
         // Configuration Operations (40-49)
-        /// Update global configuration - deprecated.
+        /// Deprecated - use `UpdateGlobalConfigV2` instead.
         UpdateGlobalConfig {
             args: UpdateGlobalConfigArgs<Address>,
         } = 40,
@@ -174,11 +178,14 @@ define_enum! {
             users: Vec<Address>,
         } = 62,
 
-        /// Auto-deleverage positions.
+        /// Closes `counterparty_a`'s position against the SDL entity at `settlement_price`.
+        /// Only reduces both sides; `size` caps the fill.
         AutoDeleverage {
             counterparty_a: Address,
             counterparty_a_sub_account_index: Option<u8>,
+            /// Ignored: the SDL entity is always the counterparty.
             counterparty_b: Address,
+            /// Ignored.
             counterparty_b_sub_account_index: Option<u8>,
             market_id: MarketId,
             size: Option<PositiveDecimal>,
@@ -203,5 +210,30 @@ define_enum! {
         InitProtocolVault { args: CreateVaultArgs<Address> } = 66,
 
         // Reserved: 67-69. 67 was SocialDeleverage (liquidation handlers now run it).
+    }
+}
+
+impl<Address> AdminAction<Address> {
+    /// Whether this action is deprecated and always rejected.
+    #[must_use]
+    pub fn is_deprecated(&self) -> bool {
+        matches!(
+            self,
+            Self::UpdateGlobalConfig { .. }
+                | Self::UpdatePerpLeverageTable { .. }
+                | Self::HaltBorrowLendPool { .. }
+                | Self::HaltPerpMarket { .. }
+                | Self::HaltSpotMarket { .. }
+                | Self::InitAssetInfo { .. }
+                | Self::UnhaltBorrowLendPool { .. }
+                | Self::UnhaltPerpMarket { .. }
+                | Self::UnhaltSpotMarket { .. }
+                | Self::UpdateAssetInfo { .. }
+                | Self::UpdateAssetInfoV1 { .. }
+                | Self::UpdateAssetInfoV2 { .. }
+                | Self::UpdatePerpMarket { .. }
+                | Self::UpdateRwaPriceConfig { .. }
+                | Self::UpdateSpotMarket { .. }
+        )
     }
 }

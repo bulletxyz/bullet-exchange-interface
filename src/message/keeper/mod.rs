@@ -31,7 +31,7 @@ define_enum! {
             publish_timestamp: UnixTimestampMicros,
         } = 1,
 
-        /// Update premium indexes for markets (PricingAdmin).
+        /// Deprecated - `UpdateMarkPrices` updates premium indexes.
         UpdatePremiumIndexes { market_ids: Vec<MarketId> } = 2,
 
         /// Update oracle prices using signed Pyth payloads (PricingAdmin).
@@ -52,13 +52,13 @@ define_enum! {
         // Reserved: 11-19
 
         // Credits Admin Operations (20-29)
-        /// Deprecated - use UpdateTradingCredits instead
+        /// Deprecated - use `UpdateTradingCredits` instead.
         AddTradingCredits {
             user_address: Address,
             amount: PositiveDecimal,
         } = 20,
 
-        /// Deprecated - use UpdateTradingCredits instead
+        /// Deprecated - use `UpdateTradingCredits` instead.
         RemoveTradingCredits {
             user_address: Address,
             amount: PositiveDecimal,
@@ -146,5 +146,16 @@ impl<Address> KeeperAction<Address> {
             | Self::UpdateUserMarginDiscount { .. } => AdminType::FeeTier,
             Self::SetCumulativeReferralRewards { .. } => AdminType::Referrals,
         }
+    }
+
+    /// Whether this action is deprecated and always rejected.
+    #[must_use]
+    pub fn is_deprecated(&self) -> bool {
+        matches!(
+            self,
+            Self::UpdatePremiumIndexes { .. }
+                | Self::AddTradingCredits { .. }
+                | Self::RemoveTradingCredits { .. }
+        )
     }
 }

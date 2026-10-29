@@ -124,6 +124,17 @@ define_enum! {
         /// Fills as much as the book allows; once the position is fully flat the
         /// entire remaining isolated balance is paid back to the cross balance.
         Close = 1,
+        /// [`DegenAction::Open`], reverting if the average fill price is worse
+        /// than mark by more than `max_slippage_bps` (1 bps = 0.01%).
+        OpenV1 {
+            size: PositiveDecimal,
+            side: Side,
+            amount_to_transfer: PositiveDecimal,
+            max_slippage_bps: Option<u16>,
+        } = 2,
+        /// [`DegenAction::Close`], reverting if the average fill price is worse
+        /// than mark by more than `max_slippage_bps` (1 bps = 0.01%).
+        CloseV1 { max_slippage_bps: Option<u16> } = 3,
     }
 }
 

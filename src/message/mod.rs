@@ -5,6 +5,7 @@
 //! reorder variants/fields or change types.
 
 use crate::define_enum;
+use crate::types::OrderType;
 
 mod admin;
 mod keeper;
@@ -60,6 +61,59 @@ impl<Address> CallMessage<Address> {
             Self::Admin(x) => format!("Admin/{}", x.as_ref()),
         }
     }
+
+    /// How the sequencer queues this call if it places or cancels orders, `None` otherwise.
+    pub fn order_flow(&self) -> Option<OrderFlow> {
+        fn placing(mut order_types: impl Iterator<Item = OrderType>) -> OrderFlow {
+            if order_types.all(|t| {
+                matches!(
+                    t,
+                    OrderType::PostOnly | OrderType::PostOnlySlide | OrderType::PostOnlyFront
+                )
+            }) {
+                OrderFlow::Maker
+            } else {
+                OrderFlow::Taker
+            }
+        }
+
+        let Self::User(action) = self else {
+            return None;
+        };
+        match action {
+            UserAction::CancelOrders { .. }
+            | UserAction::CancelAllOrders { .. }
+            | UserAction::CancelMarketOrders { .. } => Some(OrderFlow::Cancel),
+            UserAction::CancelAndPlaceOrders { places, .. } if places.is_empty() => {
+                Some(OrderFlow::Cancel)
+            }
+            UserAction::CancelAndPlaceOrders { places, .. } => {
+                Some(placing(places.iter().map(|o| o.order_type)))
+            }
+            UserAction::PlaceOrders { orders, .. } => {
+                Some(placing(orders.iter().map(|o| o.order_type)))
+            }
+            UserAction::AmendOrders { orders, .. } => {
+                Some(placing(orders.iter().map(|a| a.place.order_type)))
+            }
+            // Degen open/close always execute aggressively at top-of-book.
+            UserAction::DegenTrade { .. } => Some(OrderFlow::Taker),
+            _ => None,
+        }
+    }
+}
+
+/// Sequencer queueing class of an order call: takers wait out a speed bump, makers and cancels
+/// queue immediately.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, strum::IntoStaticStr)]
+#[strum(serialize_all = "snake_case")]
+pub enum OrderFlow {
+    /// Places only post-only orders.
+    Maker,
+    /// Places at least one order that may cross the book.
+    Taker,
+    /// Only cancels orders.
+    Cancel,
 }
 
 impl<Address> From<UserAction<Address>> for CallMessage<Address> {

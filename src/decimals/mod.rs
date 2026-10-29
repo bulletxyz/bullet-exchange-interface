@@ -19,8 +19,8 @@ pub use surrogate_decimal::*;
 /// Balances must always round in the exchange's favour, so the direction is
 /// picked per field rather than per call site: what the user *owns* rounds
 /// [`Down`](RoundingMode::Down) (assets, unsettled profit, trading credits,
-/// spot) and what the user *owes* rounds [`Up`](RoundingMode::Up) (liabilities,
-/// unrealized loss borrow). The same rule applies in scaled space, where a
+/// spot) and what the user *owes* rounds [`Up`](RoundingMode::Up)
+/// (liabilities). The same rule applies in scaled space, where a
 /// floor/ceiling survives multiplication by a positive borrow-lend index.
 pub enum RoundingMode {
     /// Round away from zero (ceiling). Use for amounts the user owes.

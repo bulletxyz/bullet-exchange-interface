@@ -1,7 +1,7 @@
 # Generated from the monorepo package manifest.
 [package]
 name = "bullet-exchange-interface"
-version = "0.15.3"
+version = "0.16.0"
 edition = "2024"
 license = "MIT"
 description = "Type definitions and message formats for the Bullet exchange protocol."
@@ -29,7 +29,7 @@ sov-universal-wallet = { version="0.4.1", features=["serde", "macros"], optional
 bullet-bs58 = "0.2"
 
 [dev-dependencies]
-serde_json = "1"
+serde_json = "=1.0.154"
 
 [features]
 default = []

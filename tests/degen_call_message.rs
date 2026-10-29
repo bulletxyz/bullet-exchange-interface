@@ -19,6 +19,27 @@ fn degen_open(size: PositiveDecimal, side: Side) -> RuntimeCall {
     }))
 }
 
+fn degen_open_v1(max_slippage_bps: Option<u16>) -> RuntimeCall {
+    RuntimeCall::Exchange(CallMessage::User(UserAction::DegenTrade {
+        market_id: MarketId(7),
+        action: DegenAction::OpenV1 {
+            size: PositiveDecimal::from(5u32),
+            side: Side::Bid,
+            amount_to_transfer: PositiveDecimal::from(10u32),
+            max_slippage_bps,
+        },
+        sub_account_index: None,
+    }))
+}
+
+fn degen_close_v1(max_slippage_bps: Option<u16>) -> RuntimeCall {
+    RuntimeCall::Exchange(CallMessage::User(UserAction::DegenTrade {
+        market_id: MarketId(7),
+        action: DegenAction::CloseV1 { max_slippage_bps },
+        sub_account_index: Some(2),
+    }))
+}
+
 fn degen_close() -> RuntimeCall {
     RuntimeCall::Exchange(CallMessage::User(UserAction::DegenTrade {
         market_id: MarketId(7),
@@ -40,6 +61,13 @@ fn degen_trade_borsh_discriminant_prefix_is_stable() {
     let bytes = to_vec(&degen_close()).expect("serialize degen close");
     assert_eq!(&bytes[0..3], &[0x07, 0x00, 0x1F]);
     assert_eq!(bytes[5], 0x01); // DegenAction::Close
+
+    let bytes = to_vec(&degen_open_v1(Some(300))).expect("serialize degen open v1");
+    assert_eq!(bytes[5], 0x02); // DegenAction::OpenV1
+    assert_eq!(&bytes[bytes.len() - 4..], &[0x01, 0x2C, 0x01, 0x00]); // Some(300u16), no sub-account
+
+    let bytes = to_vec(&degen_close_v1(Some(300))).expect("serialize degen close v1");
+    assert_eq!(&bytes[5..], &[0x03, 0x01, 0x2C, 0x01, 0x01, 0x02]); // CloseV1, Some(300), Some(2)
 }
 
 #[test]
@@ -51,6 +79,10 @@ fn degen_trade_borsh_round_trips() {
             Side::Ask,
         ),
         degen_close(),
+        degen_open_v1(Some(50)),
+        degen_open_v1(None),
+        degen_close_v1(Some(50)),
+        degen_close_v1(None),
     ] {
         let bytes = to_vec(&call).expect("serialize degen trade");
         assert_eq!(
@@ -69,6 +101,10 @@ fn degen_trade_json_round_trips() {
             Side::Ask,
         ),
         degen_close(),
+        degen_open_v1(Some(50)),
+        degen_open_v1(None),
+        degen_close_v1(Some(50)),
+        degen_close_v1(None),
     ] {
         let value = serde_json::to_value(&call).expect("serialize degen trade");
         assert_eq!(
@@ -101,4 +137,16 @@ fn degen_trade_json_uses_snake_case_structure() {
     let degen = &value["exchange"]["user"]["degen_trade"];
     assert_eq!(degen["action"], serde_json::json!("close"));
     assert_eq!(degen["sub_account_index"], serde_json::json!(2));
+
+    let value = serde_json::to_value(degen_open_v1(Some(50))).expect("serialize");
+    let open = &value["exchange"]["user"]["degen_trade"]["action"]["open_v1"];
+    assert_eq!(open["size"], serde_json::json!("5"));
+    assert_eq!(open["max_slippage_bps"], serde_json::json!(50));
+
+    let value = serde_json::to_value(degen_close_v1(None)).expect("serialize");
+    let close = &value["exchange"]["user"]["degen_trade"]["action"]["close_v1"];
+    assert_eq!(
+        close.get("max_slippage_bps"),
+        Some(&serde_json::Value::Null)
+    );
 }

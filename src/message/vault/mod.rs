@@ -12,7 +12,7 @@ define_enum! {
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum VaultAction<Address> {
-        /// Deprecated - use UpdateVaultConfigV1 instead.
+        /// Deprecated - use `UpdateVaultConfigV1` instead.
         UpdateVaultConfig {
             vault_address: Address,
             args: UpdateVaultConfigArgs,
@@ -75,5 +75,13 @@ define_enum! {
             policy: Option<VaultDepositPolicyArgs<Address>>,
         } = 8,
         // Reserved: 9-255
+    }
+}
+
+impl<Address> VaultAction<Address> {
+    /// Whether this action is deprecated and always rejected.
+    #[must_use]
+    pub fn is_deprecated(&self) -> bool {
+        matches!(self, Self::UpdateVaultConfig { .. })
     }
 }

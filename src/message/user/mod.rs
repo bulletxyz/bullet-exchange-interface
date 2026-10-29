@@ -83,9 +83,11 @@ define_enum! {
         } = 7,
 
         /// Delegate trading permissions to another address.
+        #[deprecated(note = "use `UserAction::DelegateUserV2` instead")]
         DelegateUser { delegate: Address, name: CustomString } = 8,
 
         /// Revoke delegation from an address.
+        #[deprecated(note = "use `UserAction::RevokeDelegationV1` instead")]
         RevokeDelegation { delegate: Address } = 9,
 
         /// Update maximum leverage for a market.
@@ -150,7 +152,9 @@ define_enum! {
         /// identifies the destination (`to_address: None` = the sender's own
         /// account, `Some(addr)` = another account). `memo` carries a free-form
         /// end-to-end reference. USDC to the SDL entity's address (`to: Bank`) is
-        /// a donation to its cash: no fee, minimum 1 USDC.
+        /// a donation to its cash: no fee, minimum 1 USDC. From the master
+        /// `Cross` to a vault's master `Cross` it is a fee-free vault deposit
+        /// under `DepositToVault`'s rules; delegates may not deposit.
         Transfer {
             from: TransferEndpoint,
             to: TransferEndpoint,
@@ -304,7 +308,8 @@ define_enum! {
         /// Create a new vault (caller becomes the vault leader).
         CreateVault { args: CreateVaultArgs<Address> } = 50,
 
-        /// Deposit assets to a vault.
+        /// Deposit assets to a vault. Delegates and admins may not deposit.
+        #[deprecated(note = "use `UserAction::Transfer` into the vault's `Cross` bucket instead")]
         DepositToVault {
             vault_address: Address,
             asset_id: AssetId,
@@ -396,5 +401,27 @@ define_enum! {
             amount: PositiveDecimal,
         } = 70,
         // Reserved: 71-255
+    }
+}
+
+impl<Address> UserAction<Address> {
+    /// Whether this action is deprecated and always rejected.
+    #[must_use]
+    pub fn is_deprecated(&self) -> bool {
+        matches!(
+            self,
+            Self::Deposit { .. }
+                | Self::BorrowSpot { .. }
+                | Self::CreateSubAccount { .. }
+                | Self::TransferToSubAccount { .. }
+                | Self::DelegateUser { .. }
+                | Self::RevokeDelegation { .. }
+                | Self::Withdraw { .. }
+                | Self::DepositSpotCollateral { .. }
+                | Self::WithdrawSpotCollateral { .. }
+                | Self::TransferSpotCollateral { .. }
+                | Self::DepositIso { .. }
+                | Self::WithdrawIso { .. }
+        )
     }
 }
