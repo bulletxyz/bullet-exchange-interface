@@ -167,6 +167,9 @@ impl<'a> Trimmer<'a> {
                 }
             }
             (Ty::Tuple(left), Ty::Tuple(right)) => {
+                // Informational only (no encoding or display effect); client mirror newtypes
+                // such as `WarpBytes32` for the runtime's `HexString` legitimately differ.
+                right.type_name = left.type_name.clone();
                 for (left, right) in left.fields.iter_mut().zip(&mut right.fields) {
                     self.replace_links(&mut left.value, &mut right.value);
                 }

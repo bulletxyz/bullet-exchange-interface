@@ -4,9 +4,10 @@ use crate::account_state::AccountStateV1;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, BalanceBucket, BorrowType, ClientOrderId, FeeTier, MarketId, MarketTradingStatus,
-    OrderId, OrderType, RepayType, Side, TakeFromInsuranceFundReason, TradeId, TriggerDirection,
-    TriggerOrderId, TriggerPriceCondition, TwapId,
+    AssetId, BalanceBucket, BorrowType, ClientOrderId, DegenSettleReason, DegenUnfilledReason,
+    FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType, RepayType, Side,
+    TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition,
+    TwapId,
 };
 
 #[derive(
@@ -931,6 +932,61 @@ pub enum Event<Address> {
         amount: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// A `DegenAction::Open` entered the market's queue; `margin` left the cross balance.
+    DegenOpenQueued {
+        user_address: Address,
+        market_id: MarketId,
+        side: Side,
+        size: PositiveDecimal,
+        margin: PositiveDecimal,
+        eligible_run: u64,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A `DegenAction::Close` entered the market's queue.
+    DegenCloseQueued {
+        user_address: Address,
+        market_id: MarketId,
+        eligible_run: u64,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A queued open filled against the market's degen vault at the run's oracle price.
+    DegenFilled {
+        user_address: Address,
+        market_id: MarketId,
+        side: Side,
+        size: PositiveDecimal,
+        margin: PositiveDecimal,
+        entry_price: PositiveDecimal,
+        win_cap: PositiveDecimal,
+        run: u64,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A degen position settled against the vault; `user_payout` returned to the cross balance.
+    DegenSettled {
+        user_address: Address,
+        market_id: MarketId,
+        reason: DegenSettleReason,
+        price: PositiveDecimal,
+        user_payout: PositiveDecimal,
+        run: u64,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A queued open left the queue unfilled; its margin returned to the cross balance.
+    DegenExpired {
+        user_address: Address,
+        market_id: MarketId,
+        margin: PositiveDecimal,
+        reason: DegenUnfilledReason,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A deposit into a degen vault is held until the run it mints at.
+    DegenVaultDepositQueued {
+        vault_address: Address,
+        user_address: Address,
+        amount: PositiveDecimal,
+        eligible_run: u64,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -965,6 +1021,12 @@ impl<Address> Event<Address> {
             Self::ClaimReferralRewardsV2 { .. } => "Exchange/ClaimReferralRewardsV2",
             Self::CleanupUserMarketState { .. } => "Exchange/CleanupUserMarketState",
             Self::CloseDegenPosition { .. } => "Exchange/CloseDegenPosition",
+            Self::DegenOpenQueued { .. } => "Exchange/DegenOpenQueued",
+            Self::DegenCloseQueued { .. } => "Exchange/DegenCloseQueued",
+            Self::DegenFilled { .. } => "Exchange/DegenFilled",
+            Self::DegenSettled { .. } => "Exchange/DegenSettled",
+            Self::DegenExpired { .. } => "Exchange/DegenExpired",
+            Self::DegenVaultDepositQueued { .. } => "Exchange/DegenVaultDepositQueued",
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
             Self::CreateSubAccount { .. } => "Exchange/CreateSubAccount",
             Self::CreateTriggerOrder { .. } => "Exchange/CreateTriggerOrder",

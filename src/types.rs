@@ -205,6 +205,24 @@ impl std::str::FromStr for TokenId {
 // `DegenTrade` opens. Never a market mode, and not selectable via `SetPerpLedgerTradingMode`.
 define_simple_enum!(TradingMode{ Iso = 0, Cross = 1, Degen = 2 });
 
+define_simple_enum!(DegenSettleReason {
+    /// Loss reached the liquidation threshold: the whole margin goes to the vault.
+    Liquidated = 0,
+    /// Profit reached the win cap: margin plus cap paid out.
+    Won = 1,
+    /// Held past `DEGEN_TIMEOUT_RUNS`: settled at the run's oracle price.
+    Timeout = 2,
+    /// Queued close filled: settled at the run's oracle price.
+    Closed = 3
+});
+
+define_simple_enum!(DegenUnfilledReason {
+    /// Not filled within `DEGEN_ENTRY_EXPIRY_RUNS`.
+    Expired = 0,
+    /// `size * price` at the fill exceeded the maximum leverage on the margin.
+    OverLeveraged = 1
+});
+
 define_simple_enum!(TradingCreditsUpdateType {
     /// Credit the user, funded from the USDC PNL pool.
     Add = 0,

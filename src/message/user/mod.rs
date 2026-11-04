@@ -266,12 +266,13 @@ define_enum! {
             sub_account_index: Option<u8>,
         } = 30,
 
-        /// High-risk "degen" trading: an exclusive isolated position at up to
-        /// 1000x leverage, funded with at most 10 USDC, executed top-of-book.
+        /// High-risk "degen" trading: one position per user per market at up to
+        /// 1000x, queued, filled and settled at the oracle price against the
+        /// market's degen vault, never through the orderbook. Available only on
+        /// markets whose degen vault holds deposits. Closing a legacy orderbook
+        /// degen position still goes through the orderbook.
         ///
-        /// See [`DegenAction`] for the open/close semantics. The user's perp
-        /// ledger for the market must be empty on open; it is switched to
-        /// [`TradingMode::Degen`] automatically.
+        /// See [`DegenAction`] for the open/close semantics.
         DegenTrade {
             market_id: MarketId,
             action: DegenAction,

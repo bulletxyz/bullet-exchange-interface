@@ -107,33 +107,36 @@ define_enum! {
     #[non_exhaustive]
     #[strum_discriminants(non_exhaustive)]
     enum DegenAction {
-        /// Open an isolated position at top-of-book, all-or-nothing (FOK).
+        /// Queue an open against the market's degen vault. It fills at the oracle
+        /// price of a later run, two oracle updates after it lands, so no price
+        /// is given and none can be known in advance.
         ///
-        /// `Side::Bid` opens a long, `Side::Ask` a short. `size` must be
-        /// non-zero and aligned to the market's lot size. `amount_to_transfer`
-        /// is moved into the market's isolated balance before the fill, from the
-        /// cross trading credits first (cross-margin markets only) and then the
-        /// cross balance, and is capped at 10 USDC.
+        /// `Side::Bid` opens a long, `Side::Ask` a short. `size` must be non-zero
+        /// and a multiple of the market's lot size. `amount_to_transfer` is the
+        /// margin, at least 1 USDC, taken from the cross balance now and returned
+        /// if the entry expires. At the fill `size * price` must be at most 1000x
+        /// the margin. The position settles at the oracle: the whole margin to the
+        /// vault once 95% of it is lost, margin plus the win cap (100%) to the
+        /// user at the win barrier, the clamped PnL on a close or timeout.
         Open {
             size: PositiveDecimal,
             side: Side,
             amount_to_transfer: PositiveDecimal,
         } = 0,
-        /// Close the position at top-of-book (IOC).
-        ///
-        /// Fills as much as the book allows; once the position is fully flat the
-        /// entire remaining isolated balance is paid back to the cross balance.
+        /// Queue a close of the market's position; it settles at the oracle
+        /// price of the run it fills in, two oracle updates after it lands. A
+        /// legacy orderbook degen position is instead closed at once with an IOC
+        /// order.
         Close = 1,
-        /// [`DegenAction::Open`], reverting if the average fill price is worse
-        /// than mark by more than `max_slippage_bps` (1 bps = 0.01%).
+        /// Rejected: a queued open fills at the oracle price, so there is no
+        /// fill to bound.
         OpenV1 {
             size: PositiveDecimal,
             side: Side,
             amount_to_transfer: PositiveDecimal,
             max_slippage_bps: Option<u16>,
         } = 2,
-        /// [`DegenAction::Close`], reverting if the average fill price is worse
-        /// than mark by more than `max_slippage_bps` (1 bps = 0.01%).
+        /// Rejected, as [`DegenAction::OpenV1`].
         CloseV1 { max_slippage_bps: Option<u16> } = 3,
     }
 }

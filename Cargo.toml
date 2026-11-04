@@ -1,7 +1,7 @@
 # Generated from the monorepo package manifest.
 [package]
 name = "bullet-exchange-interface"
-version = "0.16.0"
+version = "0.16.1"
 edition = "2024"
 license = "MIT"
 description = "Type definitions and message formats for the Bullet exchange protocol."
@@ -25,7 +25,7 @@ schemars = { version = "1.2", features = ["rust_decimal1"] }
 hex = { version = "0.4", features = ["serde"] }
 bech32 = "0.12"
 
-sov-universal-wallet = { version="0.4.1", features=["serde", "macros"], optional = true }
+sov-universal-wallet = { version="0.5.0", features=["serde", "macros"], optional = true }
 bullet-bs58 = "0.2"
 
 [dev-dependencies]
