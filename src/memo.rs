@@ -214,6 +214,19 @@ mod tests {
         assert_eq!(decode(&encode(&m)), Ok(m));
     }
 
+    /// As with an unknown market: the exchange refuses a depositor naming a pool, and
+    /// the operator records that refusal for recovery instead of paying the signer.
+    #[test]
+    fn a_usdc_pool_bucket_is_left_to_the_exchange() {
+        for balance in [
+            BalanceBucket::UsdcBorrowLendPool,
+            BalanceBucket::UsdcPnlPool,
+        ] {
+            let m = memo(None, balance);
+            assert_eq!(decode(&encode(&m)), Ok(m));
+        }
+    }
+
     /// Paying the zero address would burn the deposit as surely as dropping it.
     #[test]
     fn the_zero_address_is_rejected() {

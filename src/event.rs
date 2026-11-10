@@ -987,6 +987,36 @@ pub enum Event<Address> {
         eligible_run: u64,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// The interest-free loan from the USDC borrow-lend pool to the USDC PnL pool changed by
+    /// `amount`: positive when lent, negative when repaid. `outstanding` is the loan after it.
+    UsdcPnlPoolLoan {
+        amount: Decimal,
+        outstanding: PositiveDecimal,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Every `(price, size)` level of one market's book that a transaction changed, with its size
+    /// at the end of the transaction; size zero removes the level. Units are the book's own, as
+    /// the orderbook-level2 route reports them. One per changed market, after the transaction's
+    /// other events, so applying those numbered above a full-depth snapshot's
+    /// `x-sov-last-event-number`, in its `x-sov-event-epoch`, reproduces the book.
+    UpdateOrderbook {
+        market_id: MarketId,
+        bids: Vec<(PositiveDecimal, PositiveDecimal)>,
+        asks: Vec<(PositiveDecimal, PositiveDecimal)>,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// Supersedes `DegenSettled`: `user_payout` includes `bonus`, paid from the market's bonus
+    /// pool on a win.
+    DegenSettledV1 {
+        user_address: Address,
+        market_id: MarketId,
+        reason: DegenSettleReason,
+        price: PositiveDecimal,
+        user_payout: PositiveDecimal,
+        bonus: PositiveDecimal,
+        run: u64,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -1025,6 +1055,7 @@ impl<Address> Event<Address> {
             Self::DegenCloseQueued { .. } => "Exchange/DegenCloseQueued",
             Self::DegenFilled { .. } => "Exchange/DegenFilled",
             Self::DegenSettled { .. } => "Exchange/DegenSettled",
+            Self::DegenSettledV1 { .. } => "Exchange/DegenSettledV1",
             Self::DegenExpired { .. } => "Exchange/DegenExpired",
             Self::DegenVaultDepositQueued { .. } => "Exchange/DegenVaultDepositQueued",
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
@@ -1090,6 +1121,7 @@ impl<Address> Event<Address> {
             Self::UpdateMarkPriceV1 { .. } => "Exchange/UpdateMarkPriceV1",
             Self::UpdateMarket { .. } => "Exchange/UpdateMarket",
             Self::UpdateOraclePrice { .. } => "Exchange/UpdateOraclePrice",
+            Self::UpdateOrderbook { .. } => "Exchange/UpdateOrderbook",
             Self::UpdateOraclePriceFailed { .. } => "Exchange/UpdateOraclePriceFailed",
             Self::UpdatePremiumIndex { .. } => "Exchange/UpdatePremiumIndex",
             Self::UpdatePremiumIndexFailed { .. } => "Exchange/UpdatePremiumIndexFailed",
@@ -1097,6 +1129,7 @@ impl<Address> Event<Address> {
             Self::UpdateReduceOnlyLimitOrder { .. } => "Exchange/UpdateReduceOnlyLimitOrder",
             Self::UpdateUserFeeDiscountBps { .. } => "Exchange/UpdateUserFeeDiscountBps",
             Self::UpdateUserFeeTier { .. } => "Exchange/UpdateUserFeeTier",
+            Self::UsdcPnlPoolLoan { .. } => "Exchange/UsdcPnlPoolLoan",
             Self::UsdcUnrealizedLossBorrowRebalance { .. } => {
                 "Exchange/UsdcUnrealizedLossBorrowRebalance"
             }

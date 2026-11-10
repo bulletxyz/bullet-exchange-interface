@@ -105,6 +105,28 @@ define_enum! {
         /// Protocol's share of every funding payment, below 1: payers pay `1 + r` times the
         /// payment, payees receive `1 - r` times it.
         FundingFeeRatio(PositiveDecimal) = 10,
+        /// Degen: share of the margin the vault keeps on a liquidation; the loss barrier sits at
+        /// `margin * (1 - bps / 10_000)`. Below 10,000.
+        DegenLiquidationBonusBps(u16) = 11,
+        /// Degen: runs between an entry, deposit or withdrawal landing and its eligibility.
+        /// At least 1.
+        DegenRunDelay(u64) = 12,
+        /// Degen: runs an eligible entry waits before it is returned unfilled.
+        DegenEntryExpiryRuns(u64) = 13,
+        /// Degen: runs a position may stay open before it is closed at the oracle.
+        DegenTimeoutRuns(u64) = 14,
+        /// Degen: actions per market per run, counting settlements, deposit mints, fills and
+        /// withdrawals. At least 1.
+        DegenMaxActionsPerRun(u16) = 15,
+        /// Degen: most queued opens, or pending deposits, per market. Closes are always accepted:
+        /// one per open position. At least the actions per run.
+        DegenMaxQueueLen(u16) = 16,
+        /// Degen: most a win pays on top of its cap, as bps of the margin, from the market's bonus
+        /// pool. At most 10,000.
+        DegenWinBonusBps(u16) = 17,
+        /// Degen: share of what the vault collects on a settlement that goes into the market's
+        /// bonus pool. At most 10,000.
+        DegenBonusPoolShareBps(u16) = 18,
     }
 }
 

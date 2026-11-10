@@ -154,7 +154,9 @@ define_enum! {
         /// end-to-end reference. USDC to the SDL entity's address (`to: Bank`) is
         /// a donation to its cash: no fee, minimum 1 USDC. From the master
         /// `Cross` to a vault's master `Cross` it is a fee-free vault deposit
-        /// under `DepositToVault`'s rules; delegates may not deposit.
+        /// under `DepositToVault`'s rules; delegates may not deposit. From the
+        /// fees admin's wallet to a vault's master `Cross` it is a grant: no
+        /// shares are issued.
         Transfer {
             from: TransferEndpoint,
             to: TransferEndpoint,

@@ -231,7 +231,7 @@ define_simple_enum!(TradingCreditsUpdateType {
 });
 
 define_enum! {
-    /// A balance bucket within an account.
+    /// Where a transfer endpoint holds value: a bucket within an account, or a protocol pool.
     ///
     /// Extensible: new buckets may be added with new discriminants without
     /// breaking existing on-chain encodings.
@@ -247,6 +247,10 @@ define_enum! {
         Spot = 2,
         /// Isolated-margin balance for a specific market.
         Iso(MarketId) = 3,
+        /// The USDC borrow-lend pool. Protocol admin only: lends to `UsdcPnlPool`.
+        UsdcBorrowLendPool = 4,
+        /// The USDC PnL pool. Protocol admin only: repays `UsdcBorrowLendPool`.
+        UsdcPnlPool = 5,
     }
 }
 
