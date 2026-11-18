@@ -124,9 +124,7 @@ define_enum! {
             amount_to_transfer: PositiveDecimal,
         } = 0,
         /// Queue a close of the market's position; it settles at the oracle
-        /// price of the run it fills in, two oracle updates after it lands. A
-        /// legacy orderbook degen position is instead closed at once with an IOC
-        /// order.
+        /// price of the run it fills in, two oracle updates after it lands.
         Close = 1,
         /// Rejected: a queued open fills at the oracle price, so there is no
         /// fill to bound.

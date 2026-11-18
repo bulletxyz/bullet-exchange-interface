@@ -3,7 +3,7 @@
 use crate::decimals::PositiveDecimal;
 use crate::define_enum;
 use crate::message::CreateVaultArgs;
-use crate::types::{AdminType, AssetId, MarketId, OrderId, TriggerOrderId};
+use crate::types::{AdminType, AssetId, DegenMarketStatus, MarketId, OrderId, TriggerOrderId};
 
 mod args;
 pub use args::*;
@@ -210,6 +210,14 @@ define_enum! {
         InitProtocolVault { args: CreateVaultArgs<Address> } = 66,
 
         // Reserved: 67-69. 67 was SocialDeleverage (liquidation handlers now run it).
+
+        // Degen Operations (70-79)
+        /// Switch a market's degen book on or to close-only; see [`DegenMarketStatus`]. The
+        /// market must have a degen book.
+        SetDegenMarketStatus {
+            market_id: MarketId,
+            status: DegenMarketStatus,
+        } = 70,
     }
 }
 

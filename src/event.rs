@@ -4,10 +4,10 @@ use crate::account_state::AccountStateV1;
 use crate::decimals::PositiveDecimal;
 use crate::time::UnixTimestampMicros;
 use crate::types::{
-    AssetId, BalanceBucket, BorrowType, ClientOrderId, DegenSettleReason, DegenUnfilledReason,
-    FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType, RepayType, Side,
-    TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId, TriggerPriceCondition,
-    TwapId,
+    AssetId, BalanceBucket, BorrowType, ClientOrderId, DegenMarketStatus, DegenSettleReason,
+    DegenUnfilledReason, FeeTier, MarketId, MarketTradingStatus, OrderId, OrderType, RepayType,
+    Side, TakeFromInsuranceFundReason, TradeId, TriggerDirection, TriggerOrderId,
+    TriggerPriceCondition, TwapId,
 };
 
 #[derive(
@@ -814,9 +814,10 @@ pub enum Event<Address> {
         total_rewards: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    /// A `UserAction::DegenTrade` open filled: `Side::Bid` is a long,
+    /// A legacy orderbook degen open filled: `Side::Bid` is a long,
     /// `Side::Ask` a short; `transferred` is the USDC moved from cross into
-    /// the isolated balance before the fill.
+    /// the isolated balance before the fill. No longer emitted; kept so stored
+    /// events still decode.
     OpenDegenPosition {
         user_address: Address,
         market_id: MarketId,
@@ -825,10 +826,11 @@ pub enum Event<Address> {
         transferred: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
-    /// A `UserAction::DegenTrade` close executed. `remaining_size` is the
+    /// A legacy orderbook degen close executed. `remaining_size` is the
     /// signed position size still open after the IOC (zero for a full close);
     /// `paid_back` is the USDC returned to the cross balance (zero unless the
-    /// position ended flat).
+    /// position ended flat). No longer emitted; kept so stored events still
+    /// decode.
     CloseDegenPosition {
         user_address: Address,
         market_id: MarketId,
@@ -924,7 +926,10 @@ pub enum Event<Address> {
         execution_timestamp: UnixTimestampMicros,
     },
     /// Trading credits moved between an account's cross balance and one of its iso balances. Both
-    /// are claims on the PnL pool, so no tokens move and no `Transfer` is emitted for them.
+    /// are claims on the PnL pool, so no tokens move and no `Transfer` is emitted for them. For a
+    /// degen entry (`Iso(market)` is the market's queue) the backing tokens do move into the
+    /// market's custody, and back to the pool only with the credits that survive the position;
+    /// the lost ones stay in custody for the vault.
     TransferTradingCredits {
         user_address: Address,
         from_balance: BalanceBucket,
@@ -1017,6 +1022,31 @@ pub enum Event<Address> {
         run: u64,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// An admin switched the market's degen book on or to close-only.
+    SetDegenMarketStatus {
+        market_id: MarketId,
+        status: DegenMarketStatus,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A deposit queued by `DegenVaultDepositQueued` left the queue unminted; `amount` went back
+    /// to the depositor's exchange account, or to the wallet of a delegate key, as a degen vault
+    /// withdrawal does.
+    DegenVaultDepositReturned {
+        vault_address: Address,
+        user_address: Address,
+        amount: PositiveDecimal,
+        reason: DegenUnfilledReason,
+        execution_timestamp: UnixTimestampMicros,
+    },
+    /// A market's degen book ran at `price`: the oracle update published at `publish_timestamp`.
+    /// Everything the run fills or settles follows in the same transaction.
+    DegenRun {
+        market_id: MarketId,
+        run: u64,
+        price: PositiveDecimal,
+        publish_timestamp: UnixTimestampMicros,
+        execution_timestamp: UnixTimestampMicros,
+    },
 }
 
 impl<Address> Event<Address> {
@@ -1058,6 +1088,9 @@ impl<Address> Event<Address> {
             Self::DegenSettledV1 { .. } => "Exchange/DegenSettledV1",
             Self::DegenExpired { .. } => "Exchange/DegenExpired",
             Self::DegenVaultDepositQueued { .. } => "Exchange/DegenVaultDepositQueued",
+            Self::SetDegenMarketStatus { .. } => "Exchange/SetDegenMarketStatus",
+            Self::DegenVaultDepositReturned { .. } => "Exchange/DegenVaultDepositReturned",
+            Self::DegenRun { .. } => "Exchange/DegenRun",
             Self::CollectVaultFees { .. } => "Exchange/CollectVaultFees",
             Self::CreateSubAccount { .. } => "Exchange/CreateSubAccount",
             Self::CreateTriggerOrder { .. } => "Exchange/CreateTriggerOrder",

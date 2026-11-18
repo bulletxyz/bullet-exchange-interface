@@ -271,8 +271,7 @@ define_enum! {
         /// High-risk "degen" trading: one position per user per market at up to
         /// 1000x, queued, filled and settled at the oracle price against the
         /// market's degen vault, never through the orderbook. Available only on
-        /// markets whose degen vault holds deposits. Closing a legacy orderbook
-        /// degen position still goes through the orderbook.
+        /// markets whose degen vault holds deposits.
         ///
         /// See [`DegenAction`] for the open/close semantics.
         DegenTrade {

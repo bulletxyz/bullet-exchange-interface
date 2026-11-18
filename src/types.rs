@@ -201,8 +201,8 @@ impl std::str::FromStr for TokenId {
     }
 }
 
-// `Degen` is a per-user perp-ledger mode (isolated, fixed 1000x table), set only by
-// `DegenTrade` opens. Never a market mode, and not selectable via `SetPerpLedgerTradingMode`.
+// `Degen` can no longer be set; kept so ledgers stored before degen v2 still decode, as plain
+// isolated ledgers.
 define_simple_enum!(TradingMode{ Iso = 0, Cross = 1, Degen = 2 });
 
 define_simple_enum!(DegenSettleReason {
@@ -220,7 +220,19 @@ define_simple_enum!(DegenUnfilledReason {
     /// Not filled within `DEGEN_ENTRY_EXPIRY_RUNS`.
     Expired = 0,
     /// `size * price` at the fill exceeded the maximum leverage on the margin.
-    OverLeveraged = 1
+    OverLeveraged = 1,
+    /// The market's flow window had no room left for the margin.
+    FlowCapped = 2,
+    /// The market was switched to close-only while the open or vault deposit was queued.
+    MarketClosed = 3
+});
+
+define_simple_enum!(DegenMarketStatus {
+    /// Opens, closes, vault deposits and withdrawals all run.
+    On = 0,
+    /// No new open or vault deposit is accepted and the queued ones are returned; settlements,
+    /// closes and vault withdrawals still run.
+    CloseOnly = 1
 });
 
 define_simple_enum!(TradingCreditsUpdateType {

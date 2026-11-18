@@ -105,8 +105,7 @@ define_enum! {
         /// Protocol's share of every funding payment, below 1: payers pay `1 + r` times the
         /// payment, payees receive `1 - r` times it.
         FundingFeeRatio(PositiveDecimal) = 10,
-        /// Degen: share of the margin the vault keeps on a liquidation; the loss barrier sits at
-        /// `margin * (1 - bps / 10_000)`. Below 10,000.
+        /// Degen: retired and refused. The loss barrier now follows `DegenCloseFeeBps`.
         DegenLiquidationBonusBps(u16) = 11,
         /// Degen: runs between an entry, deposit or withdrawal landing and its eligibility.
         /// At least 1.
@@ -127,6 +126,27 @@ define_enum! {
         /// Degen: share of what the vault collects on a settlement that goes into the market's
         /// bonus pool. At most 10,000.
         DegenBonusPoolShareBps(u16) = 18,
+        /// Degen: most margin one open may carry, in USDC. Zero removes the limit; otherwise at
+        /// least the minimum margin.
+        DegenMaxMargin(PositiveDecimal) = 19,
+        /// Degen: runs in one flow window. At least 1.
+        DegenFlowWindowRuns(u64) = 20,
+        /// Degen: most margin a market fills per flow window, both sides together, in USDC. An
+        /// open past it is returned at the fill. Zero removes the cap; otherwise at least the
+        /// floor.
+        DegenMaxFlow(PositiveDecimal) = 21,
+        /// Degen: floor of the flow cap, in USDC. At least the minimum margin and at most the
+        /// maximum flow when that is set.
+        DegenMinFlow(PositiveDecimal) = 22,
+        /// Degen: a window in which the vault lost more than this, in USDC, halves the next
+        /// window's flow cap.
+        DegenFlowLossThreshold(PositiveDecimal) = 23,
+        /// Degen: what the flow cap regains after any other window, as bps of the maximum flow.
+        /// 1 to 10,000.
+        DegenFlowRecoveryBps(u16) = 24,
+        /// Degen: fee on every settlement, as bps of the entry notional. A position is liquidated
+        /// once its margin no longer covers it. Below 10.
+        DegenCloseFeeBps(PositiveDecimal) = 25,
     }
 }
 
