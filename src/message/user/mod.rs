@@ -153,10 +153,14 @@ define_enum! {
         /// account, `Some(addr)` = another account). `memo` carries a free-form
         /// end-to-end reference. USDC to the SDL entity's address (`to: Bank`) is
         /// a donation to its cash: no fee, minimum 1 USDC. From the master
-        /// `Cross` to a vault's master `Cross` it is a fee-free vault deposit
-        /// under `DepositToVault`'s rules; delegates may not deposit. From the
-        /// fees admin's wallet to a vault's master `Cross` it is a grant: no
-        /// shares are issued.
+        /// `Cross` to a vault's master `Cross` it is a fee-free vault deposit;
+        /// delegates and admins may not deposit. It mints shares at the vault's
+        /// NAV, within the vault's depositor whitelist, deposit assets, per-user
+        /// cap, minimum deposit and deposit limit. A degen vault takes USDC only,
+        /// with no whitelist or per-user cap, and queues the deposit to mint at
+        /// a later run's NAV; queued deposits count against its deposit limit.
+        /// From the fees admin's wallet to a vault's master `Cross` it is a
+        /// grant: no shares are issued.
         Transfer {
             from: TransferEndpoint,
             to: TransferEndpoint,
@@ -169,22 +173,35 @@ define_enum! {
         /// Set an account's self-trade group.
         ///
         /// Accounts sharing a `group` are treated as a single entity by the
-        /// self-trade check, so they cannot trade against each other. A master
-        /// and its subs, and a vault and its leader, are bound to each other
-        /// independently of `group` and cannot be separated by it.
+        /// self-trade check, so they cannot trade against each other: a taker
+        /// that meets a resting order of its own entity cancels it (`BootOrder`
+        /// then `CancelOrder`) and keeps matching. A post-only order that would
+        /// cross still fails, and a liquidation fills the victim's group and
+        /// family rather than cancelling them. A master and its subs, and a
+        /// vault and its leader, are bound to each other independently of
+        /// `group` and cannot be separated by it.
         ///
         /// `address` names the account to configure:
         /// - `None` — the sender's own account, with `sub_account_index` applied
         ///   as elsewhere.
         /// - `Some(addr)` — that account, and `sub_account_index` is **ignored**.
-        ///   Allowed for the sender's own account, a sub-account whose recorded
-        ///   master is the sender, a vault the sender leads, or any account if the
-        ///   sender is the Protocol admin.
         ///
-        /// A delegate may set a group, acting with its delegator's authority: on
-        /// the delegator's own account and on the delegator's sub-accounts. A
-        /// delegate of a vault may set that vault's group; a delegate of the
-        /// *leader* may not, since vault configuration is leader-only.
+        /// Joining a group — any `group` other than the account's own address —
+        /// is an admin decision: only the MarketStatus or Protocol admin may do
+        /// it, on any existing account.
+        ///
+        /// Leaving a group — `group` set to the account's own address — is
+        /// allowed for the account itself, a sub-account whose recorded master
+        /// is the sender, a vault the sender leads, and either admin. A delegate
+        /// acts with its delegator's authority: on the delegator's own account
+        /// and sub-accounts. A delegate of a vault may reset that vault; a
+        /// delegate of the *leader* may not, since vault configuration is
+        /// leader-only.
+        ///
+        /// A new account's group is an address, not its parent's current group:
+        /// a master's own, a sub-account's master's, and a vault's or vault
+        /// sub-account's leader's. Once reset to its own address, a sub-account
+        /// or vault can return to that group only through an admin.
         SetAccountGroup {
             address: Option<Address>,
             group: Address,
@@ -290,7 +307,8 @@ define_enum! {
         /// Settle user's PnL from the pool.
         SettleFromPnlPool { sub_account_index: Option<u8> } = 41,
 
-        /// Deposit to the insurance fund.
+        /// Deposit to the insurance fund. Rejected: the fund is deprecated; kept for decoding.
+        #[deprecated(note = "the insurance fund is deprecated; SDL and ADL cover over-bankruptcy")]
         DepositToInsuranceFund { usdc_amount: PositiveDecimal } = 42,
 
         /// Deposit to protocol treasury.
@@ -302,7 +320,8 @@ define_enum! {
         /// Claim accumulated borrow/lend protocol fees.
         ClaimBorrowLendFees {} = 44,
 
-        /// Deposit to the iso insurance fund.
+        /// Deposit to the iso insurance fund. Rejected: the fund is deprecated; kept for decoding.
+        #[deprecated(note = "the insurance fund is deprecated; SDL and ADL cover over-bankruptcy")]
         DepositToIsoInsuranceFund { market_id: MarketId, amount: PositiveDecimal } = 45,
         // Reserved: 46-49
 
@@ -324,8 +343,8 @@ define_enum! {
             shares: PositiveDecimal,
         } = 52,
 
-        /// Cancel the sender's oldest queued withdrawal from a vault. Superseded by
-        /// `CancelQueuedWithdrawalV1`, which cancels a named withdrawal or all of them.
+        /// Cancel the sender's oldest queued withdrawal from a vault.
+        #[deprecated(note = "use `UserAction::CancelQueuedWithdrawalV1` instead")]
         CancelQueuedWithdrawal { vault_address: Address } = 53,
 
         /// Force withdraw from a vault (bypasses queue).
@@ -424,6 +443,10 @@ impl<Address> UserAction<Address> {
                 | Self::TransferSpotCollateral { .. }
                 | Self::DepositIso { .. }
                 | Self::WithdrawIso { .. }
+                | Self::DepositToVault { .. }
+                | Self::CancelQueuedWithdrawal { .. }
+                | Self::DepositToInsuranceFund { .. }
+                | Self::DepositToIsoInsuranceFund { .. }
         )
     }
 }

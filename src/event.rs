@@ -650,6 +650,7 @@ pub enum Event<Address> {
         fee: PositiveDecimal,
         execution_timestamp: UnixTimestampMicros,
     },
+    /// Deprecated with the insurance fund; no longer emitted, kept for decoding.
     TakeFromInsuranceFund {
         reason: TakeFromInsuranceFundReason,
         amount: PositiveDecimal,
@@ -784,7 +785,8 @@ pub enum Event<Address> {
     },
     /// An account's self-trade group changed. Accounts sharing a group are treated
     /// as a single entity by the self-trade check. `set_by` is the signer: the
-    /// account's owner, its master, a vault leader, or the Protocol admin.
+    /// MarketStatus or Protocol admin, or, when the account left a group, its
+    /// owner, master or vault leader, or a delegate of the account or its master.
     SetAccountGroup {
         user_address: Address,
         set_by: Address,
